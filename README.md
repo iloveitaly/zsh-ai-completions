@@ -7,7 +7,7 @@ Let's see if AI can do this for us.
 ## Installation
 
 ```shell
-iloveitaly/zsh-ai-completions
+zinit light iloveitaly/zsh-ai-completions
 ```
 
 ## Prompt
