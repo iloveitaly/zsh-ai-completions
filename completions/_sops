@@ -1,0 +1,47 @@
+#compdef sops
+
+_arguments \
+  '(-d --decrypt)'{-d,--decrypt}'[decrypt file to stdout]' \
+  '(-e --encrypt)'{-e,--encrypt}'[encrypt file to stdout]' \
+  '(-r --rotate)'{-r,--rotate}'[rotate data encryption key]' \
+  '--disable-version-check[skip version check]' \
+  '(-k --kms)'{-k,--kms}'[KMS ARNs]:KMS ARNs:' \
+  '--aws-profile[AWS profile]:profile:' \
+  '--gcp-kms[GCP KMS resource IDs]:GCP KMS IDs:' \
+  '--azure-kv[Azure Key Vault URLs]:Azure KV URLs:' \
+  '--hc-vault-transit[Vault key URIs]:Vault URIs:' \
+  '(-p --pgp)'{-p,--pgp}'[PGP fingerprints]:PGP fingerprints:' \
+  '(-a --age)'{-a,--age}'[age recipients]:age recipients:' \
+  '(-i --in-place)'{-i,--in-place}'[edit file in-place]' \
+  '--extract[extract specific key]:key:' \
+  '--input-type[input type]:type:(json yaml dotenv binary)' \
+  '--output-type[output type]:type:(json yaml dotenv binary)' \
+  '(-s --show-master-keys)'{-s,--show-master-keys}'[display master keys]' \
+  '--add-gcp-kms[add GCP KMS keys]:GCP KMS keys:' \
+  '--rm-gcp-kms[remove GCP KMS keys]:GCP KMS keys:' \
+  '--add-azure-kv[add Azure KV keys]:Azure KV keys:' \
+  '--rm-azure-kv[remove Azure KV keys]:Azure KV keys:' \
+  '--add-kms[add KMS ARNs]:KMS ARNs:' \
+  '--rm-kms[remove KMS ARNs]:KMS ARNs:' \
+  '--add-hc-vault-transit[add Vault URIs]:Vault URIs:' \
+  '--rm-hc-vault-transit[remove Vault URIs]:Vault URIs:' \
+  '--add-age[add age recipients]:age recipients:' \
+  '--rm-age[remove age recipients]:age recipients:' \
+  '--add-pgp[add PGP fingerprints]:PGP fingerprints:' \
+  '--rm-pgp[remove PGP fingerprints]:PGP fingerprints:' \
+  '--ignore-mac[ignore MAC during decryption]' \
+  '--unencrypted-suffix[unencrypted key suffix]:suffix:' \
+  '--encrypted-suffix[encrypted key suffix]:suffix:' \
+  '--unencrypted-regex[unencrypted key regex]:regex:' \
+  '--encrypted-regex[encrypted key regex]:regex:' \
+  '--config[config file path]:file:_files' \
+  '--encryption-context[KMS encryption context]:context:' \
+  '--set[set key or branch]:json string:' \
+  '--shamir-secret-sharing-threshold[Shamir threshold]:number:' \
+  '--verbose[enable verbose logging]' \
+  '--output[output file]:file:_files' \
+  '--enable-local-keyservice[use local key service]' \
+  '--keyservice[specify key services]:service:' \
+  '(-h --help)'{-h,--help}'[show help]' \
+  '(-v --version)'{-v,--version}'[print version]' \
+  '*:file:_files'
