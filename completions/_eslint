@@ -1,0 +1,46 @@
+#compdef mycommand
+
+_mycommand() {
+  local -a commands
+  commands=(
+    'start:Start the application'
+    'stop:Stop the application'
+    'restart:Restart the application'
+    'status:Check the status of the application'
+    'config:Manage configuration'
+    'help:Show help information'
+  )
+
+  local -a config_commands
+  config_commands=(
+    'show:Display current configuration'
+    'edit:Edit configuration file'
+    'reset:Reset configuration to default'
+  )
+
+  _arguments -C \
+    '1: :->cmds' \
+    '*::arg:->args'
+
+  case "$state" in
+    cmds)
+      _describe -t commands 'mycommand commands' commands
+      ;;
+    args)
+      case $line[1] in
+        config)
+          _describe -t config_commands 'config subcommands' config_commands
+          ;;
+        start|stop|restart|status)
+          _message 'no more arguments'
+          ;;
+        help)
+          _message 'no more arguments'
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_mycommand "$@"
+

@@ -1,0 +1,23 @@
+#compdef fastmod
+
+local -a args
+args=(
+  '(- :)'{-h,--help}'[Print help information]'
+  '(- :)'{-V,--version}'[Print version information]'
+  '--accept-all[Automatically accept all changes]'
+  '-F--fixed-strings[Treat REGEX as a literal string]'
+  '--hidden[Search hidden files]'
+  '-i--ignore-case[Perform case-insensitive search]'
+  '-m--multiline[Have regex work over multiple lines]'
+  '--print-changed-files[Print the paths of changed files]'
+  '*-d--dir=[Directory to explore]:directory:_files -/'
+  '*-e--extensions=[File extensions to process]:extension'
+  '*-g--glob=[Globs to process]:glob'
+  '*--iglob=[Case-insensitive globs to process]:iglob'
+  '1:regex'
+  '2:substitution'
+  '*:file or directory:_files'
+)
+
+_arguments -s $args
+

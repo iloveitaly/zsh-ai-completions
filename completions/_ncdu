@@ -1,0 +1,27 @@
+#compdef ncdu
+
+local -a options
+
+options=(
+  '(-h --help)'{-h,--help}'[This help message]'
+  '-q[Quiet mode, refresh interval 2 seconds]'
+  '(-v -V --version)'{-v,-V,--version}'[Print version]'
+  '-x[Same filesystem]'
+  '-e[Enable extended information]'
+  '-r[Read only]'
+  '-o[Export scanned directory to FILE]:output file:_files'
+  '-f[Import scanned directory from FILE]:input file:_files'
+  '(-0 -1 -2)'{-0,-1,-2}'[UI to use when scanning (0=none,2=full ncurses)]'
+  '--si[Use base 10 (SI) prefixes instead of base 2]'
+  '--exclude[Exclude files that match PATTERN]:pattern'
+  '(-X --exclude-from)'{-X,--exclude-from}'[Exclude files that match any pattern in FILE]:exclude file:_files'
+  '(-L --follow-symlinks)'{-L,--follow-symlinks}'[Follow symbolic links (excluding directories)]'
+  '--exclude-caches[Exclude directories containing CACHEDIR.TAG]'
+  '--exclude-kernfs[Exclude Linux pseudo filesystems (procfs,sysfs,cgroup,...)]'
+  '--confirm-quit[Confirm quitting ncdu]'
+  '--color[Set color scheme]:color scheme:(off dark dark-bg)'
+  '--ignore-config[Don'"'"'t load config files]'
+)
+
+_arguments -s -S $options '*:directory:_files -/'
+
