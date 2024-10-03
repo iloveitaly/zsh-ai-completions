@@ -14,6 +14,10 @@ iloveitaly/zsh-ai-completions
 
 ```
 generate zsh completion
+
+write a zsh completion. This content contains subcommand --help output.
+
+write a zsh shell script to execute each subcommand help output and aggregate it so an llm could easily generate a completion from it. Only return the shell script contents (no other output), without a markdown block. Do not use "commands" as a variable name in the script.
 ```
 
 ## TODO
