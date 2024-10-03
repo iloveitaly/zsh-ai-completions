@@ -13,11 +13,17 @@ iloveitaly/zsh-ai-completions
 ## Prompt
 
 ```
-generate zsh completion
+generate zsh completion. Only return the shell script contents (no other output) without a markdown block.
 
 write a zsh completion. This content contains subcommand --help output.
 
 write a zsh shell script to execute each subcommand help output and aggregate it so an llm could easily generate a completion from it. Only return the shell script contents (no other output), without a markdown block. Do not use "commands" as a variable name in the script.
+```
+
+Example:
+
+```
+fzf --help | llm? "generate zsh completion. Only return the shell script contents (no other output) without a markdown block." > completions/_fzf
 ```
 
 ## TODO
