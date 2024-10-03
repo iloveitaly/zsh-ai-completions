@@ -1,3 +1,14 @@
+# AI Generated ZSH Completions
+
+I love zsh completions. Everyone hates generating them.
+
+Let's see if AI can do this for us.
+
+## Installation
+
+```shell
+iloveitaly/zsh-ai-completions
+```
 
 ## Prompt
 
