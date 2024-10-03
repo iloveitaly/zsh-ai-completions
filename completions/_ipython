@@ -1,4 +1,4 @@
-Here's a zsh completion script for IPython:
+Here is a zsh completion script for IPython:
 
 #compdef ipython
 
@@ -10,59 +10,58 @@ subcommands=(
   'history:Manage the IPython history database'
 )
 
-_arguments -C \
-  '(-h --help)'{-h,--help}'[Show help message and exit]' \
-  '--debug[Set log level to logging.DEBUG]' \
-  '--show-config[Show the application'\''s configuration (human-readable format)]' \
-  '--show-config-json[Show the application'\''s configuration (json format)]' \
-  '--quiet[Set log level to logging.CRITICAL]' \
-  '--init[Initialize profile with default config files]' \
+_arguments \
+  '--debug[Set log level to DEBUG]' \
+  '--show-config[Show configuration]' \
+  '--show-config-json[Show configuration in JSON]' \
+  '--quiet[Set log level to CRITICAL]' \
+  '--init[Initialize profile with default config]' \
   '--autoindent[Turn on autoindenting]' \
   '--no-autoindent[Turn off autoindenting]' \
-  '--automagic[Turn on the auto calling of magic commands]' \
-  '--no-automagic[Turn off the auto calling of magic commands]' \
-  '--pdb[Enable auto calling the pdb debugger after every exception]' \
-  '--no-pdb[Disable auto calling the pdb debugger after every exception]' \
-  '--pprint[Enable auto pretty printing of results]' \
-  '--no-pprint[Disable auto pretty printing of results]' \
-  '--color-info[Enable using colors for info related things]' \
-  '--no-color-info[Disable using colors for info related things]' \
-  '--ignore-cwd[Exclude the current working directory from sys.path]' \
-  '--no-ignore-cwd[Include the current working directory in sys.path]' \
-  '--nosep[Eliminate all spacing between prompts]' \
-  '--pylab=[Pre-load matplotlib and numpy for interactive use]:backend:(auto)' \
-  '--matplotlib=[Configure matplotlib for interactive use]:backend:(auto)' \
-  '--autoedit-syntax[Turn on auto editing of files with syntax errors]' \
-  '--no-autoedit-syntax[Turn off auto editing of files with syntax errors]' \
-  '--simple-prompt[Force simple minimal prompt using raw_input]' \
-  '--no-simple-prompt[Use a rich interactive prompt with prompt_toolkit]' \
-  '--banner[Display a banner upon starting IPython]' \
-  '--no-banner[Don'\''t display a banner upon starting IPython]' \
-  '--confirm-exit[Set to confirm when you try to exit IPython with an EOF]' \
-  '--no-confirm-exit[Don'\''t prompt the user when exiting]' \
-  '--term-title[Enable auto setting the terminal title]' \
-  '--no-term-title[Disable auto setting the terminal title]' \
-  '--classic[Gives IPython a similar feel to the classic Python prompt]' \
-  '--quick[Enable quick startup with no config files]' \
-  '-i[Become interactive after executing code]' \
-  '--log-level=[Set the log level]:level:(DEBUG INFO WARN ERROR CRITICAL)' \
-  '--profile-dir=[Set the profile location directly]:directory:_files -/' \
-  '--profile=[The IPython profile to use]:profile:' \
-  '--ipython-dir=[The name of the IPython directory]:directory:_files -/' \
-  '--config=[Path to an extra config file to load]:file:_files' \
-  '--autocall=[Make IPython automatically call callable objects]:level:(0 1 2)' \
-  '--colors=[Set the color scheme]:scheme:(NoColor Neutral Linux LightBG)' \
-  '--logfile=[The name of the logfile to use]:file:_files' \
-  '--logappend=[Start logging to the given file in append mode]:file:_files' \
-  '-c=[Execute the given command string]:command:' \
-  '-m=[Run the module as a script]:module:' \
-  '--ext=[Dotted module name(s) of IPython extensions to load]:extension:' \
-  '--gui=[Enable GUI event loop integration]:gui:(asyncio glut gtk gtk2 gtk3 gtk4 osx pyglet qt qt5 qt6 tk wx)' \
-  '--pylab=[Pre-load matplotlib and numpy]:backend:(agg auto gtk gtk3 gtk4 inline ipympl nbagg notebook osx pdf ps qt qt4 qt5 qt6 svg tk webagg widget wx)' \
-  '--matplotlib=[Configure matplotlib]:backend:(agg auto gtk gtk3 gtk4 inline ipympl nbagg notebook osx pdf ps qt qt4 qt5 qt6 svg tk webagg widget wx)' \
-  '--cache-size=[Set the size of the output cache]:size:' \
+  '--automagic[Turn on automagic]' \
+  '--no-automagic[Turn off automagic]' \
+  '--pdb[Enable auto pdb debugger]' \
+  '--no-pdb[Disable auto pdb debugger]' \
+  '--pprint[Enable auto pretty printing]' \
+  '--no-pprint[Disable auto pretty printing]' \
+  '--color-info[Enable color for info]' \
+  '--no-color-info[Disable color for info]' \
+  '--ignore-cwd[Exclude CWD from sys.path]' \
+  '--no-ignore-cwd[Include CWD in sys.path]' \
+  '--nosep[Eliminate prompt spacing]' \
+  '--pylab[Pre-load matplotlib and numpy]' \
+  '--matplotlib[Configure matplotlib]' \
+  '--autoedit-syntax[Auto edit files with syntax errors]' \
+  '--no-autoedit-syntax[Disable auto editing]' \
+  '--simple-prompt[Use simple prompt]' \
+  '--no-simple-prompt[Use rich prompt]' \
+  '--banner[Display banner on startup]' \
+  '--no-banner[Hide banner on startup]' \
+  '--confirm-exit[Confirm on exit]' \
+  '--no-confirm-exit[Do not confirm on exit]' \
+  '--term-title[Enable auto terminal title]' \
+  '--no-term-title[Disable auto terminal title]' \
+  '--classic[Use classic Python-like interface]' \
+  '--quick[Quick startup with no config]' \
+  '-i[Interactive mode after running script]' \
+  '--log-level=[Set log level]:level:(DEBUG INFO WARN ERROR CRITICAL)' \
+  '--profile-dir=[Set profile directory]:directory:_files -/' \
+  '--profile=[IPython profile to use]:profile:' \
+  '--ipython-dir=[IPython directory]:directory:_files -/' \
+  '--config=[Extra config file]:config file:_files' \
+  '--autocall=[Autocall mode]:mode:(0 1 2)' \
+  '--colors=[Color scheme]:scheme:(NoColor Neutral Linux LightBG)' \
+  '--logfile=[Log file]:file:_files' \
+  '--logappend=[Append log file]:file:_files' \
+  '-c[Execute command string]:command:' \
+  '-m[Run module as script]:module:' \
+  '--ext=[Load extensions]:extension:' \
+  '--gui=[GUI event loop]:gui:(asyncio glut gtk gtk2 gtk3 gtk4 osx pyglet qt qt5 qt6 tk wx)' \
+  '--pylab=[Matplotlib backend]:backend:(agg auto gtk gtk3 gtk4 inline ipympl nbagg notebook osx pdf ps qt qt4 qt5 qt6 svg tk webagg widget wx)' \
+  '--matplotlib=[Matplotlib backend]:backend:(agg auto gtk gtk3 gtk4 inline ipympl nbagg notebook osx pdf ps qt qt4 qt5 qt6 svg tk webagg widget wx)' \
+  '--cache-size=[Output cache size]:size:' \
   '1: :->cmds' \
-  '*:: :->args' && return 0
+  '*:: :->args'
 
 case $state in
   cmds)
@@ -74,7 +73,7 @@ case $state in
         _ipython_profile
         ;;
       kernel)
-        _ipython_kernel
+        _ipython_kernel  
         ;;
       locate)
         _ipython_locate
@@ -86,35 +85,29 @@ case $state in
     ;;
 esac
 
+# Subcommand completions
 _ipython_profile() {
-  local -a profile_cmds
-  profile_cmds=(
-    'create:Create a new profile'
+  _arguments \
+    'create:Create a new profile' \
     'list:List available profiles'
-  )
-  _describe -t commands 'profile commands' profile_cmds
 }
 
 _ipython_kernel() {
   _arguments \
-    '--ip=[IP address to bind kernel to]:ip:' \
-    '--stdin=[File to use for stdin]:file:_files' \
-    '--control=[Control port]:port:' \
-    '--shell=[Shell port]:port:' \
-    '--transport=[Transport protocol]:protocol:(tcp ipc)'
+    '--ip=[IP address]:ip:' \
+    '--stdin=[Stdin socket]:port:' \
+    '--shell=[Shell socket]:port:' \
+    '--iopub=[IOPub socket]:port:'
 }
 
 _ipython_locate() {
   _arguments \
-    '--profile=[The name of the profile to locate]:profile:'
+    'profile:Locate profile directory'
 }
 
 _ipython_history() {
-  local -a history_cmds
-  history_cmds=(
-    'trim:Trim the IPython history database'
-    'clear:Clear the IPython history database'
-  )
-  _describe -t commands 'history commands' history_cmds
+  _arguments \
+    'trim:Trim history database' \
+    'clear:Clear history database'
 }
 

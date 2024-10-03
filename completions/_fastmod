@@ -10,12 +10,12 @@ args=(
   '-i--ignore-case[Perform case-insensitive search]'
   '-m--multiline[Have regex work over multiple lines]'
   '--print-changed-files[Print the paths of changed files]'
-  '*-d--dir=[Directory to explore]:directory:_files -/'
-  '*-e--extensions=[File extensions to process]:extension'
-  '*-g--glob=[Globs to process]:glob'
-  '*--iglob=[Case-insensitive globs to process]:iglob'
-  '1:regex'
-  '2:substitution'
+  '*-d--dir=[Directory to explore]:directory:_directories'
+  '*-e--extensions=[File extensions to process]:extension:'
+  '*-g--glob=[Globs to process]:glob:'
+  '*--iglob=[Case-insensitive globs to process]:iglob:'
+  '1:regex:'
+  '2:substitution:'
   '*:file or directory:_files'
 )
 

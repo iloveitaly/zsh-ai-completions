@@ -1,47 +1,76 @@
 #compdef sops
 
-_arguments \
-  '(-d --decrypt)'{-d,--decrypt}'[decrypt file to stdout]' \
-  '(-e --encrypt)'{-e,--encrypt}'[encrypt file to stdout]' \
-  '(-r --rotate)'{-r,--rotate}'[rotate data encryption key]' \
-  '--disable-version-check[skip version check]' \
-  '(-k --kms)'{-k,--kms}'[KMS ARNs]:KMS ARNs:' \
-  '--aws-profile[AWS profile]:profile:' \
-  '--gcp-kms[GCP KMS resource IDs]:GCP KMS IDs:' \
-  '--azure-kv[Azure Key Vault URLs]:Azure KV URLs:' \
-  '--hc-vault-transit[Vault key URIs]:Vault URIs:' \
-  '(-p --pgp)'{-p,--pgp}'[PGP fingerprints]:PGP fingerprints:' \
-  '(-a --age)'{-a,--age}'[age recipients]:age recipients:' \
-  '(-i --in-place)'{-i,--in-place}'[edit file in-place]' \
-  '--extract[extract specific key]:key:' \
-  '--input-type[input type]:type:(json yaml dotenv binary)' \
-  '--output-type[output type]:type:(json yaml dotenv binary)' \
-  '(-s --show-master-keys)'{-s,--show-master-keys}'[display master keys]' \
-  '--add-gcp-kms[add GCP KMS keys]:GCP KMS keys:' \
-  '--rm-gcp-kms[remove GCP KMS keys]:GCP KMS keys:' \
-  '--add-azure-kv[add Azure KV keys]:Azure KV keys:' \
-  '--rm-azure-kv[remove Azure KV keys]:Azure KV keys:' \
-  '--add-kms[add KMS ARNs]:KMS ARNs:' \
-  '--rm-kms[remove KMS ARNs]:KMS ARNs:' \
-  '--add-hc-vault-transit[add Vault URIs]:Vault URIs:' \
-  '--rm-hc-vault-transit[remove Vault URIs]:Vault URIs:' \
-  '--add-age[add age recipients]:age recipients:' \
-  '--rm-age[remove age recipients]:age recipients:' \
-  '--add-pgp[add PGP fingerprints]:PGP fingerprints:' \
-  '--rm-pgp[remove PGP fingerprints]:PGP fingerprints:' \
-  '--ignore-mac[ignore MAC during decryption]' \
-  '--unencrypted-suffix[unencrypted key suffix]:suffix:' \
-  '--encrypted-suffix[encrypted key suffix]:suffix:' \
-  '--unencrypted-regex[unencrypted key regex]:regex:' \
-  '--encrypted-regex[encrypted key regex]:regex:' \
-  '--config[config file path]:file:_files' \
-  '--encryption-context[KMS encryption context]:context:' \
-  '--set[set key or branch]:json string:' \
-  '--shamir-secret-sharing-threshold[Shamir threshold]:number:' \
-  '--verbose[enable verbose logging]' \
-  '--output[output file]:file:_files' \
+local -a _sops_commands
+_sops_commands=(
+  'exec-env:execute a command with decrypted values inserted into the environment'
+  'exec-file:execute a command with the decrypted contents as a temporary file'
+  'publish:Publish sops file or directory to a configured destination'
+  'keyservice:start a SOPS key service server'
+  'groups:modify the groups on a SOPS file'
+  'updatekeys:update the keys of a SOPS file using the config file'
+  'help:Shows a list of commands or help for one command'
+)
+
+_arguments -C \
+  '(-d --decrypt)'{-d,--decrypt}'[decrypt a file and output the result to stdout]' \
+  '(-e --encrypt)'{-e,--encrypt}'[encrypt a file and output the result to stdout]' \
+  '(-r --rotate)'{-r,--rotate}'[generate a new data encryption key and reencrypt all values with the new key]' \
+  '--disable-version-check[do not check whether the current version is latest during --version]' \
+  '(-k --kms)'{-k,--kms}'[comma separated list of KMS ARNs]:KMS ARNs' \
+  '--aws-profile[The AWS profile to use for requests to AWS]:AWS profile' \
+  '--gcp-kms[comma separated list of GCP KMS resource IDs]:GCP KMS IDs' \
+  '--azure-kv[comma separated list of Azure Key Vault URLs]:Azure Key Vault URLs' \
+  '--hc-vault-transit[comma separated list of vault'"'"'s key URI]:Vault URIs' \
+  '(-p --pgp)'{-p,--pgp}'[comma separated list of PGP fingerprints]:PGP fingerprints' \
+  '(-a --age)'{-a,--age}'[comma separated list of age recipients]:age recipients' \
+  '(-i --in-place)'{-i,--in-place}'[write output back to the same file instead of stdout]' \
+  '--extract[extract a specific key or branch from the input document]:key' \
+  '--input-type[input type (json, yaml, dotenv, binary)]:input type:(json yaml dotenv binary)' \
+  '--output-type[output type (json, yaml, dotenv, binary)]:output type:(json yaml dotenv binary)' \
+  '(-s --show-master-keys)'{-s,--show-master-keys}'[display master encryption keys in the file during editing]' \
+  '--add-gcp-kms[add GCP KMS key resource IDs]:GCP KMS IDs' \
+  '--rm-gcp-kms[remove GCP KMS key resource IDs]:GCP KMS IDs' \
+  '--add-azure-kv[add Azure Key Vault key URLs]:Azure Key Vault URLs' \
+  '--rm-azure-kv[remove Azure Key Vault key URLs]:Azure Key Vault URLs' \
+  '--add-kms[add KMS ARNs]:KMS ARNs' \
+  '--rm-kms[remove KMS ARNs]:KMS ARNs' \
+  '--add-hc-vault-transit[add Vault'"'"'s URI key]:Vault URIs' \
+  '--rm-hc-vault-transit[remove Vault'"'"'s URI key]:Vault URIs' \
+  '--add-age[add age recipients fingerprints]:age recipients' \
+  '--rm-age[remove age recipients]:age recipients' \
+  '--add-pgp[add PGP fingerprints]:PGP fingerprints' \
+  '--rm-pgp[remove PGP fingerprints]:PGP fingerprints' \
+  '--ignore-mac[ignore Message Authentication Code during decryption]' \
+  '--unencrypted-suffix[override the unencrypted key suffix]:suffix' \
+  '--encrypted-suffix[override the encrypted key suffix]:suffix' \
+  '--unencrypted-regex[set the unencrypted key regex]:regex' \
+  '--encrypted-regex[set the encrypted key regex]:regex' \
+  '--config[path to sops'"'"' config file]:config file:_files' \
+  '--encryption-context[KMS encryption context key:value pairs]:context' \
+  '--set[set a specific key or branch in the input document]:json string' \
+  '--shamir-secret-sharing-threshold[number of master keys required for Shamir]:threshold' \
+  '--verbose[Enable verbose logging output]' \
+  '--output[Save the output to the specified file]:output file:_files' \
   '--enable-local-keyservice[use local key service]' \
-  '--keyservice[specify key services]:service:' \
+  '--keyservice[Specify additional key services]:service' \
   '(-h --help)'{-h,--help}'[show help]' \
-  '(-v --version)'{-v,--version}'[print version]' \
-  '*:file:_files'
+  '(-v --version)'{-v,--version}'[print the version]' \
+  '1: :->cmds' \
+  '*::arg:->args'
+
+case "$state" in
+  cmds)
+    _describe -t commands 'sops commands' _sops_commands
+    ;;
+  args)
+    case $line[1] in
+      help)
+        _describe -t commands 'sops commands' _sops_commands
+        ;;
+      *)
+        _files
+        ;;
+    esac
+    ;;
+esac
+
