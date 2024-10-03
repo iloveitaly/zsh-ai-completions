@@ -20,7 +20,7 @@ _arguments -C \
   '--aws-profile[The AWS profile to use for requests to AWS]:AWS profile' \
   '--gcp-kms[comma separated list of GCP KMS resource IDs]:GCP KMS IDs' \
   '--azure-kv[comma separated list of Azure Key Vault URLs]:Azure Key Vault URLs' \
-  '--hc-vault-transit[comma separated list of vault'"'"'s key URI]:Vault URIs' \
+  '--hc-vault-transit[comma separated list of vault'"'"'s key URI]:Vault key URIs' \
   '(-p --pgp)'{-p,--pgp}'[comma separated list of PGP fingerprints]:PGP fingerprints' \
   '(-a --age)'{-a,--age}'[comma separated list of age recipients]:age recipients' \
   '(-i --in-place)'{-i,--in-place}'[write output back to the same file instead of stdout]' \
@@ -34,9 +34,9 @@ _arguments -C \
   '--rm-azure-kv[remove Azure Key Vault key URLs]:Azure Key Vault URLs' \
   '--add-kms[add KMS ARNs]:KMS ARNs' \
   '--rm-kms[remove KMS ARNs]:KMS ARNs' \
-  '--add-hc-vault-transit[add Vault'"'"'s URI key]:Vault URIs' \
-  '--rm-hc-vault-transit[remove Vault'"'"'s URI key]:Vault URIs' \
-  '--add-age[add age recipients fingerprints]:age recipients' \
+  '--add-hc-vault-transit[add Vault'"'"'s URI keys]:Vault URI keys' \
+  '--rm-hc-vault-transit[remove Vault'"'"'s URI keys]:Vault URI keys' \
+  '--add-age[add age recipients]:age recipients' \
   '--rm-age[remove age recipients]:age recipients' \
   '--add-pgp[add PGP fingerprints]:PGP fingerprints' \
   '--rm-pgp[remove PGP fingerprints]:PGP fingerprints' \
@@ -46,19 +46,19 @@ _arguments -C \
   '--unencrypted-regex[set the unencrypted key regex]:regex' \
   '--encrypted-regex[set the encrypted key regex]:regex' \
   '--config[path to sops'"'"' config file]:config file:_files' \
-  '--encryption-context[KMS encryption context key:value pairs]:context' \
+  '--encryption-context[KMS encryption context key:value pairs]:encryption context' \
   '--set[set a specific key or branch in the input document]:json string' \
   '--shamir-secret-sharing-threshold[number of master keys required for Shamir]:threshold' \
   '--verbose[Enable verbose logging output]' \
-  '--output[Save the output to the specified file]:output file:_files' \
+  '--output[Save output to file]:output file:_files' \
   '--enable-local-keyservice[use local key service]' \
-  '--keyservice[Specify additional key services]:service' \
+  '--keyservice[Specify additional key services]:key service' \
   '(-h --help)'{-h,--help}'[show help]' \
   '(-v --version)'{-v,--version}'[print the version]' \
   '1: :->cmds' \
-  '*::arg:->args'
+  '*:: :->args'
 
-case "$state" in
+case $state in
   cmds)
     _describe -t commands 'sops commands' _sops_commands
     ;;

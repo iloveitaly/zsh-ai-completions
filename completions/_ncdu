@@ -1,8 +1,6 @@
 #compdef ncdu
 
-local -a options
-
-options=(
+local -a options=(
   '(-h --help)'{-h,--help}'[This help message]'
   '-q[Quiet mode, refresh interval 2 seconds]'
   '(-v -V --version)'{-v,-V,--version}'[Print version]'
@@ -20,8 +18,9 @@ options=(
   '--exclude-kernfs[Exclude Linux pseudo filesystems (procfs,sysfs,cgroup,...)]'
   '--confirm-quit[Confirm quitting ncdu]'
   '--color[Set color scheme]:color scheme:(off dark dark-bg)'
-  '--ignore-config[Don'\''t load config files]'
+  '--ignore-config[Do not load config files]'
 )
 
-_arguments -s $options '*:directory:_files -/'
+_arguments -s -S $options \
+  '*:directory:_files -/'
 

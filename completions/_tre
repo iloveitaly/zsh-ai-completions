@@ -13,7 +13,7 @@ args=(
     '(-p --portable)'{-p,--portable}'[Generate portable (absolute) paths for editor aliases]'
     '(-s --simple)'{-s,--simple}'[Use normal print despite gitignore settings]'
     '(-V --version)'{-V,--version}'[Print version information]'
-    '::path:_files -/'
+    '1:path:_files -/'
 )
 
 _arguments -s $args
