@@ -1,12 +1,13 @@
 SHELL := zsh
 
+NO_SUBCOMMAND_PROMPT := "Generate zsh completion for all arguments listed in this '--help' output. Only return the shell script contents (no other output) without a markdown block."
 PROGRAMS_WITHOUT_SUBCOMMANDS := sops ncdu tre vitest eslint fastmod ipython fzf
 
 all_completions: $(addprefix completions/_,$(PROGRAMS_WITHOUT_SUBCOMMANDS))
 
 completions/_%:
 	@if command -v $* >/dev/null 2>&1; then \
-		$* --help | cody chat --stdin "generate zsh completion. Only output completion script contents without a markdown block. Only include code in your output, no messages or preamble." > completions/_$*; \
+		$* --help | cody chat --stdin $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
 	else \
 		echo >&2 "Warning: $* is not installed or not in PATH. Skipping."; \
 	fi

@@ -2,22 +2,22 @@
 
 local -a args
 args=(
-  '(- :)'{-h,--help}'[Print help information]'
-  '(- :)'{-V,--version}'[Print version information]'
-  '--accept-all[Automatically accept all changes]'
-  {-F,--fixed-strings}'[Treat REGEX as a literal string]'
-  '--hidden[Search hidden files]'
-  {-i,--ignore-case}'[Perform case-insensitive search]'
-  {-m,--multiline}'[Have regex work over multiple lines]'
-  '--print-changed-files[Print the paths of changed files]'
-  {-d,--dir}'[The path whose descendent files are to be explored]:directory:_files -/'
-  {-e,--extensions}'[File extensions to process]:extension:'
-  {-g,--glob}'[Globs to process]:glob:'
-  '--iglob[Case-insensitive globs to process]:iglob:'
-  '1:regex:'
-  '2:substitution:'
+  '(--accept-all)--accept-all[Automatically accept all changes]'
+  '(-F --fixed-strings)'{-F,--fixed-strings}'[Treat REGEX as a literal string]'
+  '(-h --help)'{-h,--help}'[Prints help information]'
+  '(--hidden)--hidden[Search hidden files]'
+  '(-i --ignore-case)'{-i,--ignore-case}'[Perform case-insensitive search]'
+  '(-m --multiline)'{-m,--multiline}'[Have regex work over multiple lines]'
+  '(--print-changed-files)--print-changed-files[Print the paths of changed files]'
+  '(-V --version)'{-V,--version}'[Prints version information]'
+  '(-d --dir)'{-d,--dir}'[The path whose descendent files are to be explored]:directory:_files -/'
+  '(-e --extensions)'{-e,--extensions}'[A comma-delimited list of file extensions to process]:extensions'
+  '(-g --glob)'{-g,--glob}'[A space-delimited list of globs to process]:glob'
+  '(--iglob)--iglob[A space-delimited list of case-insensitive globs to process]:iglob'
+  '1:regex'
+  '2:substitution'
   '*:file or directory:_files'
 )
 
-_arguments -S $args
+_arguments -s $args
 

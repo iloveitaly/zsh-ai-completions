@@ -16,56 +16,56 @@ _arguments -C \
   '(-e --encrypt)'{-e,--encrypt}'[encrypt a file and output the result to stdout]' \
   '(-r --rotate)'{-r,--rotate}'[generate a new data encryption key and reencrypt all values with the new key]' \
   '--disable-version-check[do not check whether the current version is latest during --version]' \
-  '(-k --kms)'{-k,--kms}'[comma separated list of KMS ARNs]:KMS ARNs' \
-  '--aws-profile[The AWS profile to use for requests to AWS]:AWS profile' \
-  '--gcp-kms[comma separated list of GCP KMS resource IDs]:GCP KMS IDs' \
-  '--azure-kv[comma separated list of Azure Key Vault URLs]:Azure Key Vault URLs' \
-  '--hc-vault-transit[comma separated list of vault'"'"'s key URI]:Vault key URIs' \
-  '(-p --pgp)'{-p,--pgp}'[comma separated list of PGP fingerprints]:PGP fingerprints' \
-  '(-a --age)'{-a,--age}'[comma separated list of age recipients]:age recipients' \
+  '(-k --kms)'{-k,--kms}'[comma separated list of KMS ARNs]:KMS ARNs:' \
+  '--aws-profile[The AWS profile to use for requests to AWS]:AWS profile:' \
+  '--gcp-kms[comma separated list of GCP KMS resource IDs]:GCP KMS IDs:' \
+  '--azure-kv[comma separated list of Azure Key Vault URLs]:Azure Key Vault URLs:' \
+  '--hc-vault-transit[comma separated list of vault'"'"'s key URI]:Vault URIs:' \
+  '(-p --pgp)'{-p,--pgp}'[comma separated list of PGP fingerprints]:PGP fingerprints:' \
+  '(-a --age)'{-a,--age}'[comma separated list of age recipients]:Age recipients:' \
   '(-i --in-place)'{-i,--in-place}'[write output back to the same file instead of stdout]' \
-  '--extract[extract a specific key or branch from the input document]:key' \
-  '--input-type[input type (json, yaml, dotenv, binary)]:input type:(json yaml dotenv binary)' \
-  '--output-type[output type (json, yaml, dotenv, binary)]:output type:(json yaml dotenv binary)' \
+  '--extract[extract a specific key or branch from the input document]:Key to extract:' \
+  '--input-type[currently json, yaml, dotenv and binary are supported]:Input type:(json yaml dotenv binary)' \
+  '--output-type[currently json, yaml, dotenv and binary are supported]:Output type:(json yaml dotenv binary)' \
   '(-s --show-master-keys)'{-s,--show-master-keys}'[display master encryption keys in the file during editing]' \
-  '--add-gcp-kms[add GCP KMS key resource IDs]:GCP KMS IDs' \
-  '--rm-gcp-kms[remove GCP KMS key resource IDs]:GCP KMS IDs' \
-  '--add-azure-kv[add Azure Key Vault key URLs]:Azure Key Vault URLs' \
-  '--rm-azure-kv[remove Azure Key Vault key URLs]:Azure Key Vault URLs' \
-  '--add-kms[add KMS ARNs]:KMS ARNs' \
-  '--rm-kms[remove KMS ARNs]:KMS ARNs' \
-  '--add-hc-vault-transit[add Vault'"'"'s URI keys]:Vault URI keys' \
-  '--rm-hc-vault-transit[remove Vault'"'"'s URI keys]:Vault URI keys' \
-  '--add-age[add age recipients]:age recipients' \
-  '--rm-age[remove age recipients]:age recipients' \
-  '--add-pgp[add PGP fingerprints]:PGP fingerprints' \
-  '--rm-pgp[remove PGP fingerprints]:PGP fingerprints' \
+  '--add-gcp-kms[add the provided comma-separated list of GCP KMS key resource IDs]:GCP KMS IDs to add:' \
+  '--rm-gcp-kms[remove the provided comma-separated list of GCP KMS key resource IDs]:GCP KMS IDs to remove:' \
+  '--add-azure-kv[add the provided comma-separated list of Azure Key Vault key URLs]:Azure Key Vault URLs to add:' \
+  '--rm-azure-kv[remove the provided comma-separated list of Azure Key Vault key URLs]:Azure Key Vault URLs to remove:' \
+  '--add-kms[add the provided comma-separated list of KMS ARNs]:KMS ARNs to add:' \
+  '--rm-kms[remove the provided comma-separated list of KMS ARNs]:KMS ARNs to remove:' \
+  '--add-hc-vault-transit[add the provided comma-separated list of Vault'"'"'s URI key]:Vault URIs to add:' \
+  '--rm-hc-vault-transit[remove the provided comma-separated list of Vault'"'"'s URI key]:Vault URIs to remove:' \
+  '--add-age[add the provided comma-separated list of age recipients fingerprints]:Age recipients to add:' \
+  '--rm-age[remove the provided comma-separated list of age recipients]:Age recipients to remove:' \
+  '--add-pgp[add the provided comma-separated list of PGP fingerprints]:PGP fingerprints to add:' \
+  '--rm-pgp[remove the provided comma-separated list of PGP fingerprints]:PGP fingerprints to remove:' \
   '--ignore-mac[ignore Message Authentication Code during decryption]' \
-  '--unencrypted-suffix[override the unencrypted key suffix]:suffix' \
-  '--encrypted-suffix[override the encrypted key suffix]:suffix' \
-  '--unencrypted-regex[set the unencrypted key regex]:regex' \
-  '--encrypted-regex[set the encrypted key regex]:regex' \
-  '--config[path to sops'"'"' config file]:config file:_files' \
-  '--encryption-context[KMS encryption context key:value pairs]:encryption context' \
-  '--set[set a specific key or branch in the input document]:json string' \
-  '--shamir-secret-sharing-threshold[number of master keys required for Shamir]:threshold' \
+  '--unencrypted-suffix[override the unencrypted key suffix]:Unencrypted suffix:' \
+  '--encrypted-suffix[override the encrypted key suffix]:Encrypted suffix:' \
+  '--unencrypted-regex[set the unencrypted key regex]:Unencrypted regex:' \
+  '--encrypted-regex[set the encrypted key regex]:Encrypted regex:' \
+  '--config[path to sops'"'"' config file]:Config file:_files' \
+  '--encryption-context[comma separated list of KMS encryption context key:value pairs]:Encryption context:' \
+  '--set[set a specific key or branch in the input document]:JSON encoded string:' \
+  '--shamir-secret-sharing-threshold[the number of master keys required to retrieve the data key with shamir]:Threshold:' \
   '--verbose[Enable verbose logging output]' \
-  '--output[Save output to file]:output file:_files' \
+  '--output[Save the output after encryption or decryption to the file specified]:Output file:_files' \
   '--enable-local-keyservice[use local key service]' \
-  '--keyservice[Specify additional key services]:key service' \
+  '--keyservice[Specify the key services to use in addition to the local one]:Key service:' \
   '(-h --help)'{-h,--help}'[show help]' \
   '(-v --version)'{-v,--version}'[print the version]' \
   '1: :->cmds' \
-  '*:: :->args'
+  '*::arg:->args'
 
-case $state in
+case "$state" in
   cmds)
-    _describe -t commands 'sops commands' _sops_commands
+    _describe -t commands "sops commands" _sops_commands
     ;;
   args)
     case $line[1] in
       help)
-        _describe -t commands 'sops commands' _sops_commands
+        _describe -t commands "sops commands" _sops_commands
         ;;
       *)
         _files
