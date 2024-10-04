@@ -1,0 +1,49 @@
+#compdef zq
+
+local -a options
+
+options=(
+  '-aggmem[maximum memory used per aggregate function value]:memory:->memory'
+  '-B[allow binary zng be sent to a terminal output]'
+  '-C[display AST in Zed canonical format]'
+  '-color[enable/disable color formatting for -Z and lake text output]'
+  '-csv.delim[CSV field delimiter]:delimiter:'
+  '-e[stop upon input errors]'
+  '-f[format for output data]:format:(arrows csv json lake parquet table text tsv vng zeek zjson zng zson)'
+  '-fusemem[maximum memory used by fuse]:memory:->memory'
+  '-h[display help]'
+  '-help[display help]'
+  '-hidden[show hidden options]'
+  '-i[format of input data]:format:(auto arrows csv json line parquet tsv vng zeek zjson zng zson)'
+  '-I[source file containing Zed query text]:file:_files'
+  '-J[use formatted JSON output independent of -f option]'
+  '-j[use line-oriented JSON output independent of -f option]'
+  '-o[write data to output file]:file:_files'
+  '-persist[regular expression to persist type definitions across the stream]:regex:'
+  '-pretty[tab size to pretty print JSON/ZSON output]:size:'
+  '-q[don'"'"'t display warnings]'
+  '-s[display search stats on stderr]'
+  '-sortmem[maximum memory used by sort]:memory:->memory'
+  '-split[split output into one file per data type in this directory]:directory:_files -/'
+  '-splitsize[if >0 and -split is set, split into files at least this big]:size:'
+  '-unbuffered[disable output buffering]'
+  '-version[print version and exit]'
+  '-Z[use formatted ZSON output independent of -f option]'
+  '-z[use line-oriented ZSON output independent of -f option]'
+  '-zng.compress[compress ZNG frames]'
+  '-zng.framethresh[minimum ZNG frame size in uncompressed bytes]:size:'
+  '-zng.readmax[maximum ZNG read buffer size]:memory:->memory'
+  '-zng.readsize[target ZNG read buffer size]:memory:->memory'
+  '-zng.threads[number of ZNG read threads]:threads:'
+  '-zng.validate[validate format when reading ZNG]'
+  '*:file:_files'
+)
+
+_arguments -s $options
+
+case "$state" in
+  memory)
+    _values 'memory' 'auto' 'MiB' 'MB' 'GiB' 'GB'
+    ;;
+esac
+
