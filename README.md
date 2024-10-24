@@ -32,7 +32,15 @@ Example:
 fzf --help | llm? "generate zsh completion. Only return the shell script contents (no other output) without a markdown block." > completions/_fzf
 ```
 
+## Development
+
+Want to test out a completion locally?
+
+```shell
+fpath+=./completions
+autoload -Uz compinit && compinit
+```
+
 ## TODO
 
 - [ ] the company behind sqlc has a way to run code securely in the cloud, should try this for subcommands
-- [ ] nested subcommands? best way to handle?
