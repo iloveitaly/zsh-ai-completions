@@ -1,0 +1,137 @@
+#compdef nixpacks
+
+_nixpacks() {
+  local state line
+  typeset -A opt_args
+
+  _arguments \
+    '1: :->subcmds' \
+    '*: :->args'
+
+  case $state in
+  subcmds)
+    _alternative \
+      'plan:Generate a build plan for an app' \
+      'detect:List all of the providers that will be used to build the app' \
+      'build:Build an app' \
+      'help:Print this message or the help of the given subcommand(s)'
+    ;;
+  args)
+    case $words[1] in
+    plan)
+      _arguments \
+        '1: :->plan_args' \
+        '--json-plan=[Specify an entire build plan in json format that should be used to configure the build]:' \
+        '-i[Specify the install command to use]:install-cmd:' \
+        '--install-cmd=[Specify the install command to use]:' \
+        '-b[Specify the build command to use]:build-cmd:' \
+        '--build-cmd=[Specify the build command to use]:' \
+        '-s[Specify the start command to use]:start-cmd:' \
+        '--start-cmd=[Specify the start command to use]:' \
+        '-p[Provide additional nix packages to install in the environment]:pkgs:' \
+        '--pkgs=[Provide additional nix packages to install in the environment]:' \
+        '-a[Provide additional apt packages to install in the environment]:apt:' \
+        '--apt=[Provide additional apt packages to install in the environment]:' \
+        '--libs=[Provide additional nix libraries to install in the environment]:' \
+        '-e[Provide environment variables to your build]:env:' \
+        '--env=[Provide environment variables to your build]:' \
+        '-c[Path to config file]:config:' \
+        '--config=[Path to config file]:' \
+        '-h[Print help information]' \
+        '--help[Print help information]' \
+        '-V[Print version information]' \
+        '--version[Print version information]' \
+        '-f[Specify the output format of the build plan]:format:(json toml)' \
+        '--format=[Specify the output format of the build plan]:(json toml)'
+      ;;
+    detect)
+      _arguments \
+        '1: :->detect_args' \
+        '--json-plan=[Specify an entire build plan in json format that should be used to configure the build]:' \
+        '-i[Specify the install command to use]:install-cmd:' \
+        '--install-cmd=[Specify the install command to use]:' \
+        '-b[Specify the build command to use]:build-cmd:' \
+        '--build-cmd=[Specify the build command to use]:' \
+        '-s[Specify the start command to use]:start-cmd:' \
+        '--start-cmd=[Specify the start command to use]:' \
+        '-p[Provide additional nix packages to install in the environment]:pkgs:' \
+        '--pkgs=[Provide additional nix packages to install in the environment]:' \
+        '-a[Provide additional apt packages to install in the environment]:apt:' \
+        '--apt=[Provide additional apt packages to install in the environment]:' \
+        '--libs=[Provide additional nix libraries to install in the environment]:' \
+        '-e[Provide environment variables to your build]:env:' \
+        '--env=[Provide environment variables to your build]:' \
+        '-c[Path to config file]:config:' \
+        '--config=[Path to config file]:' \
+        '-h[Print help information]' \
+        '--help[Print help information]' \
+        '-V[Print version information]' \
+        '--version[Print version information]'
+      ;;
+    build)
+      _arguments \
+        '1: :->build_args' \
+        '-n[Name for the built image]:name:' \
+        '--name=[Name for the built image]:' \
+        '-o[Save output directory instead of building it with Docker]:out:' \
+        '--out=[Save output directory instead of building it with Docker]:' \
+        '--json-plan=[Specify an entire build plan in json format that should be used to configure the build]:' \
+        '-t[Additional tags to add to the output image]:tag:' \
+        '--tag=[Additional tags to add to the output image]:' \
+        '-i[Specify the install command to use]:install-cmd:' \
+        '--install-cmd=[Specify the install command to use]:' \
+        '-l[Additional labels to add to the output image]:label:' \
+        '--label=[Additional labels to add to the output image]:' \
+        '-b[Specify the build command to use]:build-cmd:' \
+        '--build-cmd=[Specify the build command to use]:' \
+        '--platform=[Set target platform for your output image]:' \
+        '--cache-key=[Unique identifier to key cache by. Defaults to the current directory]:' \
+        '-s[Specify the start command to use]:start-cmd:' \
+        '--start-cmd=[Specify the start command to use]:' \
+        '--current-dir[Output Nixpacks related files to the current directory]' \
+        '-p[Provide additional nix packages to install in the environment]:pkgs:' \
+        '--pkgs=[Provide additional nix packages to install in the environment]:' \
+        '-a[Provide additional apt packages to install in the environment]:apt:' \
+        '--apt=[Provide additional apt packages to install in the environment]:' \
+        '--no-cache[Disable building with the cache]' \
+        '--incremental-cache-image=[Image to hold the cached directories between builds]:' \
+        '--libs=[Provide additional nix libraries to install in the environment]:' \
+        '--cache-from=[Image to consider as cache sources]:' \
+        '-e[Provide environment variables to your build]:env:' \
+        '--env=[Provide environment variables to your build]:' \
+        '-c[Path to config file]:config:' \
+        '--config=[Path to config file]:' \
+        '--docker-host=[Specify host for Docker client]:' \
+        '--add-host=[Adds hosts to the Docker build]:' \
+        '--docker-tls-verify=[Specify if Docker client should verify the TLS (Transport Layer Security) certificates]:' \
+        '--docker-output=[Specify output destination for Docker build. https://docs.docker.com/reference/cli/docker/buildx/build/#output]:' \
+        '--docker-cert-path=[Specify the path to the Docker client certificates]:' \
+        '--inline-cache[Enable writing cache metadata into the output image]' \
+        '--no-error-without-start[Do not error when no start command can be found]' \
+        '--cpu-quota=[Limit the CPU CFS (Completely Fair Scheduler) quota. Passed directly to the docker build command]:' \
+        '--memory=[Memory limit. Passed directly to the docker build command]:' \
+        '-v[Display more info during build]' \
+        '--verbose[Display more info during build]' \
+        '-h[Print help information]' \
+        '--help[Print help information]' \
+        '-V[Print version information]' \
+        '--version[Print version information]'
+      ;;
+    help)
+      _arguments \
+        '-h[Print help information]' \
+        '--help[Print help information]'
+      ;;
+    esac
+    ;;
+  plan_args)
+    _files
+    ;;
+  detect_args)
+    _files
+    ;;
+  build_args)
+    _files
+    ;;
+  esac
+}
