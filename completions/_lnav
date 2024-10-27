@@ -1,30 +1,28 @@
-Here is the zsh completion script for the arguments listed in the '--help' output:
+#compdef lnav
 
-#compdef mycommand
+local -a options
 
-_mycommand() {
-  local -a args
-  args=(
-    '--help[Show help information]'
-    '--version[Show version information]'
-    '-v[Increase verbosity]'
-    '-q[Decrease verbosity]'
-    '-o[Specify output file]:output file:_files'
-    '-i[Specify input file]:input file:_files'
-    '--config[Specify config file]:config file:_files'
-    '--debug[Enable debug mode]'
-    '--force[Force operation]'
-    '--dry-run[Perform a trial run without making changes]'
-    '--timeout[Set operation timeout]:timeout (seconds)'
-    '--retries[Set number of retries]:retries'
-    '--format[Specify output format]:format:(json xml csv)'
-    '--log-level[Set log level]:log level:(debug info warn error)'
-    '--no-color[Disable colored output]'
-    '--quiet[Suppress all output]'
-  )
-  
-  _arguments -s $args
-}
+options=(
+  '-h[Print help message and exit]'
+  '-H[Display internal help text]'
+  '-I[Specify additional configuration directory]:directory:_files -/'
+  '-W[Print warnings related to lnav'\''s configuration]'
+  '-u[Update formats installed from git repositories]'
+  '-d[Write debug messages to file]:file:_files'
+  '-V[Print version information]'
+  '-r[Recursively load files from given directory hierarchies]'
+  '-R[Load older rotated log files as well]'
+  '-c[Execute command after files have been loaded]:command'
+  '-f[Execute commands in given file]:file:_files'
+  '-e[Execute shell command-line]:command'
+  '-t[Treat data piped into standard in as a log file]'
+  '-n[Run without the curses UI (headless mode)]'
+  '-N[Do not open default syslog file if no files are given]'
+  '-q[Do not print informational messages]'
+  '-i[Install given format files and exit]'
+  '-m[Switch to management command-line mode]'
+  '*:logfile:_files'
+)
 
-_mycommand "$@"
+_arguments -s $options
 

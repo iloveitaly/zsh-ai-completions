@@ -14,7 +14,7 @@ completions/_%:
 		if echo "$(PROGRAMS_WITH_SUBCOMMANDS)" | grep -q "\b$*\b"; then \
 			python explore_program.py $* | cody chat --model google::v1::gemini-1.5-pro --stdin $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
 		else \
-			$* $(DEFAULT_HELP_COMMAND) | cody chat --stdin $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
+			$* $(DEFAULT_HELP_COMMAND) 2>&1 | cody chat --stdin $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
 		fi; \
 		if [ ! -s completions/_$* ]; then \
 			rm -f completions/_$*; \
