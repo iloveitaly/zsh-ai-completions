@@ -1,8 +1,8 @@
 SHELL := zsh
 
 NO_SUBCOMMAND_PROMPT := "Generate zsh completion for all arguments listed in this '--help' output. Only return the shell script contents (no other output) without a markdown block."
-PROGRAMS_WITHOUT_SUBCOMMANDS := sops ncdu tre vitest eslint fastmod ipython fzf zq pytest q dokku
-PROGRAMS_WITH_SUBCOMMANDS := flowctl nixpacks cody
+PROGRAMS_WITHOUT_SUBCOMMANDS := sops ncdu tre vitest eslint fastmod ipython fzf zq pytest q dokku lnav
+PROGRAMS_WITH_SUBCOMMANDS := flowctl nixpacks cody uv
 DEFAULT_HELP_COMMAND ?= --help
 
 .DEFAULT_GOAL := all_completions

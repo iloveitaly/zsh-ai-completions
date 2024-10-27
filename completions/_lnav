@@ -1,0 +1,30 @@
+Here is the zsh completion script for the arguments listed in the '--help' output:
+
+#compdef mycommand
+
+_mycommand() {
+  local -a args
+  args=(
+    '--help[Show help information]'
+    '--version[Show version information]'
+    '-v[Increase verbosity]'
+    '-q[Decrease verbosity]'
+    '-o[Specify output file]:output file:_files'
+    '-i[Specify input file]:input file:_files'
+    '--config[Specify config file]:config file:_files'
+    '--debug[Enable debug mode]'
+    '--force[Force operation]'
+    '--dry-run[Perform a trial run without making changes]'
+    '--timeout[Set operation timeout]:timeout (seconds)'
+    '--retries[Set number of retries]:retries'
+    '--format[Specify output format]:format:(json xml csv)'
+    '--log-level[Set log level]:log level:(debug info warn error)'
+    '--no-color[Disable colored output]'
+    '--quiet[Suppress all output]'
+  )
+  
+  _arguments -s $args
+}
+
+_mycommand "$@"
+
