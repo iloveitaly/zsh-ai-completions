@@ -34,7 +34,7 @@ def get_subcommands(program, args):
         "Analyze this help output and return a JSON object with two keys: "
         "'has_subcommands' (boolean) and 'subcommands' (list of strings). "
         "If there are no subcommands, return an empty list for 'subcommands'. "
-        "Only return the JSON object, no other text."
+        "Only return the JSON object, no other text. Ignore any `help` subcommands."
     )
 
     logging.info("Sending help output to Cody for analysis")
@@ -59,6 +59,10 @@ def get_subcommands(program, args):
         return subcommands
     except (subprocess.CalledProcessError, json.JSONDecodeError) as e:
         logging.error(f"Error processing subcommands: {e}")
+
+        if isinstance(e, subprocess.CalledProcessError):
+            logging.error(f"stderr: {e.stderr}")
+            logging.error(f"stdout: {e.stdout}")
         return []
 
 
