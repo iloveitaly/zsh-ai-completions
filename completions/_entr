@@ -1,0 +1,18 @@
+#compdef entr
+
+local -a options
+
+options=(
+  '-a[Respond to all events while utility is running]'
+  '-c[Clear screen before invoking utility (specify twice to erase scrollback)]'
+  '-d[Track directories of regular files and exit if new file added (specify twice to recognize all new entries)]'
+  '-n[Run in non-interactive mode]'
+  '-p[Postpone first execution until file is modified]'
+  '-r[Reload persistent child process]'
+  '-s[Evaluate first argument using SHELL interpreter]'
+  '-x[Format custom exit status messages (specify twice to enable shell commands and file redirection)]'
+  '-z[Exit after utility completes]'
+)
+
+_arguments -s $options '*:utility and arguments:_normal'
+
