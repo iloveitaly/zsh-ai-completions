@@ -1,8 +1,8 @@
 SHELL := zsh
 
 NO_SUBCOMMAND_PROMPT := "Generate zsh completion for all arguments listed in this '--help' output. Only return the shell script contents (no other output) without a markdown block."
-PROGRAMS_WITHOUT_SUBCOMMANDS := sops ncdu tre vitest eslint fastmod ipython fzf zq pytest q dokku lnav act
-PROGRAMS_WITH_SUBCOMMANDS := flowctl nixpacks cody uv
+PROGRAMS_WITHOUT_SUBCOMMANDS := sops ncdu tre vitest eslint fastmod ipython fzf zq pytest q dokku lnav act localias
+PROGRAMS_WITH_SUBCOMMANDS := flowctl nixpacks cody uv launchctl aiautocommit
 
 # some programs don't have helpful --help output, so we use manpages instead
 PROGRAMS_WITH_MANPAGES := entr
@@ -32,3 +32,6 @@ completions/_%:
 
 clean:
 	rm -f $(addprefix completions/_,$(PROGRAMS_WITHOUT_SUBCOMMANDS) $(PROGRAMS_WITH_SUBCOMMANDS) $(PROGRAMS_WITH_MANPAGES))
+
+update-local:
+	zinit update iloveitaly/zsh-ai-completions

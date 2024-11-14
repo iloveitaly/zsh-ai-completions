@@ -1,0 +1,46 @@
+#compdef localias
+
+_localias() {
+  local -a commands
+  commands=(
+    'clear:clear all aliases'
+    'help:Help about any command'
+    'list:list all aliases'
+    'rm:remove an alias'
+    'run:run the proxy server in the foreground'
+    'set:add or edit an alias'
+    'start:start the proxy server as a daemon process'
+    'status:show the status of the daemon process'
+    'stop:stop the daemon process'
+    'version:show the version of this binary'
+  )
+
+  _arguments -C \
+    '(-c --configfile)'{-c,--configfile}'[path to the configuration file to edit]:file:_files' \
+    '(-h --help)'{-h,--help}'[help for localias]' \
+    '(-v --version)'{-v,--version}'[version for localias]' \
+    '1: :{_describe "localias commands" commands}' \
+    '*::arg:->args'
+
+  case $state in
+    args)
+      case $line[1] in
+        set)
+          _arguments \
+            '1:alias:' \
+            '2:port:'
+          ;;
+        rm)
+          _arguments \
+            '1:alias:'
+          ;;
+        *)
+          # No additional arguments for other commands
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_localias
+
