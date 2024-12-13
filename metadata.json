@@ -1,5 +1,5 @@
 {
-  "description": "Completions are hard. Let's generate them with AI.",
+  "description": "Shell completions are hard. Let's generate them with AI.",
   "homepage": "https://github.com/iloveitaly/zsh-ai-completions",
-  "keywords": ["zsh", "shell", "completions", "zinit"]
+  "keywords": ["zsh", "shell", "completions", "zinit", "ai", "llm"]
 }
