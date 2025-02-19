@@ -1,52 +1,74 @@
+```zsh:$FILEPATH
 #compdef aiautocommit
 
-_aiautocommit() {
-  local state line
-  typeset -A opt_args
+_arguments \
+  '1: :_aiautocommit_commands' \
+  '*::arg:->args' \
+  '--help[Show this message and exit]'
 
-  _arguments \
-    '1: :->subcmds' \
-    '*::arg:->args'
-
-  case $state in
-    subcmds
+_aiautocommit_commands() {
+    local commands
+    commands=(
+        "commit:Generate commit message from git diff."
+        "dump-prompts:Dump default prompts by copying the contents of the prompt directory to PWD for customization"
+        "install-pre-commit:Install pre-commit script into git hooks directory"
+        "output-exclusions:Dump file exclusions, helpful for debugging"
+        "output-prompt:Dump compiled prompt, helpful for debugging"
     )
-      local -a subcommands
-      subcommands=(
-        'commit:Generate commit message from git diff.'
-        'dump-prompts:Dump default prompts into .aiautocommit directory...'
-        'install-pre-commit:Install pre-commit script into git hooks directory'
-      )
-      _describe 'subcommand' subcommands
-      ;;
-    args
-    )
-      case $line[1] in
-        commit
-        )
-          _arguments \
-            '-p[print commit msg to stdout instead of performing commit]' \
-            '--print-message[print commit msg to stdout instead of performing commit]' \
-            '-o[write commit message to specified file]:output file:_files' \
-            '--output-file[write commit message to specified file]:output file:_files' \
-            '--config-dir[specify custom config directory]:directory:_files'
-          ;;
-        dump-prompts
-        )
-          _arguments
-          ;;
-        install-pre-commit
-        )
-          _arguments \
-            '--overwrite[Overwrite existing pre-commit hook if it exists]'
-          ;;
-        *)
-          _arguments
-          ;;
-      esac
-      ;;
-  esac
+    _describe -t commands 'command' commands
 }
 
-_aiautocommit "$@"
+_aiautocommit_commit() {
+    _arguments \
+        '-p[print commit msg to stdout instead of performing commit]' \
+        '--print-message[print commit msg to stdout instead of performing commit]' \
+        '-o=[write commit message to specified file]' \
+        '--output-file=[write commit message to specified file]:file:_files' \
+        '--config-dir=[specify custom config directory]:directory:_files -/' \
+        '--help[Show this message and exit]'
+}
+
+_aiautocommit_dump_prompts() {
+    _arguments \
+        '--help[Show this message and exit]'
+}
+
+_aiautocommit_install_pre_commit() {
+    _arguments \
+        '--overwrite[Overwrite existing pre-commit hook if it exists]' \
+        '--help[Show this message and exit]'
+}
+
+_aiautocommit_output_exclusions() {
+    _arguments \
+        '--help[Show this message and exit]'
+}
+
+_aiautocommit_output_prompt() {
+    _arguments \
+        '--help[Show this message and exit]'
+}
+
+case $state in
+    args)
+        case $line[1] in
+            commit)
+                _aiautocommit_commit
+                ;;
+            dump-prompts)
+                _aiautocommit_dump_prompts
+                ;;
+            install-pre-commit)
+                _aiautocommit_install_pre_commit
+                ;;
+            output-exclusions)
+                _aiautocommit_output_exclusions
+                ;;
+            output-prompt)
+                _aiautocommit_output_prompt
+                ;;
+        esac
+    ;;
+esac
+```
 
