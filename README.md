@@ -26,6 +26,8 @@ I've checked the AI generated completions against this tool and it works quite w
 
 Just modify the `Makefile` run `make` and test the output. Then, please submit a PR!
 
+To focus on building a single completion run `make completions/_aiautocommit`
+
 Note that [Cody](http://cody.dev) is used for generating the completions since they have a nice CLI tool.
 
 ### Local Testing
