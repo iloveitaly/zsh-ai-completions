@@ -1,0 +1,225 @@
+_alembic() {
+    local cur prev opts base_opts subcommands
+
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    base_opts='-h --help --version -c --config -n --name -x --raiseerr -q --quiet'
+    subcommands='branches check current downgrade edit ensure_version heads history init list_templates merge revision show stamp upgrade'
+
+    if [[ ${COMP_CWORD} -eq 1 ]]; then
+        COMPREPLY=( $(compgen -W "${base_opts} ${subcommands}" -- "${cur}") )
+        return 0
+    fi
+
+    case "${prev}" in
+        -c|--config)
+            COMPREPLY=( $(compgen -f -- "${cur}") )
+            return 0
+            ;;
+        -n|--name)
+            return 0
+            ;;
+        -x)
+            return 0
+            ;;
+        *)
+           ;;
+    esac
+
+    case "${COMP_WORDS[1]}" in
+        branches)
+            _alembic_branches
+            ;;
+        check)
+            _alembic_check
+            ;;
+        current)
+            _alembic_current
+            ;;
+        downgrade)
+            _alembic_downgrade
+            ;;
+        edit)
+            _alembic_edit
+            ;;
+        ensure_version)
+            _alembic_ensure_version
+            ;;
+        heads)
+            _alembic_heads
+            ;;
+        history)
+            _alembic_history
+            ;;
+        init)
+            _alembic_init
+            ;;
+        list_templates)
+            _alembic_list_templates
+            ;;
+        merge)
+            _alembic_merge
+            ;;
+        revision)
+            _alembic_revision
+            ;;
+        show)
+            _alembic_show
+            ;;
+        stamp)
+            _alembic_stamp
+            ;;
+        upgrade)
+            _alembic_upgrade
+            ;;
+        *)
+            COMPREPLY=( $(compgen -W "${base_opts} ${subcommands}" -- "${cur}") )
+            ;;
+    esac
+}
+
+_alembic_branches() {
+    local opts
+    opts='-h --help -v --verbose'
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+}
+
+_alembic_check() {
+    local opts
+    opts='-h --help'
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+}
+
+_alembic_current() {
+    local opts
+    opts='-h --help -v --verbose'
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+}
+
+_alembic_downgrade() {
+    local opts
+    opts='-h --help --sql --tag'
+    if [[ ${COMP_CWORD} -eq 2 ]]; then
+      COMPREPLY=() # No completion for revision
+    elif [[ ${prev} == "--tag" ]]; then
+      COMPREPLY=()
+    else
+      COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    fi
+}
+
+_alembic_edit() {
+    local opts
+    opts='-h --help'
+     if [[ ${COMP_CWORD} -eq 2 ]]; then
+      COMPREPLY=() # No completion for rev
+    else
+      COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    fi
+}
+
+_alembic_ensure_version() {
+    local opts
+    opts='-h --help --sql'
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+}
+
+_alembic_heads() {
+    local opts
+    opts='-h --help -v --verbose --resolve-dependencies'
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+}
+
+_alembic_history() {
+    local opts
+    opts='-h --help -r --rev-range -v --verbose -i --indicate-current'
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+}
+
+_alembic_init() {
+    local opts
+    opts='-h --help -t --template --package'
+    if [[ ${prev} == "-t" || ${prev} == "--template" ]]; then
+        COMPREPLY=()
+    elif [[ ${COMP_CWORD} -eq 2 ]]; then
+        COMPREPLY=( $(compgen -d -- "${cur}") )
+    else
+        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    fi
+}
+
+_alembic_list_templates() {
+    local opts
+    opts='-h --help'
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+}
+
+_alembic_merge() {
+    local opts
+    opts='-h --help -m --message --branch-label --rev-id'
+    if [[ ${prev} == "-m" || ${prev} == "--message" ]]; then
+        COMPREPLY=()
+    elif [[ ${prev} == "--branch-label" ]]; then
+        COMPREPLY=()
+    elif [[ ${prev} == "--rev-id" ]]; then
+        COMPREPLY=()
+    else
+        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    fi
+}
+
+_alembic_revision() {
+    local opts
+    opts='-h --help -m --message --autogenerate --sql --head --splice --branch-label --version-path --rev-id --depends-on'
+    if [[ ${prev} == "-m" || ${prev} == "--message" ]]; then
+        COMPREPLY=()
+    elif [[ ${prev} == "--head" ]]; then
+        COMPREPLY=()
+    elif [[ ${prev} == "--branch-label" ]]; then
+        COMPREPLY=()
+    elif [[ ${prev} == "--version-path" ]]; then
+        COMPREPLY=()
+    elif [[ ${prev} == "--rev-id" ]]; then
+        COMPREPLY=()
+    elif [[ ${prev} == "--depends-on" ]]; then
+        COMPREPLY=()
+    else
+        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    fi
+}
+
+_alembic_show() {
+    local opts
+    opts='-h --help'
+    if [[ ${COMP_CWORD} -eq 2 ]]; then
+      COMPREPLY=()
+    else
+      COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    fi
+}
+
+_alembic_stamp() {
+    local opts
+    opts='-h --help --sql --tag --purge'
+    if [[ ${prev} == "--tag" ]]; then
+        COMPREPLY=()
+    else
+        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    fi
+}
+
+_alembic_upgrade() {
+    local opts
+    opts='-h --help --sql --tag'
+    if [[ ${COMP_CWORD} -eq 2 ]]; then
+      COMPREPLY=()
+    elif [[ ${prev} == "--tag" ]]; then
+      COMPREPLY=()
+    else
+      COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    fi
+}
+
+complete -F _alembic alembic
+
