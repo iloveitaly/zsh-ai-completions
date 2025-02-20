@@ -1,20 +1,20 @@
-Generate zsh completion for all arguments listed in this '--help' output. MOST IMPORTANT: **Only return the shell script contents (no other output) without a markdown block.**
+Generate a Zsh completion script for the `<command>` command based on the following `--help` output. **Return only the shell script contents (no explanations or markdown blocks).**
 
-IMPORTANT: follow these instructions:
+**Requirements:**
 
-- Begin the script with `#compdef <command>` to associate the completion function with the command.
-- Define the completion function, typically named `_<command>`.
-- Use `_arguments` to parse command-line arguments.
-- For the first argument, specify the list of subcommands using `'1:cmd:(subcmd1 subcmd2 subcmd3)'`.
+- The script must be a Zsh completion script, not Bash.
+- Start with `#compdef <command>` to associate it with the `<command>` command.
+- Define the completion function as `_<command>`.
+- Use `_arguments` with `->state` to handle options and subcommands.
+- List subcommands as the first argument with `'1:cmd:(subcmd1 subcmd2 ...)'`, where `subcmd1`, `subcmd2`, etc., are extracted from the `--help` output.
 - Capture additional arguments with `'*::args:->args'`.
-- Use a `case` statement to handle different subcommands based on `$state` or `$words[1]`.
+- Use a `case $state` block to handle subcommands dynamically.
 - Within each subcommand case, define specific options using `_arguments`.
-- For options that accept files, use `:file:_files` to enable file path completion.
-- Provide possible values for options with specific choices using `(value1 value2 value3)`.
-- Always use `->state` syntax in `_arguments`
-- Ensure that the state labels used with ->state in _arguments match those in the case `$state` in statement.
-- Verify that the `$state` variable is being set correctly after each `_arguments` call.
-- Avoid using && return if further processing is needed, as it may exit the function prematurely.
-- Check that positional arguments are correctly indexed and specified in `_arguments`.
-- Use `_values` for enum-like choices
-- Include the completion function invocation at the end of the script by adding: "_commandname "$@" where 'commandname' matches the name of your completion function.
+- For options that take file paths, use `:file:_files` (e.g., for configuration files).
+- For options with specific choices, use `(value1 value2)` or `_values`.
+- End with `_<command> "$@"` to invoke the completion function.
+
+**Important:**
+
+- Replace `<command>` with the actual command name (e.g., `git`, `docker`).
+- Provide the `--help` output for the command when using this prompt.
