@@ -1,224 +1,247 @@
 _alembic() {
-    local cur prev opts base_opts subcommands
-
+    local cur prev opts base_opts cmds
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-    base_opts='-h --help --version -c --config -n --name -x --raiseerr -q --quiet'
-    subcommands='branches check current downgrade edit ensure_version heads history init list_templates merge revision show stamp upgrade'
+    base_opts='
+        -h
+        --help
+        --version
+        -c
+        --config
+        -n
+        --name
+        -x
+        --raiseerr
+        -q
+        --quiet
+    '
+    cmds='
+        branches
+        check
+        current
+        downgrade
+        edit
+        ensure_version
+        heads
+        history
+        init
+        list_templates
+        merge
+        revision
+        show
+        stamp
+        upgrade
+    '
 
-    if [[ ${COMP_CWORD} -eq 1 ]]; then
-        COMPREPLY=( $(compgen -W "${base_opts} ${subcommands}" -- "${cur}") )
-        return 0
-    fi
+    _arguments -C \
+        $base_opts \
+        "1: :($cmds)" \
+        "*::arg:->args"
 
-    case "${prev}" in
+    case "$prev" in
         -c|--config)
-            COMPREPLY=( $(compgen -f -- "${cur}") )
-            return 0
+            _files
+            return
             ;;
         -n|--name)
-            return 0
+            return
             ;;
         -x)
-            return 0
+            return
             ;;
-        *)
-           ;;
     esac
 
-    case "${COMP_WORDS[1]}" in
-        branches)
-            _alembic_branches
-            ;;
-        check)
-            _alembic_check
-            ;;
-        current)
-            _alembic_current
-            ;;
-        downgrade)
-            _alembic_downgrade
-            ;;
-        edit)
-            _alembic_edit
-            ;;
-        ensure_version)
-            _alembic_ensure_version
-            ;;
-        heads)
-            _alembic_heads
-            ;;
-        history)
-            _alembic_history
-            ;;
-        init)
-            _alembic_init
-            ;;
-        list_templates)
-            _alembic_list_templates
-            ;;
-        merge)
-            _alembic_merge
-            ;;
-        revision)
-            _alembic_revision
-            ;;
-        show)
-            _alembic_show
-            ;;
-        stamp)
-            _alembic_stamp
-            ;;
-        upgrade)
-            _alembic_upgrade
-            ;;
-        *)
-            COMPREPLY=( $(compgen -W "${base_opts} ${subcommands}" -- "${cur}") )
+    case "$state" in
+        args)
+            case "$prev" in
+                branches)
+                    _alembic_branches
+                    ;;
+                check)
+                    _alembic_check
+                    ;;
+                current)
+                    _alembic_current
+                    ;;
+                downgrade)
+                    _alembic_downgrade
+                    ;;
+                edit)
+                    _alembic_edit
+                    ;;
+                ensure_version)
+                    _alembic_ensure_version
+                    ;;
+                heads)
+                    _alembic_heads
+                    ;;
+                history)
+                    _alembic_history
+                    ;;
+                init)
+                    _alembic_init
+                    ;;
+                list_templates)
+                    _alembic_list_templates
+                    ;;
+                merge)
+                    _alembic_merge
+                    ;;
+                revision)
+                    _alembic_revision
+                    ;;
+                show)
+                    _alembic_show
+                    ;;
+                stamp)
+                    _alembic_stamp
+                    ;;
+                upgrade)
+                    _alembic_upgrade
+                    ;;
+                *)
+                    _arguments \
+                        $base_opts
+                    ;;
+            esac
             ;;
     esac
 }
 
 _alembic_branches() {
-    local opts
-    opts='-h --help -v --verbose'
-    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        '-v[Use more verbose output]' \
+        '--verbose[Use more verbose output]'
 }
 
 _alembic_check() {
-    local opts
-    opts='-h --help'
-    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]'
 }
 
 _alembic_current() {
-    local opts
-    opts='-h --help -v --verbose'
-    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        '-v[Use more verbose output]' \
+        '--verbose[Use more verbose output]'
 }
 
 _alembic_downgrade() {
-    local opts
-    opts='-h --help --sql --tag'
-    if [[ ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=() # No completion for revision
-    elif [[ ${prev} == "--tag" ]]; then
-      COMPREPLY=()
-    else
-      COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-    fi
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        '--sql[Don'\''t emit SQL to database - dump to standard output/file instead. See docs on offline mode.]' \
+        '--tag[Arbitrary '\''tag'\'' name - can be used by custom env.py scripts.]:tag:' \
+        ':revision:'
 }
 
 _alembic_edit() {
-    local opts
-    opts='-h --help'
-     if [[ ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=() # No completion for rev
-    else
-      COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-    fi
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        ':rev:'
 }
 
 _alembic_ensure_version() {
-    local opts
-    opts='-h --help --sql'
-    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        '--sql[Don'\''t emit SQL to database - dump to standard output/file instead. See docs on offline mode.]'
 }
 
 _alembic_heads() {
-    local opts
-    opts='-h --help -v --verbose --resolve-dependencies'
-    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        '-v[Use more verbose output]' \
+        '--verbose[Use more verbose output]' \
+        '--resolve-dependencies[Treat dependency versions as down revisions]'
 }
 
 _alembic_history() {
-    local opts
-    opts='-h --help -r --rev-range -v --verbose -i --indicate-current'
-    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        '-r[Specify a revision range; format is [start]:[end]]:rev_range:' \
+        '--rev-range[Specify a revision range; format is [start]:[end]]:rev_range:' \
+        '-v[Use more verbose output]' \
+        '--verbose[Use more verbose output]' \
+        '-i[Indicate the current revision]' \
+        '--indicate-current[Indicate the current revision]'
 }
 
 _alembic_init() {
-    local opts
-    opts='-h --help -t --template --package'
-    if [[ ${prev} == "-t" || ${prev} == "--template" ]]; then
-        COMPREPLY=()
-    elif [[ ${COMP_CWORD} -eq 2 ]]; then
-        COMPREPLY=( $(compgen -d -- "${cur}") )
-    else
-        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-    fi
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        '-t[Setup template for use with '\''init'\'']:template:' \
+        '--template[Setup template for use with '\''init'\'']:template:' \
+        '--package[Write empty __init__.py files to the environment and version locations]' \
+        ':directory:_files -/'
 }
 
 _alembic_list_templates() {
-    local opts
-    opts='-h --help'
-    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]'
 }
 
 _alembic_merge() {
-    local opts
-    opts='-h --help -m --message --branch-label --rev-id'
-    if [[ ${prev} == "-m" || ${prev} == "--message" ]]; then
-        COMPREPLY=()
-    elif [[ ${prev} == "--branch-label" ]]; then
-        COMPREPLY=()
-    elif [[ ${prev} == "--rev-id" ]]; then
-        COMPREPLY=()
-    else
-        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-    fi
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        '-m[Message string to use with '\''revision'\'']:message:' \
+        '--message[Message string to use with '\''revision'\'']:message:' \
+        '--branch-label[Specify a branch label to apply to the new revision]:branch_label:' \
+        '--rev-id[Specify a hardcoded revision id instead of generating one]:rev_id:' \
+        '*:revisions:'
 }
 
 _alembic_revision() {
-    local opts
-    opts='-h --help -m --message --autogenerate --sql --head --splice --branch-label --version-path --rev-id --depends-on'
-    if [[ ${prev} == "-m" || ${prev} == "--message" ]]; then
-        COMPREPLY=()
-    elif [[ ${prev} == "--head" ]]; then
-        COMPREPLY=()
-    elif [[ ${prev} == "--branch-label" ]]; then
-        COMPREPLY=()
-    elif [[ ${prev} == "--version-path" ]]; then
-        COMPREPLY=()
-    elif [[ ${prev} == "--rev-id" ]]; then
-        COMPREPLY=()
-    elif [[ ${prev} == "--depends-on" ]]; then
-        COMPREPLY=()
-    else
-        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-    fi
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        '-m[Message string to use with '\''revision'\'']:message:' \
+        '--message[Message string to use with '\''revision'\'']:message:' \
+        '--autogenerate[Populate revision script with candidate migration operations, based on comparison of database to model.]' \
+        '--sql[Don'\''t emit SQL to database - dump to standard output/file instead. See docs on offline mode.]' \
+        '--head[Specify head revision or <branchname>@head to base new revision on.]:head:' \
+        '--splice[Allow a non-head revision as the '\''head'\'' to splice onto]' \
+        '--branch-label[Specify a branch label to apply to the new revision]:branch_label:' \
+        '--version-path[Specify specific path from config for version file]:version_path:_files -/' \
+        '--rev-id[Specify a hardcoded revision id instead of generating one]:rev_id:' \
+        '--depends-on[Specify one or more revision identifiers which this revision should depend on.]:depends_on:'
 }
 
 _alembic_show() {
-    local opts
-    opts='-h --help'
-    if [[ ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=()
-    else
-      COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-    fi
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        ':rev:'
 }
 
 _alembic_stamp() {
-    local opts
-    opts='-h --help --sql --tag --purge'
-    if [[ ${prev} == "--tag" ]]; then
-        COMPREPLY=()
-    else
-        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-    fi
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        '--sql[Don'\''t emit SQL to database - dump to standard output/file instead. See docs on offline mode.]' \
+        '--tag[Arbitrary '\''tag'\'' name - can be used by custom env.py scripts.]:tag:' \
+        '--purge[Unconditionally erase the version table before stamping]' \
+        '*:revisions:'
 }
 
 _alembic_upgrade() {
-    local opts
-    opts='-h --help --sql --tag'
-    if [[ ${COMP_CWORD} -eq 2 ]]; then
-      COMPREPLY=()
-    elif [[ ${prev} == "--tag" ]]; then
-      COMPREPLY=()
-    else
-      COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
-    fi
+    _arguments \
+        '-h[show this help message and exit]' \
+        '--help[show this help message and exit]' \
+        '--sql[Don'\''t emit SQL to database - dump to standard output/file instead. See docs on offline mode.]' \
+        '--tag[Arbitrary '\''tag'\'' name - can be used by custom env.py scripts.]:tag:' \
+        ':revision:'
 }
 
 complete -F _alembic alembic
