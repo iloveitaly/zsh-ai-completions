@@ -1,3 +1,5 @@
+#compdef alembic
+
 _alembic() {
     local cur prev opts base_opts cmds
     cur="${COMP_WORDS[COMP_CWORD]}"
@@ -243,6 +245,3 @@ _alembic_upgrade() {
         '--tag[Arbitrary '\''tag'\'' name - can be used by custom env.py scripts.]:tag:' \
         ':revision:'
 }
-
-complete -F _alembic alembic
-
