@@ -1,6 +1,6 @@
 Generate zsh completion for all arguments listed in this '--help' output. MOST IMPORTANT: **Only return the shell script contents (no other output) without a markdown block.**
 
-IMPORTANT Follow these instructions:
+IMPORTANT: follow these instructions:
 
 - Begin the script with `#compdef <command>` to associate the completion function with the command.
 - Define the completion function, typically named `_<command>`.
@@ -11,7 +11,10 @@ IMPORTANT Follow these instructions:
 - Within each subcommand case, define specific options using `_arguments`.
 - For options that accept files, use `:file:_files` to enable file path completion.
 - Provide possible values for options with specific choices using `(value1 value2 value3)`.
-- Test the script to ensure subcommands and options autocomplete correctly and that file completions work where appropriate.
 - Always use `->state` syntax in `_arguments`
+- Ensure that the state labels used with ->state in _arguments match those in the case `$state` in statement.
+- Verify that the `$state` variable is being set correctly after each `_arguments` call.
+- Avoid using && return if further processing is needed, as it may exit the function prematurely.
+- Check that positional arguments are correctly indexed and specified in `_arguments`.
 - Use `_values` for enum-like choices
-- Test completions with zsh -f for clean environment verification
+- Include the completion function invocation at the end of the script by adding: "_commandname "$@" where 'commandname' matches the name of your completion function.
