@@ -2,10 +2,11 @@ import subprocess
 import sys
 import json
 import logging
+import os
 
 # Set up logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=getattr(logging, (os.environ.get("LOG_LEVEL") or "INFO").upper(), logging.INFO),
     format="%(asctime)s - %(levelname)s - %(message)s",
     stream=sys.stderr,
 )
@@ -14,12 +15,20 @@ logging.basicConfig(
 def run_help_command(command):
     logging.info(f"Running command: {' '.join(command)}")
     try:
-        result = subprocess.run(command, capture_output=True, text=True, check=True)
-        logging.debug(f"Command output: {result.stdout}")
-        return result.stdout
+        result = subprocess.run(command, capture_output=True, text=True)
+        output = result.stdout + result.stderr if result.stderr else result.stdout
+        logging.debug(f"Command output: {output}")
+        if not output:
+            logging.warning(f"No output from command: {' '.join(command)}")
+            return None
+        return output
     except subprocess.CalledProcessError as e:
         logging.error(f"Error running command {' '.join(command)}: {e}")
-        return None
+        output = e.stdout + e.stderr if e.stderr else e.stdout
+        if not output:
+            logging.warning(f"No output from failed command: {' '.join(command)}")
+            return None
+        return output
 
 
 def get_subcommands(program, args):
@@ -34,7 +43,12 @@ def get_subcommands(program, args):
         "Analyze this help output and return a JSON object with two keys: "
         "'has_subcommands' (boolean) and 'subcommands' (list of strings). "
         "If there are no subcommands, return an empty list for 'subcommands'. "
-        "Only return the JSON object, no other text. Ignore any `help` subcommands."
+        "Ignore any `help` subcommands. "
+        "Respond with a single JSON object and nothing else. Do not use markdown formatting (i.e. ```).\n\n"
+        "For example, for a tool with 'init' and 'clone' subcommands, the output should be:\n"
+        '{"has_subcommands": true, "subcommands": ["init", "clone"]}\n\n'
+        "If no subcommands are found, the output should be:\n"
+        '{"has_subcommands": false, "subcommands": []}\n\n'
     )
 
     logging.info("Sending help output to Cody for analysis")
@@ -43,6 +57,8 @@ def get_subcommands(program, args):
             [
                 "cody",
                 "chat",
+                "--model",
+                "google::v1::gemini-2.5-pro-preview-03-25",
                 "--stdin",
                 cody_prompt,
             ],
