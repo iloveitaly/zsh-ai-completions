@@ -13,15 +13,14 @@ DEFAULT_HELP_COMMAND ?= --help
 
 all_completions: $(addprefix completions/_,$(PROGRAMS_WITHOUT_SUBCOMMANDS) $(PROGRAMS_WITH_SUBCOMMANDS) $(PROGRAMS_WITH_MANPAGES))
 
-# when authenticated to cody, use `https://sourcegraph.com/.api/modelconfig/supported-models.json` to get a list of all supported models
 completions/_%:
 	@if command -v $* >/dev/null 2>&1; then \
 		if echo "$(PROGRAMS_WITH_SUBCOMMANDS)" | grep -q "\b$*\b"; then \
-			python explore_program.py $* | cody chat --model google::v1::gemini-2.5-pro-preview-03-25 --stdin $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
+			python explore_program.py $* | gemini -m gemini-2.5-pro -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
 		elif echo "$(PROGRAMS_WITH_MANPAGES)" | grep -q "\b$*\b"; then \
-			man $* | cody chat --model anthropic::2024-10-22::claude-sonnet-4-latest --stdin $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
+			man $* | gemini -m gemini-2.5-pro -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
 		else \
-			$* $(DEFAULT_HELP_COMMAND) 2>&1 | cody chat --model anthropic::2024-10-22::claude-sonnet-4-latest --stdin $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
+			$* $(DEFAULT_HELP_COMMAND) 2>&1 | gemini -m gemini-2.5-pro -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
 		fi; \
 		if [ ! -s completions/_$* ]; then \
 			rm -f completions/_$*; \
