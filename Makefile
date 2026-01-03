@@ -1,7 +1,7 @@
 SHELL := zsh
 
 NO_SUBCOMMAND_PROMPT := "Generate zsh completion for all arguments listed in this '--help' output. Only return the shell script contents (no other output) without a markdown block."
-PROGRAMS_WITHOUT_SUBCOMMANDS := sops ncdu tre vitest eslint fastmod ipython fzf zq pytest q dokku lnav act localias markdown-extract
+PROGRAMS_WITHOUT_SUBCOMMANDS := sops ncdu tre vitest eslint fastmod ipython fzf zq pytest q dokku lnav act localias markdown-extract micro
 PROGRAMS_WITH_SUBCOMMANDS := flowctl nixpacks cody uv launchctl aiautocommit alembic security foreman mcpm
 
 # some programs don't have helpful --help output, so we use manpages instead
@@ -16,11 +16,11 @@ all_completions: $(addprefix completions/_,$(PROGRAMS_WITHOUT_SUBCOMMANDS) $(PRO
 completions/_%:
 	@if command -v $* >/dev/null 2>&1; then \
 		if echo "$(PROGRAMS_WITH_SUBCOMMANDS)" | grep -q "\b$*\b"; then \
-			python explore_program.py $* | gemini -m gemini-2.5-pro -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
+			python explore_program.py $* | gemini -m gemini-3-pro-preview -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
 		elif echo "$(PROGRAMS_WITH_MANPAGES)" | grep -q "\b$*\b"; then \
-			man $* | gemini -m gemini-2.5-pro -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
+			man $* | gemini -m gemini-3-pro-preview -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
 		else \
-			$* $(DEFAULT_HELP_COMMAND) 2>&1 | gemini -m gemini-2.5-pro -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
+			$* $(DEFAULT_HELP_COMMAND) 2>&1 | gemini -m gemini-3-pro-preview -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
 		fi; \
 		if [ ! -s completions/_$* ]; then \
 			rm -f completions/_$*; \
