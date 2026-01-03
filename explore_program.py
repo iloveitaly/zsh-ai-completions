@@ -39,7 +39,7 @@ def get_subcommands(program, args):
         logging.warning(f"No help output for command: {' '.join(command)}")
         return []
 
-    cody_prompt = (
+    llm_prompt = (
         "Analyze this help output and return a JSON object with two keys: "
         "'has_subcommands' (boolean) and 'subcommands' (list of strings). "
         "If there are no subcommands, return an empty list for 'subcommands'. "
@@ -51,25 +51,24 @@ def get_subcommands(program, args):
         '{"has_subcommands": false, "subcommands": []}\n\n'
     )
 
-    logging.info("Sending help output to Cody for analysis")
+    logging.info("Sending help output to LLM for analysis")
     try:
-        cody_result = subprocess.run(
+        llm_result = subprocess.run(
             [
-                "cody",
-                "chat",
-                "--model",
-                "google::v1::gemini-2.5-pro-preview-03-25",
-                "--stdin",
-                cody_prompt,
+                "gemini",
+                "-m",
+                "gemini-3-pro-preview",
+                "-p",
+                llm_prompt,
             ],
             input=help_output,
             capture_output=True,
             text=True,
             check=True,
         )
-        cody_output = cody_result.stdout.strip()
-        logging.debug(f"Cody output: {cody_output}")
-        subcommand_data = json.loads(cody_output)
+        llm_output = llm_result.stdout.strip()
+        logging.debug(f"LLM output: {llm_output}")
+        subcommand_data = json.loads(llm_output)
         subcommands = subcommand_data.get("subcommands", [])
         logging.info(f"Found subcommands: {subcommands}")
         return subcommands
@@ -116,7 +115,12 @@ def main():
     markdown = f"# {program} Help\n\n"
     markdown += explore_command(program)
 
-    print(markdown)
+    try:
+        print(markdown)
+    except BrokenPipeError:
+        # The consumer (e.g. gemini CLI) closed the pipe. This is a failure to deliver data.
+        logging.error("BrokenPipeError: Could not write output. The receiving program closed the pipe early.")
+        sys.exit(1)
     logging.info("Exploration completed")
 
 
