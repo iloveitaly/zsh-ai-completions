@@ -115,12 +115,7 @@ def main():
     markdown = f"# {program} Help\n\n"
     markdown += explore_command(program)
 
-    try:
-        print(markdown)
-    except BrokenPipeError:
-        # The consumer (e.g. gemini CLI) closed the pipe. This is a failure to deliver data.
-        logging.error("BrokenPipeError: Could not write output. The receiving program closed the pipe early.")
-        sys.exit(1)
+    print(markdown)
     logging.info("Exploration completed")
 
 
