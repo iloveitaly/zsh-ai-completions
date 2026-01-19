@@ -14,10 +14,10 @@ DEFAULT_HELP_COMMAND ?= --help
 all_completions: $(addprefix completions/_,$(PROGRAMS_WITHOUT_SUBCOMMANDS) $(PROGRAMS_WITH_SUBCOMMANDS) $(PROGRAMS_WITH_MANPAGES))
 
 completions/_%:
+	# Buffer output to a file to prevent BrokenPipeError if gemini is slow to read stdin
+	# This decouples the help generation from the API call
 	@if command -v $* >/dev/null 2>&1; then \
 		if echo "$(PROGRAMS_WITH_SUBCOMMANDS)" | grep -q "\b$*\b"; then \
-			# Buffer output to a file to prevent BrokenPipeError if gemini is slow to read stdin
-			# This decouples the help generation from the API call
 			python explore_program.py $* > tmp/$*.help; \
 			cat tmp/$*.help | gemini -m gemini-3-pro-preview -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
 			rm tmp/$*.help; \
