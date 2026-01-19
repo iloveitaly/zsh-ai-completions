@@ -1,0 +1,28 @@
+#compdef difft
+
+_arguments -s \
+  '--context=[The number of contextual lines to show around changed lines]:lines' \
+  '--width=[Use this many columns when calculating line wrapping]:columns' \
+  '--tab-width=[Treat a tab as this many spaces]:num_spaces' \
+  '--display=[Display mode for showing results]:mode:(side-by-side side-by-side-show-both inline json)' \
+  '--color=[When to use color output]:when:(always auto never)' \
+  '--background=[Set the background brightness]:background:(dark light)' \
+  '--syntax-highlight=[Enable or disable syntax highlighting]:on/off:(on off)' \
+  '--exit-code[Set the exit code to 1 if there are syntactic changes]' \
+  '--strip-cr=[Remove any carriage return characters before diffing]:on/off:(on off)' \
+  '--check-only[Report whether there are any changes, but do not calculate them]' \
+  '--ignore-comments[Do not consider comments when diffing]' \
+  '--skip-unchanged[Do not display anything if a file is unchanged]' \
+  '*--override=[Associate this glob pattern with this language]:glob_name' \
+  '*--override-binary=[Treat file names matching this glob as binary files]:glob' \
+  '--list-languages[Print all the languages supported by difftastic]' \
+  '--byte-limit=[Use a line-oriented diff if either input file exceeds this size]:limit' \
+  '--graph-limit=[Use a line-oriented diff if the internal graph exceeds this number of vertices]:limit' \
+  '--parse-error-limit=[Use a line-oriented diff if the number of parse errors exceeds this value]:limit' \
+  '--sort-paths[When diffing a directory, output the results sorted by path]' \
+  '(-h --help)'{-h,--help}'[Print help]' \
+  '(-V --version)'{-V,--version}'[Print version]' \
+  '--dump-syntax=[Parse a single file with tree-sitter and display the difftastic syntax tree]:file:_files' \
+  '--dump-syntax-dot=[Parse a single file with tree-sitter and display the difftastic syntax tree, as a DOT graph]:file:_files' \
+  '--dump-ts=[Parse a single file with tree-sitter and display the tree-sitter parse tree]:file:_files' \
+  '*:filename:_files'
