@@ -1,0 +1,224 @@
+#compdef gemini
+
+local context state state_descr line
+typeset -A opt_args
+
+_gemini() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '(-m --model)'{-m,--model}'[Model]:model' \
+        '(-p --prompt)'{-p,--prompt}'[Prompt (deprecated)]:prompt' \
+        '(-i --prompt-interactive)'{-i,--prompt-interactive}'[Execute the provided prompt and continue in interactive mode]:prompt' \
+        '(-s --sandbox)'{-s,--sandbox}'[Run in sandbox]' \
+        '(-y --yolo)'{-y,--yolo}'[Automatically accept all actions (YOLO mode)]' \
+        '--approval-mode[Set the approval mode]:mode:(default auto_edit yolo)' \
+        '--experimental-acp[Starts the agent in ACP mode]' \
+        '*--allowed-mcp-server-names[Allowed MCP server names]:name' \
+        '*--allowed-tools[Tools that are allowed to run without confirmation]:tool' \
+        '(-e --extensions)'{-e,--extensions}'[List of extensions to use]:extensions' \
+        '(-l --list-extensions)'{-l,--list-extensions}'[List all available extensions and exit]' \
+        '(-r --resume)'{-r,--resume}'[Resume a previous session]:session:(latest)' \
+        '--list-sessions[List available sessions]' \
+        '--delete-session[Delete a session]:session' \
+        '*--include-directories[Additional directories to include]:directory:_files -/' \
+        '--screen-reader[Enable screen reader mode]' \
+        '(-o --output-format)'{-o,--output-format}'[The format of the CLI output]:format:(text json stream-json)' \
+        '(-v --version)'{-v,--version}'[Show version number]' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1: :_gemini_commands' \
+        '*:: :->args'
+
+    case $state in
+        args)
+            case $words[1] in
+                mcp) _gemini_mcp ;;
+                extensions|extension) _gemini_extensions ;;
+                hooks|hook) _gemini_hooks ;;
+                *) _default ;;
+            esac
+            ;;
+    esac
+}
+
+_gemini_commands() {
+    local -a commands
+    commands=(
+        'mcp:Manage MCP servers'
+        'extensions:Manage Gemini CLI extensions'
+        'extension:Manage Gemini CLI extensions'
+        'hooks:Manage Gemini CLI hooks'
+        'hook:Manage Gemini CLI hooks'
+    )
+    _describe -t commands 'command' commands
+}
+
+_gemini_mcp() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1: :_gemini_mcp_commands' \
+        '*:: :->args'
+
+    case $state in
+        args)
+            case $words[1] in
+                add) _gemini_mcp_add ;;
+                remove) _gemini_mcp_remove ;;
+                list) _gemini_mcp_list ;;
+            esac
+            ;;
+    esac
+}
+
+_gemini_mcp_commands() {
+    local -a commands
+    commands=(
+        'add:Add a server'
+        'remove:Remove a server'
+        'list:List all configured MCP servers'
+    )
+    _describe -t commands 'gemini mcp command' commands
+}
+
+_gemini_mcp_add() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '(-s --scope)'{-s,--scope}'[Configuration scope]:scope:(user project)' \
+        '(-t --transport --type)'{-t,--transport,--type}'[Transport type]:type:(stdio sse http)' \
+        '*'{-e,--env}'[Set environment variables]:env var' \
+        '*'{-H,--header}'[Set HTTP headers]:header' \
+        '--timeout[Set connection timeout in milliseconds]:ms' \
+        '--trust[Trust the server (bypass all tool call confirmation prompts)]' \
+        '--description[Set the description for the server]:description' \
+        '--include-tools[Comma-separated list of tools to include]:tools' \
+        '--exclude-tools[Comma-separated list of tools to exclude]:tools' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1:name: ' \
+        '2:commandOrUrl: ' \
+        '*:args: '
+}
+
+_gemini_mcp_remove() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '(-s --scope)'{-s,--scope}'[Configuration scope]:scope:(user project)' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1:name: '
+}
+
+_gemini_mcp_list() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '(-h --help)'{-h,--help}'[Show help]'
+}
+
+_gemini_extensions() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1: :_gemini_extensions_commands' \
+        '*:: :->args'
+
+    case $state in
+        args)
+            case $words[1] in
+                install) _gemini_extensions_install ;;
+                uninstall) _gemini_extensions_uninstall ;;
+                list) _gemini_extensions_list ;;
+                update) _gemini_extensions_update ;;
+                disable) _gemini_extensions_disable ;;
+                enable) _gemini_extensions_enable ;;
+                link) _gemini_extensions_link ;;
+                new) _gemini_extensions_new ;;
+                validate) _gemini_extensions_validate ;;
+                config) _gemini_extensions_config ;;
+            esac
+            ;;
+    esac
+}
+
+_gemini_extensions_commands() {
+    local -a commands
+    commands=(
+        'install:Installs an extension'
+        'uninstall:Uninstalls one or more extensions'
+        'list:Lists installed extensions'
+        'update:Updates extensions'
+        'disable:Disables an extension'
+        'enable:Enables an extension'
+        'link:Links an extension from a local path'
+        'new:Create a new extension from a boilerplate example'
+        'validate:Validates an extension from a local path'
+        'config:Configure extension settings'
+    )
+    _describe -t commands 'gemini extension command' commands
+}
+
+_gemini_extensions_install() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '--ref[The git ref to install from]:ref' \
+        '--auto-update[Enable auto-update for this extension]' \
+        '--pre-release[Enable pre-release versions for this extension]' \
+        '--consent[Acknowledge the security risks and skip confirmation]' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1:source: '
+}
+
+_gemini_extensions_uninstall() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '*:names: '
+}
+
+_gemini_extensions_list() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '(-h --help)'{-h,--help}'[Show help]'
+}
+
+_gemini_extensions_update() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '--all[Update all extensions]' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1:name: '
+}
+
+_gemini_extensions_disable() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '--scope[The scope to disable the extension in]:scope:(User)' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1:name: '
+}
+
+_gemini_extensions_enable() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '--scope[The scope to enable the extension in]:scope' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1:name: '
+}
+
+_gemini_extensions_link() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '--consent[Acknowledge the security risks and skip confirmation]' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1:path:_files -/'
+}
+
+_gemini_extensions_new() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1:path:_files -/' \
+        '2:template:(context custom-commands exclude-tools mcp-server)'
+}
+
+_gemini_extensions_validate() {
+    _arguments -S \
+        '(-d --debug)'{-d,--debug}'[Run in debug mode]' \
+        '(-h --help)'{-h,--help
