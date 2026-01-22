@@ -30,6 +30,12 @@ completions/_%: completion_prompt.md generate_completion.py
 		if [ ! -s completions/_$* ]; then \
 			rm -f completions/_$*; \
 			echo >&2 "Warning: Generated completion for $* was empty. Removing file."; \
+		else \
+			if ! ./test_completion.zsh completions/_$*; then \
+				rm -f completions/_$*; \
+				echo >&2 "Error: Generated completion for $* failed validation. Removing file."; \
+				exit 1; \
+			fi; \
 		fi; \
 	else \
 		echo >&2 "Warning: $* is not installed or not in PATH. Skipping."; \
