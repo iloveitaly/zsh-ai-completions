@@ -42,7 +42,7 @@ clean:
 update-local:
 	zinit update iloveitaly/zsh-ai-completions
 
-test: all_completions
+test:
 	@echo "Testing completions..."
 	@failed=0; \
 	for file in completions/_*; do \
