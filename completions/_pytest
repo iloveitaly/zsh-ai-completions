@@ -1,102 +1,102 @@
 #compdef pytest
 
 _arguments -S \
-  '(-k)'{-k,}[Only run tests which match the given substring expression]:expression \
-  '(-m)'{-m,}[Only run tests matching given mark expression]:mark expression \
+  '-k+[Only run tests which match the given substring expression]:expression' \
+  '-m+[Only run tests matching given mark expression]:mark expression' \
   '--markers[Show markers (builtin, plugin and per-project ones)]' \
-  '(-x --exitfirst)'{-x,--exitfirst}[Exit instantly on first error or failed test] \
-  '--maxfail=[Exit after first num failures or errors]:num' \
+  '(-x --exitfirst)'{-x,--exitfirst}'[Exit instantly on first error or failed test]' \
+  '--maxfail=[Exit after first num failures or errors]:number' \
   '--strict-config[Any warnings encountered while parsing the pytest section of the configuration file raise errors]' \
   '--strict-markers[Markers not registered in the markers section of the configuration file raise errors]' \
   '--strict[(Deprecated) alias to --strict-markers]' \
   '(--fixtures --funcargs)'{--fixtures,--funcargs}'[Show available fixtures, sorted by plugin appearance]' \
   '--fixtures-per-test[Show fixtures per test]' \
   '--pdb[Start the interactive Python debugger on errors or KeyboardInterrupt]' \
-  '--pdbcls=[Specify a custom interactive Python debugger for use with --pdb]:module\:classname' \
+  '--pdbcls=[Specify a custom interactive Python debugger for use with --pdb]:module\:class' \
   '--trace[Immediately break when running each test]' \
   '--capture=[Per-test capturing method]:method:(fd sys no tee-sys)' \
   '-s[Shortcut for --capture=no]' \
   '--runxfail[Report the results of xfail tests as if they were not marked]' \
-  '(--lf --last-failed)'{--lf,--last-failed}'[Rerun only the tests that failed at the last run]' \
+  '(--lf --last-failed)'{--lf,--last-failed}'[Rerun only the tests that failed at the last run (or all if none failed)]' \
   '(--ff --failed-first)'{--ff,--failed-first}'[Run all tests, but run the last failures first]' \
-  '(--nf --new-first)'{--nf,--new-first}'[Run tests from new files first]' \
-  '--cache-show=[Show cache contents, do not perform collection or tests]::glob:_files' \
+  '(--nf --new-first)'{--nf,--new-first}'[Run tests from new files first, then the rest of the tests sorted by file mtime]' \
+  '--cache-show=[Show cache contents, do not perform collection or tests]::glob pattern' \
   '--cache-clear[Remove all cache contents at start of test run]' \
-  '(--lfnf --last-failed-no-failures)'{--lfnf,--last-failed-no-failures}'=[With --lf, determines whether to execute tests when there are no previously (known) failures]:action:(all none)' \
+  '(--lfnf --last-failed-no-failures)'{--lfnf,--last-failed-no-failures}'=[With --lf, determines whether to execute tests when there are no previously (known) failures]:strategy:(all none)' \
   '(--sw --stepwise)'{--sw,--stepwise}'[Exit on test failure and continue from last failing test next time]' \
   '(--sw-skip --stepwise-skip)'{--sw-skip,--stepwise-skip}'[Ignore the first failing test but stop on the next failing test]' \
   '(--sw-reset --stepwise-reset)'{--sw-reset,--stepwise-reset}'[Resets stepwise state, restarting the stepwise workflow]' \
-  '--durations=[Show N slowest setup/test durations]:N' \
-  '--durations-min=[Minimal duration in seconds for inclusion in slowest list]:N' \
+  '--durations=[Show N slowest setup/test durations (N=0 for all)]:number' \
+  '--durations-min=[Minimal duration in seconds for inclusion in slowest list]:number' \
   '*'{-v,--verbose}'[Increase verbosity]' \
   '--no-header[Disable header]' \
   '--no-summary[Disable summary]' \
   '--no-fold-skipped[Do not fold skipped tests in short summary]' \
   '--force-short-summary[Force condensed summary output regardless of verbosity level]' \
   '(-q --quiet)'{-q,--quiet}'[Decrease verbosity]' \
-  '--verbosity=[Set verbosity]:VERBOSE' \
-  '-r[Show extra test summary info]:chars' \
+  '--verbosity=[Set verbosity]:verbosity level' \
+  '-r+[Show extra test summary info as specified by chars]:chars' \
   '(--disable-warnings --disable-pytest-warnings)'{--disable-warnings,--disable-pytest-warnings}'[Disable warnings summary]' \
-  '(-l --showlocals)'{-l,--showlocals}'[Show locals in tracebacks (disabled by default)]' \
+  '(-l --showlocals)'{-l,--showlocals}'[Show locals in tracebacks]' \
   '--no-showlocals[Hide locals in tracebacks]' \
   '--tb=[Traceback print mode]:style:(auto long short line native no)' \
   '--xfail-tb[Show tracebacks for xfail]' \
   '--show-capture=[Controls how captured stdout/stderr/log is shown on failed tests]:method:(no stdout stderr log all)' \
   '--full-trace[Do not cut any tracebacks]' \
   '--color=[Color terminal output]:color:(yes no auto)' \
-  '--code-highlight=[Whether code should be highlighted]:(yes no)' \
+  '--code-highlight=[Whether code should be highlighted]:highlight:(yes no)' \
   '--pastebin=[Send failed|all info to bpaste.net pastebin service]:mode' \
   '(--junitxml --junit-xml)'{--junitxml,--junit-xml}'=[Create junit-xml style report file at given path]:path:_files' \
-  '(--junitprefix --junit-prefix)'{--junitprefix,--junit-prefix}'=[Prepend prefix to classnames in junit-xml output]:str' \
-  '*'{-W,--pythonwarnings}'[Set which warnings to report]:PYTHONWARNINGS' \
+  '(--junitprefix --junit-prefix)'{--junitprefix,--junit-prefix}'=[Prepend prefix to classnames in junit-xml output]:string' \
+  '*'{-W,--pythonwarnings}'+[Set which warnings to report]:warnings' \
   '(--collect-only --co)'{--collect-only,--co}'[Only collect tests, do not execute them]' \
   '--pyargs[Try to interpret all arguments as Python packages]' \
   '*--ignore=[Ignore path during collection]:path:_files' \
-  '*--ignore-glob=[Ignore path pattern during collection]:path:_files' \
-  '*--deselect=[Deselect item (via node id prefix) during collection]:nodeid_prefix' \
+  '*--ignore-glob=[Ignore path pattern during collection]:path pattern' \
+  '*--deselect=[Deselect item (via node id prefix) during collection]:node id prefix' \
   '--confcutdir=[Only load conftest.py relative to specified dir]:dir:_files -/' \
   '--noconftest[Do not load any conftest.py files]' \
   '--keep-duplicates[Keep duplicate tests]' \
   '--collect-in-virtualenv[Do not ignore tests in a local virtualenv directory]' \
   '--continue-on-collection-errors[Force test execution even if collection errors occur]' \
-  '--import-mode=[Prepend/append to sys.path when importing test modules]:mode:(prepend append importlib)' \
+  '--import-mode=[Prepend/append to sys.path when importing test modules and conftest files]:mode:(prepend append importlib)' \
   '--doctest-modules[Run doctests in all .py modules]' \
   '--doctest-report=[Choose another output format for diffs on doctest failure]:format:(none cdiff ndiff udiff only_first_failure)' \
-  '--doctest-glob=[Doctests file matching pattern]:pat' \
+  '--doctest-glob=[Doctests file matching pattern]:pattern' \
   '--doctest-ignore-import-errors[Ignore doctest collection errors]' \
   '--doctest-continue-on-failure[For a given doctest, continue to run after the first failure]' \
-  '(-c --config-file)'{-c,--config-file}'[Load configuration from FILE]:FILE:_files' \
-  '--rootdir=[Define root directory for tests]:ROOTDIR:_files -/' \
+  '(-c --config-file)'{-c,--config-file}'[Load configuration from FILE]:config file:_files' \
+  '--rootdir=[Define root directory for tests]:root directory:_files -/' \
   '--basetemp=[Base temporary directory for this test run]:dir:_files -/' \
-  '(-V --version)'{-V,--version}'[Display pytest version and information about plugins]' \
+  '*'{-V,--version}'[Display pytest version and information about plugins]' \
   '(-h --help)'{-h,--help}'[Show help message and configuration info]' \
-  '*-p[Early-load given plugin module name or entry point]:name' \
+  '*-p[Early-load given plugin module name or entry point]:plugin' \
   '--disable-plugin-autoload[Disable plugin auto-loading through entry point packaging metadata]' \
   '--trace-config[Trace considerations of conftest.py files]' \
-  '--debug=[Store internal tracing debug information in log file]::debug_file:_files' \
-  '*'{-o,--override-ini}'[Override ini option with option=value style]:OVERRIDE_INI' \
-  '--assert=[Control assertion debugging tools]:MODE:(plain rewrite)' \
+  '--debug=[Store internal tracing debug information in this log file]::log file:_files' \
+  '*'{-o,--override-ini}'+[Override ini option]:override' \
+  '--assert=[Control assertion debugging tools]:mode:(plain rewrite)' \
   '--setup-only[Only setup fixtures, do not execute tests]' \
   '--setup-show[Show setup of fixtures while executing tests]' \
   '--setup-plan[Show what fixtures and tests would be executed but do not execute anything]' \
-  '--log-level=[Level of messages to catch/display]:LEVEL' \
-  '--log-format=[Log format used by the logging module]:LOG_FORMAT' \
-  '--log-date-format=[Log date format used by the logging module]:LOG_DATE_FORMAT' \
-  '--log-cli-level=[CLI logging level]:LOG_CLI_LEVEL' \
-  '--log-cli-format=[Log format used by the logging module]:LOG_CLI_FORMAT' \
-  '--log-cli-date-format=[Log date format used by the logging module]:LOG_CLI_DATE_FORMAT' \
-  '--log-file=[Path to a file when logging will be written to]:LOG_FILE:_files' \
+  '--log-level=[Level of messages to catch/display]:level' \
+  '--log-format=[Log format used by the logging module]:format' \
+  '--log-date-format=[Log date format used by the logging module]:date format' \
+  '--log-cli-level=[CLI logging level]:level' \
+  '--log-cli-format=[Log format used by the logging module]:format' \
+  '--log-cli-date-format=[Log date format used by the logging module]:date format' \
+  '--log-file=[Path to a file when logging will be written to]:file:_files' \
   '--log-file-mode=[Log file open mode]:mode:(w a)' \
-  '--log-file-level=[Log file logging level]:LOG_FILE_LEVEL' \
-  '--log-file-format=[Log format used by the logging module]:LOG_FILE_FORMAT' \
-  '--log-file-date-format=[Log date format used by the logging module]:LOG_FILE_DATE_FORMAT' \
-  '--log-auto-indent=[Auto-indent multiline messages passed to the logging module]:LOG_AUTO_INDENT' \
-  '*--log-disable=[Disable a logger by name]:LOGGER_DISABLE' \
+  '--log-file-level=[Log file logging level]:level' \
+  '--log-file-format=[Log format used by the logging module]:format' \
+  '--log-file-date-format=[Log date format used by the logging module]:date format' \
+  '--log-auto-indent=[Auto-indent multiline messages passed to the logging module]:value' \
+  '*--log-disable=[Disable a logger by name]:logger' \
   '--fzf=[Select tests to be run using fzf]::query' \
   '--fzf-bat-preview[Use bat as fzf preview command]' \
-  '--typeguard-packages=[comma separated name list of packages and modules to instrument for type checking]:TYPEGUARD_PACKAGES' \
+  '--typeguard-packages=[comma separated name list of packages and modules to instrument for type checking]:packages' \
   '--typeguard-debug-instrumentation[print all instrumented code to stderr]' \
-  '--typeguard-typecheck-fail-callback=[reference to a function that is called to handle a TypeCheckError]:TYPEGUARD_TYPECHECK_FAIL_CALLBACK' \
-  '--typeguard-forward-ref-policy=[determines how to deal with unresolveable forward references]:policy:(ERROR WARN IGNORE)' \
+  '--typeguard-typecheck-fail-callback=[module\:varname reference to a function to handle a TypeCheckError]:callback' \
+  '--typeguard-forward-ref-policy=[determines how to deal with unresolveable forward references in type annotations]:policy:(ERROR WARN IGNORE)' \
   '--typeguard-collection-check-strategy=[determines how thoroughly to check collections]:strategy:(FIRST_ITEM ALL_ITEMS)' \
   '*:file or directory:_files'

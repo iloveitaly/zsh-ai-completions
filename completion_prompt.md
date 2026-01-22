@@ -13,6 +13,7 @@ Generate a Zsh completion script for the command based on the provided help outp
     - **Repeatable Flags:** If a flag is described as "repeatable" or "multiple":
         - Prepend `*` to the definition (e.g., `'*--verbose'`).
         - **Do NOT** include the flag itself in the exclusion list (the parentheses at the start). e.g., Use `'*-v'` instead of `'*(-v)-v'`.
+    - **Single Flags:** If a flag has no long/short alternative (e.g. only `-k` exists), do **NOT** use brace expansion like `{-k,}`. Just use the flag directly, e.g. `'-k[Description]...'`.
 - **Subcommands (if present in help output):**
     - If the help output clearly defines subcommands (e.g., `git commit`, `docker run`), structure the completion using `_arguments` with `1: :_subcommands` and `*:: :->args`, and define helper functions for each subcommand.
 - **Syntax:**

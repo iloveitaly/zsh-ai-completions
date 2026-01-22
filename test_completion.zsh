@@ -47,8 +47,13 @@ OUTPUT=$(zsh -c "
   # If it has syntax error, it will exit non-zero before that.
   
   try_load() {
-      # Force load the function definition to check for syntax errors
-      # This parses the file but does not execute the function body (except for immediate top-level code)
+      # 1. Strict syntax check (checks the entire file)
+      if ! zsh -n "$COMP_FILE"; then
+          return 1
+      fi
+
+      # 2. Force load the function definition to check for function-specific errors
+      # This parses the file but does not execute the function body
       autoload +X $COMP_NAME >/dev/null 2>&1
       RET=\$?
       return \$RET
