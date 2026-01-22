@@ -1,71 +1,63 @@
 #compdef aiautocommit
 
-_arguments \
-  '1: :_aiautocommit_commands' \
-  '*::arg:->args' \
-  '--help[Show this message and exit]'
+function _aiautocommit {
+  local context state state_descr line
+  typeset -A opt_args
 
-_aiautocommit_commands() {
-    local commands
-    commands=(
-        "commit:Generate commit message from git diff."
-        "dump-prompts:Dump default prompts by copying the contents of the prompt directory to PWD for customization"
-        "install-pre-commit:Install pre-commit script into git hooks directory"
-        "output-exclusions:Dump file exclusions, helpful for debugging"
-        "output-prompt:Dump compiled prompt, helpful for debugging"
-    )
-    _describe -t commands 'command' commands
+  _arguments -C -S \
+    '--help[Show this message and exit]' \
+    '1: :_aiautocommit_commands' \
+    '*:: :->args'
+
+  case $state in
+    (args)
+      case $line[1] in
+        (commit)
+          _arguments -S \
+            '(-p --print-message)'{-p,--print-message}'[print commit msg to stdout instead of performing commit]' \
+            '(-o --output-file)'{-o,--output-file}'[write commit message to specified file]:file:_files' \
+            '--config-dir[specify custom config directory]:directory:_files -/' \
+            '--help[Show this message and exit]'
+          ;;
+        (debug-prompt)
+          _arguments -S \
+            '--help[Show this message and exit]' \
+            '1:SHA: ' \
+            '2:MESSAGE: '
+          ;;
+        (dump-prompts)
+          _arguments -S \
+            '--help[Show this message and exit]'
+          ;;
+        (install-pre-commit)
+          _arguments -S \
+            '--overwrite[Overwrite existing pre-commit hook if it exists]' \
+            '--help[Show this message and exit]'
+          ;;
+        (output-exclusions)
+          _arguments -S \
+            '--help[Show this message and exit]'
+          ;;
+        (output-prompt)
+          _arguments -S \
+            '--help[Show this message and exit]'
+          ;;
+      esac
+      ;;
+  esac
 }
 
-_aiautocommit_commit() {
-    _arguments \
-        '-p[print commit msg to stdout instead of performing commit]' \
-        '--print-message[print commit msg to stdout instead of performing commit]' \
-        '-o=[write commit message to specified file]' \
-        '--output-file=[write commit message to specified file]:file:_files' \
-        '--config-dir=[specify custom config directory]:directory:_files -/' \
-        '--help[Show this message and exit]'
+function _aiautocommit_commands {
+  local -a commands
+  commands=(
+    'commit:Generate commit message from git diff'
+    'debug-prompt:Show debug info for a given commit SHA'
+    'dump-prompts:Dump default prompts by copying the contents of the prompt directory to PWD'
+    'install-pre-commit:Install pre-commit script into git hooks directory'
+    'output-exclusions:Dump file exclusions, helpful for debugging'
+    'output-prompt:Dump compiled prompt, helpful for debugging'
+  )
+  _describe -t commands 'command' commands
 }
 
-_aiautocommit_dump_prompts() {
-    _arguments \
-        '--help[Show this message and exit]'
-}
-
-_aiautocommit_install_pre_commit() {
-    _arguments \
-        '--overwrite[Overwrite existing pre-commit hook if it exists]' \
-        '--help[Show this message and exit]'
-}
-
-_aiautocommit_output_exclusions() {
-    _arguments \
-        '--help[Show this message and exit]'
-}
-
-_aiautocommit_output_prompt() {
-    _arguments \
-        '--help[Show this message and exit]'
-}
-
-case $state in
-    args)
-        case $line[1] in
-            commit)
-                _aiautocommit_commit
-                ;;
-            dump-prompts)
-                _aiautocommit_dump_prompts
-                ;;
-            install-pre-commit)
-                _aiautocommit_install_pre_commit
-                ;;
-            output-exclusions)
-                _aiautocommit_output_exclusions
-                ;;
-            output-prompt)
-                _aiautocommit_output_prompt
-                ;;
-        esac
-    ;;
-esac
+_aiautocommit "$@"

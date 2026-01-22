@@ -1,76 +1,130 @@
 #compdef sops
 
-local -a _sops_commands
-_sops_commands=(
-  'exec-env:execute a command with decrypted values inserted into the environment'
-  'exec-file:execute a command with the decrypted contents as a temporary file'
-  'publish:Publish sops file or directory to a configured destination'
-  'keyservice:start a SOPS key service server'
-  'groups:modify the groups on a SOPS file'
-  'updatekeys:update the keys of a SOPS file using the config file'
-  'help:Shows a list of commands or help for one command'
+local context state state_descr line
+typeset -A opt_args
+
+_sops_commands() {
+  local -a commands
+  commands=(
+    'completion:Generate shell completion scripts'
+    'exec-env:execute a command with decrypted values inserted into the environment'
+    'exec-file:execute a command with the decrypted contents as a temporary file'
+    'publish:Publish sops file or directory to a configured destination'
+    'keyservice:start a SOPS key service server'
+    'filestatus:check the status of the file, returning encryption status'
+    'groups:modify the groups on a SOPS file'
+    'updatekeys:update the keys of SOPS files using the config file'
+    'decrypt:decrypt a file, and output the results to stdout'
+    'encrypt:encrypt a file, and output the results to stdout'
+    'rotate:generate a new data encryption key and reencrypt all values with the new key'
+    'edit:edit an encrypted file'
+    'set:set a specific key or branch in the input document'
+    'unset:unset a specific key or branch in the input document'
+    'help:Shows a list of commands or help for one command'
+  )
+  _describe -t commands 'sops command' commands
+}
+
+local -a global_opts
+global_opts=(
+  '(-d --decrypt)'{-d,--decrypt}'[decrypt a file and output the result to stdout]'
+  '(-e --encrypt)'{-e,--encrypt}'[encrypt a file and output the result to stdout]'
+  '(-r --rotate)'{-r,--rotate}'[generate a new data encryption key and reencrypt all values with the new key]'
+  '--disable-version-check[do not check whether the current version is latest during --version]'
+  '--check-for-updates[do check whether the current version is latest during --version]'
+  '(-k --kms)'{-k,--kms}'[comma separated list of KMS ARNs]:kms arn'
+  '--aws-profile[The AWS profile to use for requests to AWS]:profile'
+  '--gcp-kms[comma separated list of GCP KMS resource IDs]:gcp kms id'
+  '--azure-kv[comma separated list of Azure Key Vault URLs]:azure kv url'
+  '--hc-vault-transit[comma separated list of vault key URIs]:vault uri'
+  '(-p --pgp)'{-p,--pgp}'[comma separated list of PGP fingerprints]:pgp fp'
+  '(-a --age)'{-a,--age}'[comma separated list of age recipients]:age recipient'
+  '(-i --in-place)'{-i,--in-place}'[write output back to the same file instead of stdout]'
+  '--extract[extract a specific key or branch from the input document]:key path'
+  '--input-type[specify input type]:input type:(json yaml dotenv binary)'
+  '--output-type[specify output type]:output type:(json yaml dotenv binary)'
+  '(-s --show-master-keys)'{-s,--show-master-keys}'[display master encryption keys in the file during editing]'
+  '--add-gcp-kms[add GCP KMS key resource IDs]:gcp kms id'
+  '--rm-gcp-kms[remove GCP KMS key resource IDs]:gcp kms id'
+  '--add-azure-kv[add Azure Key Vault key URLs]:azure kv url'
+  '--rm-azure-kv[remove Azure Key Vault key URLs]:azure kv url'
+  '--add-kms[add KMS ARNs]:kms arn'
+  '--rm-kms[remove KMS ARNs]:kms arn'
+  '--add-hc-vault-transit[add Vault URI keys]:vault uri'
+  '--rm-hc-vault-transit[remove Vault URI keys]:vault uri'
+  '--add-age[add age recipients fingerprints]:age recipient'
+  '--rm-age[remove age recipients]:age recipient'
+  '--add-pgp[add PGP fingerprints]:pgp fp'
+  '--rm-pgp[remove PGP fingerprints]:pgp fp'
+  '--ignore-mac[ignore Message Authentication Code during decryption]'
+  '--mac-only-encrypted[compute MAC only over values which end up encrypted]'
+  '--unencrypted-suffix[override the unencrypted key suffix]:suffix'
+  '--encrypted-suffix[override the encrypted key suffix]:suffix'
+  '--unencrypted-regex[set the unencrypted key regex]:regex'
+  '--encrypted-regex[set the encrypted key regex]:regex'
+  '--unencrypted-comment-regex[set the unencrypted comment suffix]:regex'
+  '--encrypted-comment-regex[set the encrypted comment suffix]:regex'
+  '--config[path to sops config file]:config file:_files'
+  '--encryption-context[comma separated list of KMS encryption context key\:value pairs]:context'
+  '--set[set a specific key or branch in the input document (edit mode only)]:value'
+  '--shamir-secret-sharing-threshold[number of master keys required to retrieve the data key]:number'
+  '--indent[number of spaces to indent YAML or JSON encoded file]:number'
+  '--verbose[Enable verbose logging output]'
+  '--output[Save the output after encryption or decryption to the file specified]:output file:_files'
+  '--filename-override[Use this filename instead of the provided argument for loading configuration]:filename'
+  '--decryption-order[comma separated list of decryption key types]:order'
+  '--enable-local-keyservice[use local key service]'
+  '--keyservice[Specify the key services to use in addition to the local one]:service'
+  '(-h --help)'{-h,--help}'[show help]'
+  '(-v --version)'{-v,--version}'[print the version]'
 )
 
-_arguments -C \
-  '(-d --decrypt)'{-d,--decrypt}'[decrypt a file and output the result to stdout]' \
-  '(-e --encrypt)'{-e,--encrypt}'[encrypt a file and output the result to stdout]' \
-  '(-r --rotate)'{-r,--rotate}'[generate a new data encryption key and reencrypt all values with the new key]' \
-  '--disable-version-check[do not check whether the current version is latest during --version]' \
-  '(-k --kms)'{-k,--kms}'[comma separated list of KMS ARNs]:KMS ARNs:' \
-  '--aws-profile[The AWS profile to use for requests to AWS]:AWS profile:' \
-  '--gcp-kms[comma separated list of GCP KMS resource IDs]:GCP KMS IDs:' \
-  '--azure-kv[comma separated list of Azure Key Vault URLs]:Azure Key Vault URLs:' \
-  '--hc-vault-transit[comma separated list of vault'"'"'s key URI]:Vault URIs:' \
-  '(-p --pgp)'{-p,--pgp}'[comma separated list of PGP fingerprints]:PGP fingerprints:' \
-  '(-a --age)'{-a,--age}'[comma separated list of age recipients]:Age recipients:' \
-  '(-i --in-place)'{-i,--in-place}'[write output back to the same file instead of stdout]' \
-  '--extract[extract a specific key or branch from the input document]:Key to extract:' \
-  '--input-type[currently json, yaml, dotenv and binary are supported]:Input type:(json yaml dotenv binary)' \
-  '--output-type[currently json, yaml, dotenv and binary are supported]:Output type:(json yaml dotenv binary)' \
-  '(-s --show-master-keys)'{-s,--show-master-keys}'[display master encryption keys in the file during editing]' \
-  '--add-gcp-kms[add the provided comma-separated list of GCP KMS key resource IDs]:GCP KMS IDs to add:' \
-  '--rm-gcp-kms[remove the provided comma-separated list of GCP KMS key resource IDs]:GCP KMS IDs to remove:' \
-  '--add-azure-kv[add the provided comma-separated list of Azure Key Vault key URLs]:Azure Key Vault URLs to add:' \
-  '--rm-azure-kv[remove the provided comma-separated list of Azure Key Vault key URLs]:Azure Key Vault URLs to remove:' \
-  '--add-kms[add the provided comma-separated list of KMS ARNs]:KMS ARNs to add:' \
-  '--rm-kms[remove the provided comma-separated list of KMS ARNs]:KMS ARNs to remove:' \
-  '--add-hc-vault-transit[add the provided comma-separated list of Vault'"'"'s URI key]:Vault URIs to add:' \
-  '--rm-hc-vault-transit[remove the provided comma-separated list of Vault'"'"'s URI key]:Vault URIs to remove:' \
-  '--add-age[add the provided comma-separated list of age recipients fingerprints]:Age recipients to add:' \
-  '--rm-age[remove the provided comma-separated list of age recipients]:Age recipients to remove:' \
-  '--add-pgp[add the provided comma-separated list of PGP fingerprints]:PGP fingerprints to add:' \
-  '--rm-pgp[remove the provided comma-separated list of PGP fingerprints]:PGP fingerprints to remove:' \
-  '--ignore-mac[ignore Message Authentication Code during decryption]' \
-  '--unencrypted-suffix[override the unencrypted key suffix]:Unencrypted suffix:' \
-  '--encrypted-suffix[override the encrypted key suffix]:Encrypted suffix:' \
-  '--unencrypted-regex[set the unencrypted key regex]:Unencrypted regex:' \
-  '--encrypted-regex[set the encrypted key regex]:Encrypted regex:' \
-  '--config[path to sops'"'"' config file]:Config file:_files' \
-  '--encryption-context[comma separated list of KMS encryption context key:value pairs]:Encryption context:' \
-  '--set[set a specific key or branch in the input document]:JSON encoded string:' \
-  '--shamir-secret-sharing-threshold[the number of master keys required to retrieve the data key with shamir]:Threshold:' \
-  '--verbose[Enable verbose logging output]' \
-  '--output[Save the output after encryption or decryption to the file specified]:Output file:_files' \
-  '--enable-local-keyservice[use local key service]' \
-  '--keyservice[Specify the key services to use in addition to the local one]:Key service:' \
-  '(-h --help)'{-h,--help}'[show help]' \
-  '(-v --version)'{-v,--version}'[print the version]' \
-  '1: :->cmds' \
-  '*::arg:->args'
+_arguments -C -S \
+  "${global_opts[@]}" \
+  '1: :->command' \
+  '*:: :->args' && return
 
-case "$state" in
-  cmds)
-    _describe -t commands "sops commands" _sops_commands
-    ;;
-  args)
-    case $line[1] in
-      help)
-        _describe -t commands "sops commands" _sops_commands
-        ;;
-      *)
-        _files
-        ;;
-    esac
-    ;;
-esac
+if [[ $state == command ]]; then
+  _alternative \
+    'commands:sops command:_sops_commands' \
+    'files:file:_files'
+  return
+fi
 
+if [[ $state == args ]]; then
+  case $line[1] in
+    (exec-env|exec-file)
+      _arguments \
+        "${global_opts[@]}" \
+        '1:file:_files' \
+        '*::command:_command_names -e'
+      ;;
+    (publish)
+       _arguments \
+        "${global_opts[@]}" \
+        '1:file:_files' \
+        '*:destination'
+      ;;
+    (set)
+       _arguments \
+        "${global_opts[@]}" \
+        '1:file:_files' \
+        '2:key' \
+        '3:value'
+      ;;
+    (unset)
+       _arguments \
+        "${global_opts[@]}" \
+        '1:file:_files' \
+        '2:key'
+      ;;
+    (help)
+       _arguments '1:command:_sops_commands'
+       ;;
+    (completion|keyservice|filestatus|groups|updatekeys|decrypt|encrypt|rotate|edit)
+       _arguments \
+         "${global_opts[@]}" \
+         '*:file:_files'
+       ;;
+  esac
+fi

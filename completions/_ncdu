@@ -1,29 +1,44 @@
 #compdef ncdu
 
-local -a options
-
-options=(
-  '(-h --help)'{-h,--help}'[This help message]'
-  '-q[Quiet mode, refresh interval 2 seconds]'
-  '(-v -V --version)'{-v,-V,--version}'[Print version]'
-  '-x[Same filesystem]'
-  '-e[Enable extended information]'
-  '-r[Read only]'
-  '-o[Export scanned directory to FILE]:output file:_files'
-  '-f[Import scanned directory from FILE]:input file:_files'
-  '-0[UI to use when scanning (none)]'
-  '-1[UI to use when scanning (intermediate)]'
-  '-2[UI to use when scanning (full ncurses)]'
-  '--si[Use base 10 (SI) prefixes instead of base 2]'
-  '--exclude[Exclude files that match PATTERN]:pattern'
-  '(-X --exclude-from)'{-X,--exclude-from}'[Exclude files that match any pattern in FILE]:exclude file:_files'
-  '(-L --follow-symlinks)'{-L,--follow-symlinks}'[Follow symbolic links (excluding directories)]'
-  '--exclude-caches[Exclude directories containing CACHEDIR.TAG]'
-  '--exclude-kernfs[Exclude Linux pseudo filesystems (procfs,sysfs,cgroup,...)]'
-  '--confirm-quit[Confirm quitting ncdu]'
-  '--color[Set color scheme]:color scheme:(off dark dark-bg)'
-  '--ignore-config[Don'\''t load config files]'
-)
-
-_arguments -s -S $options '*:directory:_files -/'
-
+_arguments -S \
+  '(-h --help)'{-h,--help}'[Print help message]' \
+  '(-v -V --version)'{-v,-V,--version}'[Print version]' \
+  '-f[Import scanned directory from FILE]:import file:_files' \
+  '-o[Export scanned directory to FILE in JSON format]:export json file:_files' \
+  '-O[Export scanned directory to FILE in binary format]:export binary file:_files' \
+  '(-e --extended)'{-e,--extended}'[Enable extended information]' \
+  '--ignore-config[Do not load config files]' \
+  '(-x --one-file-system)'{-x,--one-file-system}'[Stay on the same filesystem]' \
+  '*--exclude[Exclude files that match PATTERN]:pattern' \
+  '(-X --exclude-from)'{-X,--exclude-from}'[Exclude files that match any pattern in FILE]:file:_files' \
+  '--exclude-caches[Exclude directories containing CACHEDIR.TAG]' \
+  '(-L --follow-symlinks)'{-L,--follow-symlinks}'[Follow symbolic links (excluding directories)]' \
+  '--exclude-kernfs[Exclude Linux pseudo filesystems]' \
+  '-t[Scan with NUM threads]:threads' \
+  '(-c --compress)'{-c,--compress}'[Use Zstandard compression with -o]' \
+  '--compress-level[Set compression level]:level' \
+  '--export-block-size[Set export block size with -O]:block size (KiB)' \
+  '(-0 -1 -2)'{-0,-1,-2}'[UI to use when scanning]' \
+  '(-q --slow-ui-updates)'{-q,--slow-ui-updates}'[Quiet mode, refresh interval 2 seconds]' \
+  '(--enable-shell --disable-shell)'{--enable-shell,--disable-shell}'[Enable/disable shell spawning feature]' \
+  '(--enable-delete --disable-delete)'{--enable-delete,--disable-delete}'[Enable/disable file deletion feature]' \
+  '(--enable-refresh --disable-refresh)'{--enable-refresh,--disable-refresh}'[Enable/disable directory refresh feature]' \
+  '-r[Read only mode (--disable-delete)]' \
+  '-rr[Read only++ mode (--disable-delete & --disable-shell)]' \
+  '--si[Use base 10 (SI) prefixes instead of base 2]' \
+  '--apparent-size[Show apparent size instead of disk usage by default]' \
+  '--hide-hidden[Hide hidden or excluded files by default]' \
+  '--show-itemcount[Show item count column by default]' \
+  '--show-mtime[Show mtime column by default (requires -e)]' \
+  '--show-graph[Show graph column by default]' \
+  '--show-percent[Show percent column by default]' \
+  '--graph-style[Set graph style]:style:(hash half-block eighth-block)' \
+  '--shared-column[Set shared column visibility]:visibility:(off shared unique)' \
+  '--sort[Sort by column]:column:((disk-usage name apparent-size itemcount mtime){,-asc,-desc})' \
+  '--enable-natsort[Use natural order when sorting by name]' \
+  '--group-directories-first[Sort directories before files]' \
+  '--confirm-quit[Ask confirmation before quitting ncdu]' \
+  '--no-confirm-delete[Do not ask confirmation before deletion]' \
+  '--delete-command[Command to run for file deletion]:command' \
+  '--color[Set color scheme]:scheme:(off dark dark-bg)' \
+  '::directory:_files -/'

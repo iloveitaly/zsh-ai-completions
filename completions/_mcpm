@@ -1,0 +1,402 @@
+#compdef mcpm
+
+local context state state_descr line
+typeset -A opt_args
+
+_mcpm_servers() {
+    _message 'server name'
+}
+
+_mcpm_profiles() {
+    _message 'profile name'
+}
+
+_mcpm_clients() {
+    _values 'client' 'claude-desktop' 'cursor' 'windsurf' 'continue' 'zed'
+}
+
+_mcpm_commands() {
+    local -a commands
+    commands=(
+        'search:Search available MCP servers'
+        'info:Display detailed information about a specific MCP server'
+        'install:Install an MCP server to the global configuration'
+        'uninstall:Remove an installed MCP server from global configuration'
+        'ls:List all installed MCP servers from global configuration'
+        'edit:Edit a server configuration'
+        'new:Create a new server configuration'
+        'inspect:Launch MCP Inspector to test and debug a server'
+        'run:Execute an installed MCP server in stdio, HTTP, or SSE mode'
+        'share:Share a server from global configuration through a tunnel'
+        'usage:Display comprehensive analytics and usage data'
+        'client:Manage MCP client configurations'
+        'profile:Manage MCPM profiles'
+        'doctor:Check system health and installed server status'
+        'config:Manage MCPM configuration'
+        'migrate:Migrate v1 configuration to v2'
+    )
+    _describe 'command' commands
+}
+
+_mcpm_search() {
+    _arguments -S \
+        '--table[Display results in table format with descriptions]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:query:_message "query"'
+}
+
+_mcpm_info() {
+    _arguments -S \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:server name:_mcpm_servers'
+}
+
+_mcpm_install() {
+    _arguments -S \
+        '--force[Force reinstall if server is already installed]' \
+        '--alias=[Alias for the server]:alias' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:server name:_mcpm_servers'
+}
+
+_mcpm_uninstall() {
+    _arguments -S \
+        '(-f --force)'{-f,--force}'[Force removal without confirmation]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:server name:_mcpm_servers'
+}
+
+_mcpm_ls() {
+    _arguments -S \
+        '(-v --verbose)'{-v,--verbose}'[Show detailed server configuration]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]'
+}
+
+_mcpm_edit() {
+    _arguments -S \
+        '(-N --new)'{-N,--new}'[Create a new server configuration]' \
+        '(-e --editor)'{-e,--editor}'[Open global config in external editor]' \
+        '--name=[Update server name]:name' \
+        '--command=[Update command (for stdio servers)]:command' \
+        '--args=[Update command arguments]:arguments' \
+        '--env=[Update environment variables]:env' \
+        '--url=[Update server URL (for remote servers)]:url' \
+        '--headers=[Update HTTP headers]:headers' \
+        '--force[Skip confirmation prompts]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1::server name:_mcpm_servers'
+}
+
+_mcpm_new() {
+    _arguments -S \
+        '--type=[Server type]:type:(stdio remote)' \
+        '--command=[Command to execute]:command' \
+        '--args=[Command arguments]:arguments' \
+        '--env=[Environment variables]:env' \
+        '--url=[Server URL]:url' \
+        '--headers=[HTTP headers]:headers' \
+        '--force[Skip confirmation prompts]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1::server name:_mcpm_servers'
+}
+
+_mcpm_inspect() {
+    _arguments -S \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1::server name:_mcpm_servers'
+}
+
+_mcpm_run() {
+    _arguments -S \
+        '(--sse)--http[Run server in HTTP mode]' \
+        '(--http)--sse[Run server in SSE mode]' \
+        '--port=[Port for HTTP/SSE mode]:port' \
+        '--host=[Host for HTTP/SSE mode]:host' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:server name:_mcpm_servers'
+}
+
+_mcpm_share() {
+    _arguments -S \
+        '--port=[Port for the SSE server]:port' \
+        '--address=[Remote address for tunnel]:address' \
+        '--http[Use HTTP instead of HTTPS]' \
+        '--timeout=[Timeout in seconds]:seconds' \
+        '--retry=[Number of times to automatically retry on error]:retries' \
+        '--no-auth[Disable authentication for the shared server]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:server name:_mcpm_servers'
+}
+
+_mcpm_usage() {
+    _arguments -S \
+        '(-d --days)'{-d,--days}'=[Show usage for last N days]:days' \
+        '(-s --server)'{-s,--server}'=[Show usage for specific server]:server name:_mcpm_servers' \
+        '(-p --profile)'{-p,--profile}'=[Show usage for specific profile]:profile name:_mcpm_profiles' \
+        '(-h --help)'{-h,--help}'[Show help and exit]'
+}
+
+_mcpm_doctor() {
+    _arguments -S \
+        '(-h --help)'{-h,--help}'[Show help and exit]'
+}
+
+_mcpm_migrate() {
+    _arguments -S \
+        '--force[Force migration even if v1 config not detected]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]'
+}
+
+# Client Subcommands
+_mcpm_client_commands() {
+    local -a commands
+    commands=(
+        'edit:Enable/disable MCPM-managed servers in the specified client configuration'
+        'import:Import and manage MCP server configurations from a client'
+        'ls:List all supported MCP clients and their enabled MCPM servers'
+    )
+    _describe 'command' commands
+}
+
+_mcpm_client_edit() {
+    _arguments -S \
+        '(-e --external)'{-e,--external}'[Open config file in external editor instead of interactive mode]' \
+        '(-f --file)'{-f,--file}'=[Specify a custom path to the client config file]:file:_files' \
+        '--add-server=[Comma-separated list of server names to add]:servers' \
+        '--remove-server=[Comma-separated list of server names to remove]:servers' \
+        '--set-servers=[Comma-separated list of server names to set]:servers' \
+        '--add-profile=[Comma-separated list of profile names to add]:profiles' \
+        '--remove-profile=[Comma-separated list of profile names to remove]:profiles' \
+        '--set-profiles=[Comma-separated list of profile names to set]:profiles' \
+        '--force[Skip confirmation prompts]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:client name:_mcpm_clients'
+}
+
+_mcpm_client_import() {
+    _arguments -S \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:client name:_mcpm_clients'
+}
+
+_mcpm_client_ls() {
+    _arguments -S \
+        '(-v --verbose)'{-v,--verbose}'[Show detailed server information]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]'
+}
+
+_mcpm_client() {
+    local context state state_descr line
+    typeset -A opt_args
+
+    _arguments -C -S \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1: :_mcpm_client_commands' \
+        '*:: :->args'
+
+    case $state in
+        (args)
+            case $line[1] in
+                (edit) _mcpm_client_edit ;;
+                (import) _mcpm_client_import ;;
+                (ls) _mcpm_client_ls ;;
+            esac
+            ;;
+    esac
+}
+
+# Profile Subcommands
+_mcpm_profile_commands() {
+    local -a commands
+    commands=(
+        'create:Create a new MCPM profile'
+        'edit:Edit a profile name and server selection'
+        'inspect:Launch MCP Inspector to test and debug servers in a profile'
+        'ls:List all MCPM profiles'
+        'rm:Remove a profile'
+        'run:Execute all servers in a profile over stdio, HTTP, or SSE'
+        'share:Create a secure public tunnel to all servers in a profile'
+    )
+    _describe 'command' commands
+}
+
+_mcpm_profile_create() {
+    _arguments -S \
+        '--force[Force add even if profile already exists]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:profile name:_mcpm_profiles'
+}
+
+_mcpm_profile_edit() {
+    _arguments -S \
+        '--name=[New profile name]:name' \
+        '--servers=[Comma-separated list of server names to include]:servers' \
+        '--add-server=[Comma-separated list of server names to add]:servers' \
+        '--remove-server=[Comma-separated list of server names to remove]:servers' \
+        '--set-servers=[Comma-separated list of server names to set]:servers' \
+        '--force[Skip confirmation prompts]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:profile name:_mcpm_profiles'
+}
+
+_mcpm_profile_inspect() {
+    _arguments -S \
+        '--server=[Inspect only specific servers]:servers' \
+        '--port=[Port for the FastMCP proxy server]:port' \
+        '--host=[Host for the FastMCP proxy server]:host' \
+        '--http[Use HTTP transport instead of stdio]' \
+        '--sse[Use SSE transport instead of stdio]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:profile name:_mcpm_profiles'
+}
+
+_mcpm_profile_ls() {
+    _arguments -S \
+        '(-v --verbose)'{-v,--verbose}'[Show detailed server information]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]'
+}
+
+_mcpm_profile_rm() {
+    _arguments -S \
+        '(-f --force)'{-f,--force}'[Force removal without confirmation]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:profile name:_mcpm_profiles'
+}
+
+_mcpm_profile_run() {
+    _arguments -S \
+        '--http[Run profile over HTTP instead of stdio]' \
+        '--sse[Run profile over SSE instead of stdio]' \
+        '--port=[Port for HTTP / SSE mode]:port' \
+        '--host=[Host address for HTTP / SSE mode]:host' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:profile name:_mcpm_profiles'
+}
+
+_mcpm_profile_share() {
+    _arguments -S \
+        '--port=[Port for the SSE server]:port' \
+        '--address=[Remote address for tunnel]:address' \
+        '--http[Use HTTP instead of HTTPS]' \
+        '--no-auth[Disable authentication for the shared profile]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:profile name:_mcpm_profiles'
+}
+
+_mcpm_profile() {
+    local context state state_descr line
+    typeset -A opt_args
+
+    _arguments -C -S \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1: :_mcpm_profile_commands' \
+        '*:: :->args'
+
+    case $state in
+        (args)
+            case $line[1] in
+                (create) _mcpm_profile_create ;;
+                (edit) _mcpm_profile_edit ;;
+                (inspect) _mcpm_profile_inspect ;;
+                (ls) _mcpm_profile_ls ;;
+                (rm) _mcpm_profile_rm ;;
+                (run) _mcpm_profile_run ;;
+                (share) _mcpm_profile_share ;;
+            esac
+            ;;
+    esac
+}
+
+# Config Subcommands
+_mcpm_config_commands() {
+    local -a commands
+    commands=(
+        'clear-cache:Clear the local repository cache'
+        'ls:List all MCPM configuration settings'
+        'set:Set MCPM configuration'
+        'unset:Remove a configuration setting'
+    )
+    _describe 'command' commands
+}
+
+_mcpm_config_clear_cache() {
+    _arguments -S \
+        '(-h --help)'{-h,--help}'[Show help and exit]'
+}
+
+_mcpm_config_ls() {
+    _arguments -S \
+        '(-h --help)'{-h,--help}'[Show help and exit]'
+}
+
+_mcpm_config_set() {
+    _arguments -S \
+        '--key=[Configuration key to set]:key' \
+        '--value=[Configuration value to set]:value' \
+        '--force[Skip confirmation prompts]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]'
+}
+
+_mcpm_config_unset() {
+    _arguments -S \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1:name'
+}
+
+_mcpm_config() {
+    local context state state_descr line
+    typeset -A opt_args
+
+    _arguments -C -S \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1: :_mcpm_config_commands' \
+        '*:: :->args'
+
+    case $state in
+        (args)
+            case $line[1] in
+                (clear-cache) _mcpm_config_clear_cache ;;
+                (ls) _mcpm_config_ls ;;
+                (set) _mcpm_config_set ;;
+                (unset) _mcpm_config_unset ;;
+            esac
+            ;;
+    esac
+}
+
+# Main Command
+_mcpm() {
+    local context state state_descr line
+    typeset -A opt_args
+
+    _arguments -C -S \
+        '(-v --version)'{-v,--version}'[Show version and exit]' \
+        '(-h --help)'{-h,--help}'[Show help and exit]' \
+        '1: :_mcpm_commands' \
+        '*:: :->args'
+
+    case $state in
+        (args)
+            case $line[1] in
+                (search) _mcpm_search ;;
+                (info) _mcpm_info ;;
+                (install) _mcpm_install ;;
+                (uninstall) _mcpm_uninstall ;;
+                (ls) _mcpm_ls ;;
+                (edit) _mcpm_edit ;;
+                (new) _mcpm_new ;;
+                (inspect) _mcpm_inspect ;;
+                (run) _mcpm_run ;;
+                (share) _mcpm_share ;;
+                (usage) _mcpm_usage ;;
+                (client) _mcpm_client ;;
+                (profile) _mcpm_profile ;;
+                (doctor) _mcpm_doctor ;;
+                (config) _mcpm_config ;;
+                (migrate) _mcpm_migrate ;;
+            esac
+            ;;
+    esac
+}
+
+_mcpm "$@"

@@ -1,23 +1,18 @@
 #compdef fastmod
 
-local -a args
-args=(
-  '(--accept-all)--accept-all[Automatically accept all changes]'
-  '(-F --fixed-strings)'{-F,--fixed-strings}'[Treat REGEX as a literal string]'
-  '(-h --help)'{-h,--help}'[Prints help information]'
-  '(--hidden)--hidden[Search hidden files]'
-  '(-i --ignore-case)'{-i,--ignore-case}'[Perform case-insensitive search]'
-  '(-m --multiline)'{-m,--multiline}'[Have regex work over multiple lines]'
-  '(--print-changed-files)--print-changed-files[Print the paths of changed files]'
-  '(-V --version)'{-V,--version}'[Prints version information]'
-  '(-d --dir)'{-d,--dir}'[The path whose descendent files are to be explored]:directory:_files -/'
-  '(-e --extensions)'{-e,--extensions}'[A comma-delimited list of file extensions to process]:extensions'
-  '(-g --glob)'{-g,--glob}'[A space-delimited list of globs to process]:glob'
-  '(--iglob)--iglob[A space-delimited list of case-insensitive globs to process]:iglob'
-  '1:regex'
-  '2:substitution'
+_arguments -S \
+  '--accept-all[Automatically accept all changes]' \
+  '(-F --fixed-strings)'{-F,--fixed-strings}'[Treat REGEX as a literal string]' \
+  '(-h --help)'{-h,--help}'[Prints help information]' \
+  '--hidden[Search hidden files]' \
+  '(-i --ignore-case)'{-i,--ignore-case}'[Perform case-insensitive search]' \
+  '(-m --multiline)'{-m,--multiline}'[Have regex work over multiple lines]' \
+  '--print-changed-files[Print the paths of changed files]' \
+  '(-V --version)'{-V,--version}'[Prints version information]' \
+  '*'{-d,--dir}'[Path whose descendent files are to be explored]:directory:_files -/' \
+  '*'{-e,--extensions}'[Comma-delimited list of file extensions to process]:extensions' \
+  '*'{-g,--glob}'[Space-delimited list of globs to process]:glob' \
+  '*--iglob[Space-delimited list of case-insensitive globs to process]:glob' \
+  '1:regular expression' \
+  '2:substitution' \
   '*:file or directory:_files'
-)
-
-_arguments -s $args
-

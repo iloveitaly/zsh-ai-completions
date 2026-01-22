@@ -1,0 +1,14 @@
+#compdef entr
+
+_arguments -S \
+  '-a[Respond to all events which occur while the utility is running]' \
+  '*-c[Clear the screen before invoking the utility]' \
+  '*-d[Track the directories of regular files provided as input]' \
+  '-n[Run in non-interactive mode]' \
+  '-p[Postpone the first execution of the utility]' \
+  '-r[Reload a persistent child process]' \
+  '-s[Evaluate the first argument using the interpreter specified by SHELL]' \
+  '*-x[Format custom exit status messages using a persistent awk process]' \
+  '-z[Exit after the utility completes]' \
+  '1: :_command_names -e' \
+  '*:: :_normal'

@@ -1,0 +1,682 @@
+#compdef flowctl
+
+function _flowctl {
+  local -a commands
+  local -A opt_args
+
+  _arguments -C -S \
+    '(-h --help)'{-h,--help}'[Print help (see a summary with -h)]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)' \
+    '--profile[Configuration profile to use]:profile' \
+    '(-V --version)'{-V,--version}'[Print version]' \
+    '1: :_flowctl_commands' \
+    '*:: :->args'
+
+  case $state in
+    args)
+      case $line[1] in
+        auth) _flowctl_auth ;;
+        catalog) _flowctl_catalog ;;
+        collections) _flowctl_collections ;;
+        discover) _flowctl_discover ;;
+        draft) _flowctl_draft ;;
+        generate) _flowctl_generate ;;
+        logs) _flowctl_logs ;;
+        preview) _flowctl_preview ;;
+        raw) _flowctl_raw ;;
+      esac
+      ;;
+  esac
+}
+
+function _flowctl_commands {
+  local -a commands=(
+    "auth:Authenticate with Flow"
+    "catalog:Work with the current Flow catalog"
+    "collections:Work with Flow collections"
+    "discover:Discover capture bindings from an endpoint"
+    "draft:Work with your Flow catalog drafts"
+    "generate:Generate derivation project files and implementation stubs"
+    "logs:Read operational logs of your tasks"
+    "preview:Locally run and preview a capture, derivation, or materialization"
+    "raw:Advanced, low-level, and experimental commands"
+    "help:Print this message or the help of the given subcommand(s)"
+  )
+  _describe 'command' commands
+}
+
+function _flowctl_auth {
+  local -a commands
+  _arguments -C -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)' \
+    '1: :_flowctl_auth_commands' \
+    '*:: :->args'
+
+  case $state in
+    args)
+      case $line[1] in
+        login) _flowctl_auth_login ;;
+        token) _flowctl_auth_token ;;
+        roles) _flowctl_auth_roles ;;
+        help) _arguments '*: :_flowctl_auth_commands' ;;
+      esac
+      ;;
+  esac
+}
+
+function _flowctl_auth_commands {
+  local -a commands=(
+    "login:Authenticate with Flow"
+    "token:Authenticate to Flow using a secret access token"
+    "roles:Work with authorization roles and grants"
+    "help:Print this message or the help of the given subcommand(s)"
+  )
+  _describe 'command' commands
+}
+
+function _flowctl_auth_login {
+  _arguments -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_auth_token {
+  _arguments -S \
+    '--token[Token]:token' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_auth_roles {
+  _arguments -C -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)' \
+    '1: :_flowctl_auth_roles_commands' \
+    '*:: :->args'
+
+  case $state in
+    args)
+      case $line[1] in
+        list) _flowctl_auth_roles_list ;;
+        grant) _flowctl_auth_roles_grant ;;
+        revoke) _flowctl_auth_roles_revoke ;;
+        help) _arguments '*: :_flowctl_auth_roles_commands' ;;
+      esac
+      ;;
+  esac
+}
+
+function _flowctl_auth_roles_commands {
+  local -a commands=(
+    "list:List all user and role grants"
+    "grant:Grant an object role to a subject user or role"
+    "revoke:Revoke an object role from a subject user or role"
+    "help:Print this message or the help of the given subcommand(s)"
+  )
+  _describe 'command' commands
+}
+
+function _flowctl_auth_roles_list {
+  _arguments -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_auth_roles_grant {
+  _arguments -S \
+    '--subject-user-id[Subject user Id (a UUID) to which the grant should be issued]:user_id' \
+    '--subject-role[Subject role which receives the grant]:role' \
+    '--object-role[Object role to which the subject role is granted]:role' \
+    '--capability[Granted capability of the subject to the object role]:capability:(read write admin)' \
+    '--detail[Free-form details of the grant]:detail' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_auth_roles_revoke {
+  _arguments -S \
+    '--subject-user-id[Subject user Id (a UUID) from which the grant is revoked]:user_id' \
+    '--subject-role[Subject role from which the grant is revoked]:role' \
+    '--object-role[Object role from which the subject role is revoked]:role' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_catalog {
+  _arguments -C -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)' \
+    '1: :_flowctl_catalog_commands' \
+    '*:: :->args'
+
+  case $state in
+    args)
+      case $line[1] in
+        list) _flowctl_catalog_list ;;
+        delete) _flowctl_catalog_delete ;;
+        pull-specs) _flowctl_catalog_pull_specs ;;
+        publish) _flowctl_catalog_publish ;;
+        test) _flowctl_catalog_test ;;
+        history) _flowctl_catalog_history ;;
+        draft) _flowctl_catalog_draft ;;
+        status) _flowctl_catalog_status ;;
+        help) _arguments '*: :_flowctl_catalog_commands' ;;
+      esac
+      ;;
+  esac
+}
+
+function _flowctl_catalog_commands {
+  local -a commands=(
+    "list:List catalog specifications"
+    "delete:Delete catalog specifications"
+    "pull-specs:Pull down catalog specifications into a local directory"
+    "publish:Publish catalog specifications"
+    "test:Test catalog specifications"
+    "history:History of a catalog specification"
+    "draft:Add a catalog specification to your current draft"
+    "status:Print status information for a given task or collection"
+    "help:Print this message or the help of the given subcommand(s)"
+  )
+  _describe 'command' commands
+}
+
+function _flowctl_catalog_list {
+  _arguments -S \
+    '(-f --flows)'{-f,--flows}'[Include Reads From / Writes To columns in the output]' \
+    '--models[Include the models in the output (requires output json|yaml)]' \
+    '*--name[Select a spec by name]:name' \
+    '--prefix[Select catalog items under the given prefix]:prefix' \
+    '--captures[Whether to include captures in the selection]:boolean:(true false)' \
+    '--collections[Whether to include collections in the selection]:boolean:(true false)' \
+    '--materializations[Whether to include materializations in the selection]:boolean:(true false)' \
+    '--tests[Whether to include tests in the selection]:boolean:(true false)' \
+    '--data-plane-name[Selects only specs assigned to the given data plane]:name' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_catalog_delete {
+  _arguments -S \
+    '*--name[Select a spec by name]:name' \
+    '--prefix[Select catalog items under the given prefix]:prefix' \
+    '--captures[Whether to include captures in the selection]:boolean:(true false)' \
+    '--collections[Whether to include collections in the selection]:boolean:(true false)' \
+    '--materializations[Whether to include materializations in the selection]:boolean:(true false)' \
+    '--tests[Whether to include tests in the selection]:boolean:(true false)' \
+    '--data-plane-name[Selects only specs assigned to the given data plane]:name' \
+    '--dangerous-auto-approve[Proceed with deletion without prompting for confirmation]' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_catalog_pull_specs {
+  _arguments -S \
+    '*--name[Select a spec by name]:name' \
+    '--prefix[Select catalog items under the given prefix]:prefix' \
+    '--captures[Whether to include captures in the selection]:boolean:(true false)' \
+    '--collections[Whether to include collections in the selection]:boolean:(true false)' \
+    '--materializations[Whether to include materializations in the selection]:boolean:(true false)' \
+    '--tests[Whether to include tests in the selection]:boolean:(true false)' \
+    '--data-plane-name[Selects only specs assigned to the given data plane]:name' \
+    '--target[Root flow specification to create or update]:target:_files' \
+    '--overwrite[Should existing specs be over-written by specs from the Flow control plane?]' \
+    '--flat[Should specs be written to the single specification file, or written in the canonical layout?]' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_catalog_publish {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file to author]:source:_files' \
+    '--auto-approve[Proceed with the publication without prompting for confirmation]' \
+    '--init-data-plane[Data-plane into which newly initialized specifications will be placed]:data_plane' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_catalog_test {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file to author]:source:_files' \
+    '--init-data-plane[Data-plane into which newly initialized specifications will be placed]:data_plane' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_catalog_history {
+  _arguments -S \
+    '--name[Catalog name or prefix to retrieve history for]:name' \
+    '--models[Include the live specs models in the output (requires output json|yaml)]' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_catalog_draft {
+  _arguments -S \
+    '--name[Catalog name to add to your draft]:name' \
+    '--delete[If set, add the deletion of this specification to your draft]' \
+    '--publication-id[Publication ID]:id' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_catalog_status {
+  _arguments -S \
+    '--connected[Show the status of all other live specs that are connected to the given names]' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)' \
+    '*::catalog_names: '
+}
+
+function _flowctl_collections {
+  _arguments -C -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)' \
+    '1: :_flowctl_collections_commands' \
+    '*:: :->args'
+
+  case $state in
+    args)
+      case $line[1] in
+        read) _flowctl_collections_read ;;
+        list-journals) _flowctl_collections_list_journals ;;
+        list-fragments) _flowctl_collections_list_fragments ;;
+        split-journals) _flowctl_collections_split_journals ;;
+        help) _arguments '*: :_flowctl_collections_commands' ;;
+      esac
+      ;;
+  esac
+}
+
+function _flowctl_collections_commands {
+  local -a commands=(
+    "read:Read data from a Flow collection and output to stdout"
+    "list-journals:List the individual journals of a flow collection"
+    "list-fragments:List the journal fragments of a flow collection"
+    "split-journals:Split the journals of a flow collection"
+    "help:Print this message or the help of the given subcommand(s)"
+  )
+  _describe 'command' commands
+}
+
+function _flowctl_collections_read {
+  _arguments -S \
+    '--collection[The full name of the Flow collection]:collection' \
+    '--partitions[Selects a subset of collection partitions using the given selector (JSON)]:json' \
+    '--follow[Continue reading indefinitely until interrupted or ending due to an error]' \
+    '--since[Start reading from approximately this far in the past]:duration' \
+    '--uncommitted[Read all journal data, including messages from transactions which were rolled back or never committed]' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_collections_list_journals {
+  _arguments -S \
+    '--collection[The full name of the Flow collection]:collection' \
+    '--partitions[Selects a subset of collection partitions using the given selector (JSON)]:json' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_collections_list_fragments {
+  _arguments -S \
+    '--collection[The full name of the Flow collection]:collection' \
+    '--partitions[Selects a subset of collection partitions using the given selector (JSON)]:json' \
+    '--signature-ttl[If provided, then the fragment listing will include a pre-signed URL]:duration' \
+    '--since[Only include fragments which were written within the provided duration from the present]:duration' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_collections_split_journals {
+  _arguments -S \
+    '--collection[The full name of the Flow collection]:collection' \
+    '--partitions[Selects a subset of collection partitions using the given selector (JSON)]:json' \
+    '--dry-run[Show what would be split without actually performing the splits]' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_discover {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file]:source:_files' \
+    '--capture[Name of the capture to discover within the Flow specification file]:capture' \
+    '--flat[Should specs be written to the single specification file, or written in the canonical layout?]' \
+    '--data-plane[Explicit data-plane on which discovery should occur]:data_plane' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_draft {
+  _arguments -C -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)' \
+    '1: :_flowctl_draft_commands' \
+    '*:: :->args'
+
+  case $state in
+    args)
+      case $line[1] in
+        author) _flowctl_draft_author ;;
+        create) _flowctl_draft_create ;;
+        delete) _flowctl_draft_delete ;;
+        describe) _flowctl_draft_describe ;;
+        develop) _flowctl_draft_develop ;;
+        list) _flowctl_draft_list ;;
+        publish) _flowctl_draft_publish ;;
+        select) _flowctl_draft_select ;;
+        test) _flowctl_draft_test ;;
+        help) _arguments '*: :_flowctl_draft_commands' ;;
+      esac
+      ;;
+  esac
+}
+
+function _flowctl_draft_commands {
+  local -a commands=(
+    "author:Author to a draft"
+    "create:Create a new draft"
+    "delete:Delete your current draft"
+    "describe:Describe your current draft"
+    "develop:Develop your current draft within a local directory"
+    "list:List your catalog drafts"
+    "publish:Test and then publish the current draft"
+    "select:Select a draft to work on"
+    "test:Test the current draft without publishing it"
+    "help:Print this message or the help of the given subcommand(s)"
+  )
+  _describe 'command' commands
+}
+
+function _flowctl_draft_author {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file to author]:source:_files' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_draft_create {
+  _arguments -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_draft_delete {
+  _arguments -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_draft_describe {
+  _arguments -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_draft_develop {
+  _arguments -S \
+    '--target[Root flow specification to create or update]:target:_files' \
+    '--overwrite[Should existing specs be over-written by specs from the Flow control plane?]' \
+    '--flat[Should specs be written to the single specification file, or written in the canonical layout?]' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_draft_list {
+  _arguments -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_draft_publish {
+  _arguments -S \
+    '--init-data-plane[Data-plane into which newly initialized specifications will be placed]:data_plane' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_draft_select {
+  _arguments -S \
+    '--id[Draft ID]:id' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_draft_test {
+  _arguments -S \
+    '--init-data-plane[Data-plane into which newly initialized specifications will be placed]:data_plane' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_generate {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file to generate development files for]:source:_files' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_logs {
+  _arguments -S \
+    '--task[The name of the task]:task' \
+    '--follow[Continue reading indefinitely until interrupted or ending due to an error]' \
+    '--since[Start reading from approximately this far in the past]:duration' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_preview {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file]:source:_files' \
+    '--name[Name of the task to preview within the Flow specification file]:name' \
+    '--delay[Optional, artificial delay between transactions]:delay' \
+    '--timeout[How long can the task produce no data before this command stops?]:timeout' \
+    '--sessions[How many connector sessions should be run]:sessions' \
+    '--fixture[Path to a transactions fixture to use]:fixture:_files' \
+    '--network[Docker network to run connector images]:network' \
+    '--initial-state[Initial JSON connector state to use]:json' \
+    '--output-state[Output state updates]' \
+    '--output-apply[Output apply RPC description]' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw {
+  _arguments -C -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)' \
+    '1: :_flowctl_raw_commands' \
+    '*:: :->args'
+
+  case $state in
+    args)
+      case $line[1] in
+        alerts) _flowctl_raw_alerts ;;
+        get) _flowctl_raw_get ;;
+        rpc) _flowctl_raw_rpc ;;
+        update) _flowctl_raw_update ;;
+        build) _flowctl_raw_build ;;
+        bundle) _flowctl_raw_bundle ;;
+        combine) _flowctl_raw_combine ;;
+        materialize-fixture) _flowctl_raw_materialize_fixture ;;
+        discover) _flowctl_raw_discover ;;
+        spec) _flowctl_raw_spec ;;
+        oauth) _flowctl_raw_oauth ;;
+        json-schema) _flowctl_raw_json_schema ;;
+        stats) _flowctl_raw_stats ;;
+        bearer-logs) _flowctl_raw_bearer_logs ;;
+        list-shards) _flowctl_raw_list_shards ;;
+        gazctl-env) _flowctl_raw_gazctl_env ;;
+        help) _arguments '*: :_flowctl_raw_commands' ;;
+      esac
+      ;;
+  esac
+}
+
+function _flowctl_raw_commands {
+  local -a commands=(
+    "alerts:Fetch currently firing alerts"
+    "get:Issue a custom table select request to the API"
+    "rpc:Issue a custom RPC request to the API"
+    "update:Issue a custom table update request to the API"
+    "build:Perform a configured build of catalog sources"
+    "bundle:Bundle catalog sources into a flattened and inlined catalog"
+    "combine:Combine over an input stream of documents and write the output"
+    "materialize-fixture:Generate a materialization fixture"
+    "discover:Discover a connector and write catalog files"
+    "spec:Get the spec output of a connector"
+    "oauth:Test a connector's OAuth config"
+    "json-schema:Emit the Flow specification JSON-Schema"
+    "stats:Read stats collection documents"
+    "bearer-logs:Stream logs associated with the given bearer token"
+    "list-shards:Print information about the shards for a given task"
+    "gazctl-env:Print environment variables for working with a given data-plane and prefix"
+    "help:Print this message or the help of the given subcommand(s)"
+  )
+  _describe 'command' commands
+}
+
+function _flowctl_raw_alerts {
+  _arguments -S \
+    '--prefix[Prefix]:prefix' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_get {
+  _arguments -S \
+    '--table[Table to select from]:table' \
+    '--query[Optional query parameters]:query' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_rpc {
+  _arguments -S \
+    '--function[RPC function to invoke]:function' \
+    '--query[Optional query parameters]:query' \
+    '--body[Serialized JSON argument of the request]:body' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_update {
+  _arguments -S \
+    '--table[Table to update]:table' \
+    '--query[Optional query parameters]:query' \
+    '--body[Serialized JSON argument of the request]:body' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_build {
+  _arguments -S \
+    '--db-path[Path of database to build]:db_path:_files' \
+    '--pub-id[Publication ID of this build]:pub_id' \
+    '--build-id[Build ID of this build]:build_id' \
+    '--connector-network[Docker network to use for connectors]:network' \
+    '--file-root[File root which jails local file:// resources]:file_root:_files' \
+    '--source[Source file or URL from which to load the draft catalog]:source:_files' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_bundle {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file to bundle]:source:_files' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_combine {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file]:source:_files' \
+    '--collection[Name of a collection in the Flow specification file]:collection' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_materialize_fixture {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file]:source:_files' \
+    '--fixture[Fixture]:fixture:_files' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_discover {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file]:source:_files' \
+    '--capture[Name of the capture to discover within the Flow specification file]:capture' \
+    '--flat[Should specs be written to one specification file, instead of the canonical layout?]' \
+    '--emit-raw[Emit the raw discover output so it can be used in snapshot tests]' \
+    '--network[Docker network to run the connector]:network' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_spec {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file]:source:_files' \
+    '--name[Name of the task to request the spec for]:name' \
+    '--network[Docker network to run the connector, if one exists]:network' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_oauth {
+  _arguments -S \
+    '--source[Path or URL to a Flow specification file]:source:_files' \
+    '--task[Name of the task to test oauth for]:task' \
+    '--network[Docker network to run the connector, if one exists]:network' \
+    '--client-id[Your OAuth application client ID]:client_id' \
+    '--client-secret[Your OAuth application client secret]:client_secret' \
+    '--endpoint-config[The endpoint config you want to test with]:endpoint_config' \
+    '--injected-values[If the connector oauth spec required needs any other values injected]:injected_values' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_json_schema {
+  _arguments -S \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_stats {
+  _arguments -S \
+    '--task[The name of the task]:task' \
+    '--follow[Continue reading indefinitely until interrupted or ending due to an error]' \
+    '--since[Start reading from approximately this far in the past]:duration' \
+    '--uncommitted[Read raw data from stats journals, including possibly uncommitted or rolled back transactions]' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_bearer_logs {
+  _arguments -S \
+    '--token[Bearer logs token]:token' \
+    '--since[Start reading from this far in the past]:duration' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_list_shards {
+  _arguments -S \
+    '--task[The name of the task]:task' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+function _flowctl_raw_gazctl_env {
+  _arguments -S \
+    '--data-plane[Name of the data-plane to work with]:data_plane' \
+    '--prefix[Journal and shard prefix to request authorization for]:prefix' \
+    '--name[Flow catalog name to resolve data plane and use as prefix]:name' \
+    '--admin[Admin]' \
+    '(-h --help)'{-h,--help}'[Print help]' \
+    '(-o --output)'{-o,--output}'[How to format CLI output]:format:(json yaml table)'
+}
+
+_flowctl

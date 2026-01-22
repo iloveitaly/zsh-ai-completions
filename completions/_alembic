@@ -1,11 +1,10 @@
-```zsh
 #compdef alembic
 
 function _alembic {
   local context state state_descr line
   typeset -A opt_args
 
-  _arguments -C \
+  _arguments -S \
     '(-h --help)'{-h,--help}'[show this help message and exit]' \
     '--version[show program version number and exit]' \
     '(-c --config)'{-c,--config}'[Alternate config file]:config file:_files' \
@@ -18,102 +17,105 @@ function _alembic {
 
   case $state in
     args)
-      case $line[1] in
+      case $words[1] in
         branches)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
             '(-v --verbose)'{-v,--verbose}'[Use more verbose output]'
           ;;
         check)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]'
           ;;
         current)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
             '(-v --verbose)'{-v,--verbose}'[Use more verbose output]'
           ;;
         downgrade)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
-            '--sql[Don'\''t emit SQL to database - dump to standard output/file instead]' \
+            '--sql[Do not emit SQL to database - dump to standard output/file instead]' \
             '--tag[Arbitrary tag name]:tag' \
-            '1:revision identifier'
+            '1:revision'
           ;;
         edit)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
-            '1:revision identifier'
+            '1:revision'
           ;;
         ensure_version)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
-            '--sql[Don'\''t emit SQL to database - dump to standard output/file instead]'
+            '--sql[Do not emit SQL to database - dump to standard output/file instead]'
           ;;
         heads)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
             '(-v --verbose)'{-v,--verbose}'[Use more verbose output]' \
             '--resolve-dependencies[Treat dependency versions as down revisions]'
           ;;
         history)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
-            '(-r --rev-range)'{-r,--rev-range}'[Specify a revision range]:revision range' \
+            '(-r --rev-range)'{-r,--rev-range}'[Specify a revision range (start:end)]:revision range' \
             '(-v --verbose)'{-v,--verbose}'[Use more verbose output]' \
             '(-i --indicate-current)'{-i,--indicate-current}'[Indicate the current revision]'
           ;;
         init)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
             '(-t --template)'{-t,--template}'[Setup template for use with init]:template' \
-            '--package[Write empty __init__.py files]' \
+            '--package[Write empty __init__.py files to the environment and version locations]' \
             '1:directory:_files -/'
           ;;
         list_templates)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]'
           ;;
         merge)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
             '(-m --message)'{-m,--message}'[Message string to use with revision]:message' \
-            '--branch-label[Specify a branch label]:branch label' \
-            '--rev-id[Specify a hardcoded revision id]:revision id' \
+            '--branch-label[Specify a branch label to apply to the new revision]:branch label' \
+            '--rev-id[Specify a hardcoded revision id instead of generating one]:revision id' \
             '*:revisions'
           ;;
         revision)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
             '(-m --message)'{-m,--message}'[Message string to use with revision]:message' \
             '--autogenerate[Populate revision script with candidate migration operations]' \
-            '--sql[Don'\''t emit SQL to database - dump to standard output/file instead]' \
-            '--head[Specify head revision or <branchname>@head]:head revision' \
+            '--sql[Do not emit SQL to database - dump to standard output/file instead]' \
+            '--head[Specify head revision or <branchname> @head to base new revision on]:head' \
             '--splice[Allow a non-head revision as the head to splice onto]' \
-            '--branch-label[Specify a branch label]:branch label' \
-            '--version-path[Specify specific path from config for version file]:path:_files -/' \
-            '--rev-id[Specify a hardcoded revision id]:revision id' \
-            '--depends-on[Specify one or more revision identifiers which this revision should depend on]:dependency'
+            '--branch-label[Specify a branch label to apply to the new revision]:branch label' \
+            '--version-path[Specify specific path from config for version file]:version path:_files' \
+            '--rev-id[Specify a hardcoded revision id instead of generating one]:revision id' \
+            '--depends-on[Specify one or more revision identifiers which this revision should depend on]:depends on'
           ;;
         show)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
-            '1:revision identifier'
+            '1:revision'
           ;;
         stamp)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
-            '--sql[Don'\''t emit SQL to database - dump to standard output/file instead]' \
+            '--sql[Do not emit SQL to database - dump to standard output/file instead]' \
             '--tag[Arbitrary tag name]:tag' \
             '--purge[Unconditionally erase the version table before stamping]' \
             '*:revisions'
           ;;
         upgrade)
-          _arguments -s \
+          _arguments -S \
             '(-h --help)'{-h,--help}'[show this help message and exit]' \
-            '--sql[Don'\''t emit SQL to database - dump to standard output/file instead]' \
+            '--sql[Do not emit SQL to database - dump to standard output/file instead]' \
             '--tag[Arbitrary tag name]:tag' \
-            '1:revision identifier'
+            '1:revision'
+          ;;
+        *)
+          _default
           ;;
       esac
       ;;
@@ -123,24 +125,23 @@ function _alembic {
 function _alembic_commands {
   local -a commands
   commands=(
-    'branches:Show current branch points'
-    'check:Check if revision command with autogenerate has pending upgrade ops'
-    'current:Display the current revision for a database'
-    'downgrade:Revert to a previous version'
-    'edit:Edit revision script(s) using $EDITOR'
-    'ensure_version:Create the alembic version table if it does not exist already'
-    'heads:Show current available heads in the script directory'
-    'history:List changeset scripts in chronological order'
-    'init:Initialize a new scripts directory'
-    'list_templates:List available templates'
-    'merge:Merge two revisions together'
-    'revision:Create a new revision file'
-    'show:Show the revision(s) denoted by the given symbol'
-    'stamp:Stamp the revision table with the given revision'
-    'upgrade:Upgrade to a later version'
+    "branches:Show current branch points"
+    "check:Check if revision command with autogenerate has pending upgrade ops"
+    "current:Display the current revision for a database"
+    "downgrade:Revert to a previous version"
+    "edit:Edit revision script(s) using \$EDITOR"
+    "ensure_version:Create the alembic version table if it doesn't exist already"
+    "heads:Show current available heads in the script directory"
+    "history:List changeset scripts in chronological order"
+    "init:Initialize a new scripts directory"
+    "list_templates:List available templates"
+    "merge:Merge two revisions together"
+    "revision:Create a new revision file"
+    "show:Show the revision(s) denoted by the given symbol"
+    "stamp:Stamp the revision table with the given revision"
+    "upgrade:Upgrade to a later version"
   )
-  _describe -t commands 'alembic command' commands
+  _describe 'command' commands
 }
 
 _alembic "$@"
-```

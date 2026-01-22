@@ -1,20 +1,15 @@
 #compdef tre
 
-local -a args
-args=(
-    '(-a --all)'{-a,--all}'[Print all files and directories, including hidden ones]'
-    '(-c --color)'{-c,--color}'[When to color the output]:color:(automatic always never)'
-    '(-d --directories)'{-d,--directories}'[Only list directories in output]'
-    '(-e --editor)'{-e,--editor}'[Create aliases for each displayed result]::command:'
-    '(-E --exclude)'{-E,--exclude}'[Exclude paths matching a regex pattern]:pattern:'
-    '(-h --help)'{-h,--help}'[Print help information]'
-    '(-j --json)'{-j,--json}'[Output JSON instead of tree diagram]'
-    '(-l --limit)'{-l,--limit}'[Limit depth of the tree in output]:limit:'
-    '(-p --portable)'{-p,--portable}'[Generate portable (absolute) paths for editor aliases]'
-    '(-s --simple)'{-s,--simple}'[Use normal print despite gitignore settings]'
-    '(-V --version)'{-V,--version}'[Print version information]'
-    '::path:_files -/'
-)
-
-_arguments -s $args
-
+_arguments -S \
+  '(-a --all)'{-a,--all}'[Print all files and directories, including hidden ones]' \
+  '(-c --color)'{-c,--color}'[When to color the output]:when:(automatic always never)' \
+  '(-d --directories)'{-d,--directories}'[Only list directories in output]' \
+  '(-e --editor)'{-e,--editor}'[Create aliases for each displayed result]::editor command:_command_names -e' \
+  '*(-E --exclude)'{-E,--exclude}'[Exclude paths matching a regex pattern]:pattern' \
+  '(-h --help)'{-h,--help}'[Print help information]' \
+  '(-j --json)'{-j,--json}'[Output JSON instead of tree diagram]' \
+  '(-l --limit)'{-l,--limit}'[Limit depth of the tree in output]:limit' \
+  '(-p --portable)'{-p,--portable}'[Generate portable (absolute) paths for editor aliases]' \
+  '(-s --simple)'{-s,--simple}'[Use normal print despite gitignore settings]' \
+  '(-V --version)'{-V,--version}'[Print version information]' \
+  '1:path:_files'

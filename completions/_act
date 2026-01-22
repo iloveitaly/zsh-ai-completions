@@ -1,79 +1,70 @@
 #compdef act
 
-local -a options
-
-options=(
-  '(--action-cache-path)--action-cache-path[Defines the path where the actions get cached and host workspaces created]:path:_files -/'
-  '(--action-offline-mode)--action-offline-mode[If action contents exists, it will not be fetch and pull again]'
-  '(-a --actor)'{-a,--actor}'[User that triggered the event]:actor'
-  '(--artifact-server-addr)--artifact-server-addr[Defines the address to which the artifact server binds]:address'
-  '(--artifact-server-path)--artifact-server-path[Defines the path where the artifact server stores uploads and retrieves downloads from]:path:_files -/'
-  '(--artifact-server-port)--artifact-server-port[Defines the port where the artifact server listens]:port'
-  '(-b --bind)'{-b,--bind}'[Bind working directory to container, rather than copy]'
-  '(--bug-report)--bug-report[Display system information for bug report]'
-  '(--cache-server-addr)--cache-server-addr[Defines the address to which the cache server binds]:address'
-  '(--cache-server-path)--cache-server-path[Defines the path where the cache server stores caches]:path:_files -/'
-  '(--cache-server-port)--cache-server-port[Defines the port where the artifact server listens]:port'
-  '(--container-architecture)--container-architecture[Architecture which should be used to run containers]:architecture'
-  '(--container-cap-add)--container-cap-add[Kernel capabilities to add to the workflow containers]:capability'
-  '(--container-cap-drop)--container-cap-drop[Kernel capabilities to remove from the workflow containers]:capability'
-  '(--container-daemon-socket)--container-daemon-socket[URI to Docker Engine socket]:uri'
-  '(--container-options)--container-options[Custom docker container options for the job container]:options'
-  '(--defaultbranch)--defaultbranch[The name of the main branch]:branch'
-  '(--detect-event)--detect-event[Use first event type from workflow as event that triggered the workflow]'
-  '(-C --directory)'{-C,--directory}'[Working directory]:directory:_files -/'
-  '(-n --dryrun)'{-n,--dryrun}'[Disable container creation, validates only workflow correctness]'
-  '(--env)--env[Env to make available to actions with optional value]:env'
-  '(--env-file)--env-file[Environment file to read and use as env in the containers]:file:_files'
-  '(-e --eventpath)'{-e,--eventpath}'[Path to event JSON file]:file:_files'
-  '(--github-instance)--github-instance[GitHub instance to use]:instance'
-  '(-g --graph)'{-g,--graph}'[Draw workflows]'
-  '(-h --help)'{-h,--help}'[Help for act]'
-  '(--input)--input[Action input to make available to actions]:input'
-  '(--input-file)--input-file[Input file to read and use as action input]:file:_files'
-  '(--insecure-secrets)--insecure-secrets[NOT RECOMMENDED! Doesn'"'"'t hide secrets while printing logs]'
-  '(-j --job)'{-j,--job}'[Run a specific job ID]:job'
-  '(--json)--json[Output logs in json format]'
-  '(-l --list)'{-l,--list}'[List workflows]'
-  '(--local-repository)--local-repository[Replaces the specified repository and ref with a local folder]:repo:_files -/'
-  '(--log-prefix-job-id)--log-prefix-job-id[Output the job id within non-json logs instead of the entire name]'
-  '(--man-page)--man-page[Print a generated manual page to stdout]'
-  '(--matrix)--matrix[Specify which matrix configuration to include]:matrix'
-  '(--network)--network[Sets a docker network name]:network'
-  '(--no-cache-server)--no-cache-server[Disable cache server]'
-  '(--no-recurse)--no-recurse[Flag to disable running workflows from subdirectories of specified path in '"'"'--workflows'"'"'/'"'"'-W'"'"' flag]'
-  '(--no-skip-checkout)--no-skip-checkout[Do not skip actions/checkout]'
-  '(-P --platform)'{-P,--platform}'[Custom image to use per platform]:platform'
-  '(--privileged)--privileged[Use privileged mode]'
-  '(-p --pull)'{-p,--pull}'[Pull docker image(s) even if already present]'
-  '(-q --quiet)'{-q,--quiet}'[Disable logging of output from steps]'
-  '(--rebuild)--rebuild[Rebuild local action docker image(s) even if already present]'
-  '(--remote-name)--remote-name[Git remote name that will be used to retrieve url of git repo]:remote'
-  '(--replace-ghe-action-token-with-github-com)--replace-ghe-action-token-with-github-com[Personal access token for private actions on GitHub]:token'
-  '(--replace-ghe-action-with-github-com)--replace-ghe-action-with-github-com[Actions to allow from GitHub for GitHub Enterprise Server]:action'
-  '(-r --reuse)'{-r,--reuse}'[Don'"'"'t remove container(s) on successfully completed workflow(s) to maintain state between runs]'
-  '(--rm)--rm[Automatically remove container(s)/volume(s) after a workflow(s) failure]'
-  '(-s --secret)'{-s,--secret}'[Secret to make available to actions with optional value]:secret'
-  '(--secret-file)--secret-file[File with list of secrets to read from]:file:_files'
-  '(--use-gitignore)--use-gitignore[Controls whether paths specified in .gitignore should be copied into container]'
-  '(--use-new-action-cache)--use-new-action-cache[Enable using the new Action Cache for storing Actions locally]'
-  '(--userns)--userns[User namespace to use]:namespace'
-  '(--var)--var[Variable to make available to actions with optional value]:var'
-  '(--var-file)--var-file[File with list of vars to read from]:file:_files'
-  '(-v --verbose)'{-v,--verbose}'[Verbose output]'
-  '(--version)--version[Version for act]'
-  '(-w --watch)'{-w,--watch}'[Watch the contents of the local repo and run when files change]'
-  '(-W --workflows)'{-W,--workflows}'[Path to workflow file(s)]:path:_files -/'
-)
-
-_arguments -s $options
-
-# Event name completion
-local -a events
-events=(
-  'push:Run push event'
-  'pull_request:Run pull request event'
-  'issue:Run issue event'
-)
-_describe -t events 'event' events
-
+_arguments -S \
+  '--action-cache-path=[Defines the path where the actions get cached and host workspaces created]:directory:_files' \
+  '--action-offline-mode[If action contents exists, it will not be fetch and pull again]' \
+  '(-a --actor)'{-a,--actor=}'[user that triggered the event]:user:(nektos/act)' \
+  '--artifact-server-addr=[Defines the address to which the artifact server binds]:ip address:(192.168.7.166)' \
+  '--artifact-server-path=[Defines the path where the artifact server stores uploads and retrieves downloads from]:directory:_files' \
+  '--artifact-server-port=[Defines the port where the artifact server listens]:port:(34567)' \
+  '(-b --bind)'{-b,--bind}'[bind working directory to container, rather than copy]' \
+  '--bug-report[Display system information for bug report]' \
+  '--cache-server-addr=[Defines the address to which the cache server binds]:ip address:(192.168.7.166)' \
+  '--cache-server-external-url=[Defines the external URL for if the cache server is behind a proxy]:url' \
+  '--cache-server-path=[Defines the path where the cache server stores caches]:directory:_files' \
+  '--cache-server-port=[Defines the port where the artifact server listens]:port' \
+  '--concurrent-jobs=[Maximum number of concurrent jobs to run]:int' \
+  '--container-architecture=[Architecture which should be used to run containers]:architecture' \
+  '*--container-cap-add=[kernel capabilities to add to the workflow containers]:capability' \
+  '*--container-cap-drop=[kernel capabilities to remove from the workflow containers]:capability' \
+  '--container-daemon-socket=[URI to Docker Engine socket]:uri' \
+  '--container-options=[Custom docker container options for the job container]:options' \
+  '--defaultbranch=[the name of the main branch]:branch' \
+  '--detect-event[Use first event type from workflow as event that triggered the workflow]' \
+  '(-C --directory)'{-C,--directory=}'[working directory]:directory:_files -/' \
+  '(-n --dryrun)'{-n,--dryrun}'[disable container creation, validates only workflow correctness]' \
+  '*--env=[env to make available to actions with optional value]:env' \
+  '--env-file=[environment file to read and use as env in the containers]:file:_files' \
+  '(-e --eventpath)'{-e,--eventpath=}'[path to event JSON file]:file:_files' \
+  '--github-instance=[GitHub instance to use]:instance:(github.com)' \
+  '(-g --graph)'{-g,--graph}'[draw workflows]' \
+  '(-h --help)'{-h,--help}'[help for act]' \
+  '*--input=[action input to make available to actions]:input' \
+  '--input-file=[input file to read and use as action input]:file:_files' \
+  '--insecure-secrets[NOT RECOMMENDED! Doesnt hide secrets while printing logs]' \
+  '(-j --job)'{-j,--job=}'[run a specific job ID]:job id' \
+  '--json[Output logs in json format]' \
+  '(-l --list)'{-l,--list}'[list workflows]' \
+  '--list-options[Print a json structure of compatible options]' \
+  '*--local-repository=[Replaces the specified repository and ref with a local folder]:repo' \
+  '--log-prefix-job-id[Output the job id within non-json logs instead of the entire name]' \
+  '--man-page[Print a generated manual page to stdout]' \
+  '*--matrix=[specify which matrix configuration to include]:matrix' \
+  '--network=[Sets a docker network name]:network:(host)' \
+  '--no-cache-server[Disable cache server]' \
+  '--no-recurse[Flag to disable running workflows from subdirectories of specified path]' \
+  '--no-skip-checkout[Use actions/checkout instead of copying local files into container]' \
+  '(-P --platform)'{-P,--platform=}'[custom image to use per platform]:platform' \
+  '--privileged[use privileged mode]' \
+  '(-p --pull)'{-p,--pull}'[pull docker image(s) even if already present]' \
+  '(-q --quiet)'{-q,--quiet}'[disable logging of output from steps]' \
+  '--rebuild[rebuild local action docker image(s) even if already present]' \
+  '--remote-name=[git remote name that will be used to retrieve url of git repo]:remote:(origin)' \
+  '--replace-ghe-action-token-with-github-com=[Personal access token for private actions on GitHub]' \
+  '*--replace-ghe-action-with-github-com=[If you are using GitHub Enterprise Server and allow specified actions from GitHub]' \
+  '(-r --reuse)'{-r,--reuse}'[dont remove container(s) on successfully completed workflow(s) to maintain state between runs]' \
+  '--rm[automatically remove container(s)/volume(s) after a workflow(s) failure]' \
+  '(-s --secret)'{-s,--secret=}'[secret to make available to actions with optional value]:secret' \
+  '--secret-file=[file with list of secrets to read from]:file:_files' \
+  '--strict[use strict workflow schema]' \
+  '--use-gitignore[Controls whether paths specified in .gitignore should be copied into container]' \
+  '--use-new-action-cache[Enable using the new Action Cache for storing Actions locally]' \
+  '--userns=[user namespace to use]:userns' \
+  '--validate[validate workflows]' \
+  '*--var=[variable to make available to actions with optional value]:variable' \
+  '--var-file=[file with list of vars to read from]:file:_files' \
+  '(-v --verbose)'{-v,--verbose}'[verbose output]' \
+  '--version[version for act]' \
+  '(-w --watch)'{-w,--watch}'[watch the contents of the local repo and run when files change]' \
+  '(-W --workflows)'{-W,--workflows=}'[path to workflow file(s)]:directory:_files' \
+  '1:event name:(push pull_request pull_request_target push release registry_package watch repository_dispatch workflow_dispatch workflow_run schedule issue_comment issues label milestone page_build project project_card project_column public status check_run check_suite create delete deployment deployment_status fork gollum)'

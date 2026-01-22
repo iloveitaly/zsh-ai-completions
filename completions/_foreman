@@ -1,0 +1,82 @@
+#compdef foreman
+
+function _foreman {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C -S \
+    '(-f --procfile)'{-f,--procfile=}'[Default: Procfile]:procfile:_files' \
+    '(-d --root)'{-d,--root=}'[Default: Procfile directory]:directory:_files -/' \
+    '1: :_foreman_commands' \
+    '*:: :->args'
+
+  case $state in
+    (args)
+      case $line[1] in
+        (check)
+          _foreman_check
+          ;;
+        (export)
+          _foreman_export
+          ;;
+        (help)
+          _foreman_help
+          ;;
+        (run)
+          _foreman_run
+          ;;
+        (start)
+          _foreman_start
+          ;;
+        (version)
+          _foreman_version
+          ;;
+      esac
+      ;;
+  esac
+}
+
+function _foreman_commands {
+  local -a commands
+  commands=(
+    'check:Validate your application'\''s Procfile'
+    'export:Export the application to another process management format'
+    'help:Describe available commands or one specific command'
+    'run:Run a command using your application'\''s environment'
+    'start:Start the application (or a specific PROCESS)'
+    'version:Display Foreman gem version'
+  )
+  _describe 'command' commands
+}
+
+function _foreman_check {
+  _arguments -S
+}
+
+function _foreman_export {
+  _arguments -S \
+    '1:format:(bluepill inittab launchd runit supervisord systemd upstart)' \
+    '2:location:_files -/'
+}
+
+function _foreman_help {
+  _arguments -S \
+    '1:command:_foreman_commands'
+}
+
+function _foreman_run {
+  _arguments -S \
+    '1:command: _command_names -e' \
+    '*::args: _normal'
+}
+
+function _foreman_start {
+  _arguments -S \
+    '1:process: '
+}
+
+function _foreman_version {
+  _arguments -S
+}
+
+_foreman "$@"

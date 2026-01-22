@@ -1,28 +1,22 @@
 #compdef lnav
 
-local -a options
-
-options=(
-  '-h[Print help message and exit]'
-  '-H[Display internal help text]'
-  '-I[Specify additional configuration directory]:directory:_files -/'
-  '-W[Print warnings related to lnav'\''s configuration]'
-  '-u[Update formats installed from git repositories]'
-  '-d[Write debug messages to file]:file:_files'
-  '-V[Print version information]'
-  '-r[Recursively load files from given directory hierarchies]'
-  '-R[Load older rotated log files as well]'
-  '-c[Execute command after files have been loaded]:command'
-  '-f[Execute commands in given file]:file:_files'
-  '-e[Execute shell command-line]:command'
-  '-t[Treat data piped into standard in as a log file]'
-  '-n[Run without the curses UI (headless mode)]'
-  '-N[Do not open default syslog file if no files are given]'
-  '-q[Do not print informational messages]'
-  '-i[Install given format files and exit]'
-  '-m[Switch to management command-line mode]'
-  '*:logfile:_files'
-)
-
-_arguments -s $options
-
+_arguments -S \
+  '-h[Print this message, then exit]' \
+  '-H[Display the internal help text]' \
+  '-I+[An additional configuration directory]:directory:_files -/' \
+  '-W[Print warnings related to lnav'\''s configuration]' \
+  '-u[Update formats installed from git repositories]' \
+  '-d+[Write debug messages to the given file]:debug file:_files' \
+  '-V[Print version information]' \
+  '-r[Recursively load files from the given directory hierarchies]' \
+  '-R[Load older rotated log files as well]' \
+  '-c+[Execute a command after the files have been loaded]:lnav command' \
+  '-f+[Execute the commands in the given file]:command file:_files' \
+  '-e+[Execute a shell command-line]:shell command:_cmdstring' \
+  '-t[Treat data piped into standard in as a log file]' \
+  '-n[Run without the curses UI (headless mode)]' \
+  '-N[Do not open the default syslog file if no files are given]' \
+  '-q[Do not print informational messages]' \
+  '-i+[Install the given format files and exit]:format file or "extra":_files' \
+  '-m[Switch to the management command-line mode]' \
+  '*:log file:_files'
