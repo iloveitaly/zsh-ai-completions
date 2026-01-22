@@ -13,18 +13,19 @@ DEFAULT_HELP_COMMAND ?= --help
 
 all_completions: $(addprefix completions/_,$(PROGRAMS_WITHOUT_SUBCOMMANDS) $(PROGRAMS_WITH_SUBCOMMANDS) $(PROGRAMS_WITH_MANPAGES))
 
-completions/_%:
+completions/_%: completion_prompt.md generate_completion.py
 	# Buffer output to a file to prevent BrokenPipeError if gemini is slow to read stdin
 	# This decouples the help generation from the API call
 	@if command -v $* >/dev/null 2>&1; then \
+		mkdir -p tmp; \
 		if echo "$(PROGRAMS_WITH_SUBCOMMANDS)" | grep -q "\b$*\b"; then \
 			python explore_program.py $* > tmp/$*.help; \
-			cat tmp/$*.help | gemini -m gemini-3-pro-preview -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
+			python generate_completion.py $* tmp/$*.help > completions/_$*; \
 			rm tmp/$*.help; \
 		elif echo "$(PROGRAMS_WITH_MANPAGES)" | grep -q "\b$*\b"; then \
-			man $* | gemini -m gemini-3-pro-preview -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
+			man $* | python generate_completion.py $* > completions/_$*; \
 		else \
-			$* $(DEFAULT_HELP_COMMAND) 2>&1 | gemini -m gemini-3-pro-preview -p $(NO_SUBCOMMAND_PROMPT) > completions/_$*; \
+			$* $(DEFAULT_HELP_COMMAND) 2>&1 | python generate_completion.py $* > completions/_$*; \
 		fi; \
 		if [ ! -s completions/_$* ]; then \
 			rm -f completions/_$*; \
@@ -40,3 +41,13 @@ clean:
 
 update-local:
 	zinit update iloveitaly/zsh-ai-completions
+
+test: all_completions
+	@echo "Testing completions..."
+	@failed=0; \
+	for file in completions/_*; do \
+		if [ -f "$$file" ]; then \
+			./test_completion.zsh "$$file" || failed=1; \
+		fi; \
+	done; \
+	if [ $$failed -ne 0 ]; then exit 1; fi
