@@ -14,6 +14,10 @@ Generate a Zsh completion script for the command based on the provided help outp
         - Prepend `*` to the definition (e.g., `'*--verbose'`).
         - **Do NOT** include the flag itself in the exclusion list (the parentheses at the start). e.g., Use `'*-v'` instead of `'*(-v)-v'`.
     - **Single Flags:** If a flag has no long/short alternative (e.g. only `-k` exists), do **NOT** use brace expansion like `{-k,}`. Just use the flag directly, e.g. `'-k[Description]...'`.
+- **Structure:**
+    - The script MUST define a main function named `_<command>` (e.g., `_git` for `git`) that contains the top-level completion logic.
+    - All other helper functions should be defined separately, outside the main function.
+    - The script MUST end by calling the main function: `_<command> "$@"`.
 - **Subcommands (if present in help output):**
     - If the help output clearly defines subcommands (e.g., `git commit`, `docker run`), structure the completion using `_arguments` with `1: :_subcommands` and `*:: :->args`, and define helper functions for each subcommand.
 - **Syntax:**
