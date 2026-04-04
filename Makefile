@@ -8,6 +8,7 @@ PROGRAMS_WITH_SUBCOMMANDS := flowctl nixpacks cody uv launchctl aiautocommit ale
 PROGRAMS_WITH_MANPAGES := entr
 
 DEFAULT_HELP_COMMAND ?= --help
+PYTHON ?= python3
 AI_CLI ?= gemini
 AI_MODEL ?=
 AI_MODEL_FLAG ?= -m
@@ -22,18 +23,24 @@ endif
 all_completions: $(addprefix completions/_,$(PROGRAMS_WITHOUT_SUBCOMMANDS) $(PROGRAMS_WITH_SUBCOMMANDS) $(PROGRAMS_WITH_MANPAGES))
 
 completions/_%: completion_prompt.md generate_completion.py
-	# Buffer output to a file to prevent BrokenPipeError if gemini is slow to read stdin
-	# This decouples the help generation from the API call
+	@# Buffer output to a file to prevent BrokenPipeError if gemini is slow to read stdin
+	@# This decouples the help generation from the API call
 	@if command -v $* >/dev/null 2>&1; then \
+		binary_path=$$(command -v $*); \
+		echo "Generating completion for $* ($$binary_path) using $(AI_CLI)$${AI_MODEL:+ model $(AI_MODEL)}..."; \
 		mkdir -p tmp; \
 		if echo "$(PROGRAMS_WITH_SUBCOMMANDS)" | grep -q "\b$*\b"; then \
-			python explore_program.py $(AI_ARGS) $* > tmp/$*.help; \
-			python generate_completion.py $(AI_ARGS) $* tmp/$*.help > completions/_$*; \
+			echo "  Exploring subcommands..."; \
+			$(PYTHON) explore_program.py $(AI_ARGS) $* > tmp/$*.help; \
+			echo "  Generating completion from explored help..."; \
+			$(PYTHON) generate_completion.py $(AI_ARGS) $* tmp/$*.help > completions/_$*; \
 			rm tmp/$*.help; \
 		elif echo "$(PROGRAMS_WITH_MANPAGES)" | grep -q "\b$*\b"; then \
-			man $* | python generate_completion.py $(AI_ARGS) $* > completions/_$*; \
+			echo "  Generating completion from manpage..."; \
+			man $* | $(PYTHON) generate_completion.py $(AI_ARGS) $* > completions/_$*; \
 		else \
-			$* $(DEFAULT_HELP_COMMAND) 2>&1 | python generate_completion.py $(AI_ARGS) $* > completions/_$*; \
+			echo "  Generating completion from --help output..."; \
+			$* $(DEFAULT_HELP_COMMAND) 2>&1 | $(PYTHON) generate_completion.py $(AI_ARGS) $* > completions/_$*; \
 		fi; \
 		if [ ! -s completions/_$* ]; then \
 			rm -f completions/_$*; \
@@ -44,6 +51,15 @@ completions/_%: completion_prompt.md generate_completion.py
 				echo >&2 "Error: Generated completion for $* failed validation. Removing file."; \
 				exit 1; \
 			fi; \
+			tool_version=$$($* --version 2>/dev/null | head -1 || echo "unknown"); \
+			gen_date=$$(date +%Y-%m-%d); \
+			{ echo "#compdef $*"; \
+			  echo "# Generated from: $$tool_version ($$binary_path)"; \
+			  echo "# Generated on: $$gen_date"; \
+			  echo "# AI: $(AI_CLI)$${AI_MODEL:+ ($(AI_MODEL))}"; \
+			  tail -n +2 completions/_$*; } > completions/_$*.tmp && \
+			mv completions/_$*.tmp completions/_$*; \
+			echo "  Written to completions/_$*"; \
 		fi; \
 	else \
 		echo >&2 "Warning: $* is not installed or not in PATH. Skipping."; \
