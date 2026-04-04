@@ -22,13 +22,79 @@ I've checked the AI generated completions against this tool and it works quite w
 
 ## Development
 
-### Additional Completions
+### Generating Completions
 
-Just modify the `Makefile` run `make` and test the output. Then, please submit a PR!
+The `Makefile` orchestrates exploration and generation. It automatically detects whether a program has subcommands and explores them recursively. The `completions/_` pattern rule accepts any program name — if the binary is in your PATH, it will generate a completion for it:
 
-To focus on building a single completion run `make completions/_aiautocommit`
+```shell
+# Generate completion for any installed program
+make completions/_claude
 
-Note that [Cody](http://cody.dev) is used for generating the completions since they have a nice CLI tool.
+# Build all pre-configured completions
+make
+
+# Force regeneration of an existing completion
+make -B completions/_claude
+
+# Force regeneration of all completions
+make -B
+```
+
+### Configuring the AI Backend
+
+By default, the [Gemini CLI](https://github.com/google-gemini/gemini-cli) is used with its default model. You can override the AI CLI, model, and model flag syntax via Makefile variables:
+
+```shell
+# Use a specific Gemini model
+make completions/_sops AI_MODEL=gemini-2.5-pro
+
+# Use Claude instead of Gemini
+make completions/_sops AI_CLI=claude AI_MODEL=sonnet
+
+# Build all completions with a different backend
+make AI_CLI=claude AI_MODEL=sonnet
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `AI_CLI` | `gemini` | The LLM CLI binary to invoke |
+| `AI_MODEL` | *(empty — uses CLI default)* | Model name to pass to the CLI |
+| `AI_MODEL_FLAG` | `--model` | The flag syntax for model selection (e.g., `--model` works for both Gemini and Claude) |
+
+#### Benchmark: `ls` completion generation
+
+| Backend | Model | Time |
+|---------|-------|------|
+| Claude | Opus | 47s |
+| Claude | Sonnet | 61s |
+| Gemini | default | 216s |
+
+#### Compatibility Notes
+
+The AI CLI must support a prompt as a positional argument (or via `-p`) and accept context on stdin. CLIs that don't follow this pattern (e.g., Codex, which uses `-p` for config profiles and doesn't accept piped stdin) are not currently supported.
+
+### Running Scripts Directly
+
+The Python scripts also accept these options directly and support environment variables as fallbacks:
+
+```shell
+# Explore a program's help and subcommands
+uv run python explore_program.py --cli gemini --model gemini-2.5-pro myprogram
+
+# Generate a completion from a help file
+uv run python generate_completion.py --cli claude --model sonnet --model-flag --model myprogram help.md
+
+# Pipe help output directly (uses defaults)
+myprogram --help 2>&1 | uv run python generate_completion.py myprogram
+```
+
+Environment variables `AI_CLI`, `AI_MODEL`, and `AI_MODEL_FLAG` are also respected when flags are not provided.
+
+### Adding New Completions
+
+1. Add the program name to the appropriate list in the `Makefile` (`PROGRAMS_WITHOUT_SUBCOMMANDS`, `PROGRAMS_WITH_SUBCOMMANDS`, or `PROGRAMS_WITH_MANPAGES`)
+2. Run `make completions/_<program>`
+3. Test the output, then submit a PR
 
 ### Local Testing
 
@@ -38,6 +104,11 @@ Want to test out a completion locally?
 fpath+=./completions
 autoload -Uz compinit && compinit
 ```
+
+## Authors
+
+- [Michael Bianco](https://github.com/iloveitaly) — original project
+- [Stephen Feather](https://github.com/stephenfeather) — configurable AI backend, documentation (with the help of [@claude](https://claude.ai))
 
 ## TODO
 

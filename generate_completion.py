@@ -1,6 +1,8 @@
-import sys
-import subprocess
+import argparse
 import os
+import subprocess
+import sys
+
 
 def clean_output(output):
     """
@@ -10,71 +12,81 @@ def clean_output(output):
     output = output.strip()
     if "```" in output:
         parts = output.split("```")
-        # Usually the code is in the second part (index 1)
         if len(parts) >= 3:
             code_block = parts[1]
-            # Remove language identifier line if it exists (e.g. "zsh")
             if "\n" in code_block:
                 first_line_end = code_block.find("\n")
                 first_line = code_block[:first_line_end].strip()
-                # If the first line is just a language name or empty, skip it
                 if not first_line or "zsh" in first_line or "sh" in first_line:
                     return code_block[first_line_end+1:].strip()
             return code_block.strip()
     return output
 
-def main():
-    if len(sys.argv) < 2:
-        print("Usage: python generate_completion.py <program_name> [help_file]", file=sys.stderr)
-        sys.exit(1)
 
-    program_name = sys.argv[1]
-    help_file = sys.argv[2] if len(sys.argv) > 2 else None
-
-    # Read the prompt
+def read_prompt(program_name):
+    """Read and prepare the completion prompt template."""
     try:
         with open("completion_prompt.md", "r") as f:
-            prompt = f.read()
+            return f.read().replace("<command>", program_name)
     except FileNotFoundError:
         print("Error: completion_prompt.md not found.", file=sys.stderr)
         sys.exit(1)
 
-    # Replace placeholder if any (though currently the prompt is generic)
-    prompt = prompt.replace("<command>", program_name)
 
-    # Read help content
+def read_help_content(help_file):
+    """Read help content from file or stdin."""
     if help_file:
         try:
             with open(help_file, "r") as f:
-                help_content = f.read()
+                return f.read()
         except FileNotFoundError:
             print(f"Error: Help file {help_file} not found.", file=sys.stderr)
             sys.exit(1)
-    else:
-        # Read from stdin
-        help_content = sys.stdin.read()
+    return sys.stdin.read()
 
-    # Call Gemini
-    # We pass the prompt as the "prompt" argument and help_content as stdin (context)
+
+def build_cmd(cli, model_flag, model, prompt):
+    """Build the CLI command list."""
+    cmd = [cli]
+    if model:
+        cmd.extend([model_flag, model])
+    cmd.append(prompt)
+    return cmd
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Generate a Zsh completion script using an LLM CLI"
+    )
+    parser.add_argument("program_name", help="Name of the program to generate completions for")
+    parser.add_argument("help_file", nargs="?", default=None, help="Path to help file (reads stdin if omitted)")
+    parser.add_argument("--cli", default=os.environ.get("AI_CLI", "gemini"), help="LLM CLI binary (default: gemini)")
+    parser.add_argument("--model", default=os.environ.get("AI_MODEL", ""), help="Model name (omit to use CLI default)")
+    args = parser.parse_args()
+    args.model_flag = os.environ.get("AI_MODEL_FLAG", "--model")
+    return args
+
+
+def main():
+    args = parse_args()
+    prompt = read_prompt(args.program_name)
+    help_content = read_help_content(args.help_file)
+    cmd = build_cmd(args.cli, args.model_flag, args.model, prompt)
+
     try:
-        # We use the -p flag or positional argument. 
-        # Using positional argument is safer for recent gemini CLI versions.
-        cmd = ["gemini", "-m", "gemini-3-pro-preview", prompt]
-        
         result = subprocess.run(
             cmd,
             input=help_content,
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
-        
         print(clean_output(result.stdout))
-
     except subprocess.CalledProcessError as e:
-        print(f"Error calling gemini: {e}", file=sys.stderr)
+        print(f"Error calling {args.cli}: {e}", file=sys.stderr)
         print(f"Stderr: {e.stderr}", file=sys.stderr)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
