@@ -1,8 +1,9 @@
-import subprocess
-import sys
+import argparse
 import json
 import logging
 import os
+import subprocess
+import sys
 
 # Set up logging
 logging.basicConfig(
@@ -31,7 +32,16 @@ def run_help_command(command):
         return output
 
 
-def get_subcommands(program, args):
+def build_llm_cmd(cli, model_flag, model, prompt):
+    """Build the LLM CLI command list."""
+    cmd = [cli]
+    if model:
+        cmd.extend([model_flag, model])
+    cmd.extend(["-p", prompt])
+    return cmd
+
+
+def get_subcommands(program, args, cli, model_flag, model):
     command = [program] + args + ["--help"]
     help_output = run_help_command(command)
 
@@ -52,15 +62,10 @@ def get_subcommands(program, args):
     )
 
     logging.info("Sending help output to LLM for analysis")
+    cmd = build_llm_cmd(cli, model_flag, model, llm_prompt)
     try:
         llm_result = subprocess.run(
-            [
-                "gemini",
-                "-m",
-                "gemini-3-pro-preview",
-                "-p",
-                llm_prompt,
-            ],
+            cmd,
             input=help_output,
             capture_output=True,
             text=True,
@@ -81,7 +86,7 @@ def get_subcommands(program, args):
         return []
 
 
-def explore_command(program, args=None, depth=0):
+def explore_command(program, cli, model_flag, model, args=None, depth=0):
     if args is None:
         args = []
 
@@ -96,24 +101,31 @@ def explore_command(program, args=None, depth=0):
     markdown = f"{'#' * (depth + 2)} {' '.join([program] + args)}\n\n"
     markdown += "```\n" + help_output.strip() + "\n```\n\n"
 
-    subcommands = get_subcommands(program, args)
+    subcommands = get_subcommands(program, args, cli, model_flag, model)
 
     for subcommand in subcommands:
-        markdown += explore_command(program, args + [subcommand], depth + 1)
+        markdown += explore_command(program, cli, model_flag, model, args + [subcommand], depth + 1)
 
     return markdown
 
 
-def main():
-    if len(sys.argv) != 2:
-        logging.error("Invalid number of arguments")
-        print("Usage: python explore_program.py <program_name>", file=sys.stderr)
-        sys.exit(1)
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Explore a program's help output and subcommands using an LLM CLI"
+    )
+    parser.add_argument("program_name", help="Name of the program to explore")
+    parser.add_argument("--cli", default=os.environ.get("AI_CLI", "gemini"), help="LLM CLI binary (default: gemini)")
+    parser.add_argument("--model", default=os.environ.get("AI_MODEL", ""), help="Model name (omit to use CLI default)")
+    parser.add_argument("--model-flag", default=os.environ.get("AI_MODEL_FLAG", "-m"), help="Flag syntax for model selection (default: -m)")
+    return parser.parse_args()
 
-    program = sys.argv[1]
-    logging.info(f"Starting exploration of program: {program}")
-    markdown = f"# {program} Help\n\n"
-    markdown += explore_command(program)
+
+def main():
+    args = parse_args()
+    logging.info(f"Starting exploration of program: {args.program_name}")
+
+    markdown = f"# {args.program_name} Help\n\n"
+    markdown += explore_command(args.program_name, args.cli, args.model_flag, args.model)
 
     print(markdown)
     logging.info("Exploration completed")

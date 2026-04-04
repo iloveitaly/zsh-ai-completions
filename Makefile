@@ -8,6 +8,14 @@ PROGRAMS_WITH_SUBCOMMANDS := flowctl nixpacks cody uv launchctl aiautocommit ale
 PROGRAMS_WITH_MANPAGES := entr
 
 DEFAULT_HELP_COMMAND ?= --help
+AI_CLI ?= gemini
+AI_MODEL ?=
+AI_MODEL_FLAG ?= -m
+
+AI_ARGS := --cli $(AI_CLI)
+ifneq ($(AI_MODEL),)
+AI_ARGS += --model $(AI_MODEL) --model-flag $(AI_MODEL_FLAG)
+endif
 
 .DEFAULT_GOAL := all_completions
 
@@ -19,13 +27,13 @@ completions/_%: completion_prompt.md generate_completion.py
 	@if command -v $* >/dev/null 2>&1; then \
 		mkdir -p tmp; \
 		if echo "$(PROGRAMS_WITH_SUBCOMMANDS)" | grep -q "\b$*\b"; then \
-			python explore_program.py $* > tmp/$*.help; \
-			python generate_completion.py $* tmp/$*.help > completions/_$*; \
+			python explore_program.py $(AI_ARGS) $* > tmp/$*.help; \
+			python generate_completion.py $(AI_ARGS) $* tmp/$*.help > completions/_$*; \
 			rm tmp/$*.help; \
 		elif echo "$(PROGRAMS_WITH_MANPAGES)" | grep -q "\b$*\b"; then \
-			man $* | python generate_completion.py $* > completions/_$*; \
+			man $* | python generate_completion.py $(AI_ARGS) $* > completions/_$*; \
 		else \
-			$* $(DEFAULT_HELP_COMMAND) 2>&1 | python generate_completion.py $* > completions/_$*; \
+			$* $(DEFAULT_HELP_COMMAND) 2>&1 | python generate_completion.py $(AI_ARGS) $* > completions/_$*; \
 		fi; \
 		if [ ! -s completions/_$* ]; then \
 			rm -f completions/_$*; \
