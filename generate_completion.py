@@ -62,8 +62,9 @@ def parse_args():
     parser.add_argument("help_file", nargs="?", default=None, help="Path to help file (reads stdin if omitted)")
     parser.add_argument("--cli", default=os.environ.get("AI_CLI", "gemini"), help="LLM CLI binary (default: gemini)")
     parser.add_argument("--model", default=os.environ.get("AI_MODEL", ""), help="Model name (omit to use CLI default)")
-    parser.add_argument("--model-flag", default=os.environ.get("AI_MODEL_FLAG", "-m"), help="Flag syntax for model selection (default: -m)")
-    return parser.parse_args()
+    args = parser.parse_args()
+    args.model_flag = os.environ.get("AI_MODEL_FLAG", "--model")
+    return args
 
 
 def main():

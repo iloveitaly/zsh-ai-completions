@@ -24,20 +24,20 @@ I've checked the AI generated completions against this tool and it works quite w
 
 ### Generating Completions
 
-The `Makefile` orchestrates exploration and generation. The `completions/_` pattern rule accepts any program name — if the binary is in your PATH, it will generate a completion for it:
+The `Makefile` orchestrates exploration and generation. It automatically detects whether a program has subcommands and explores them recursively. The `completions/_` pattern rule accepts any program name — if the binary is in your PATH, it will generate a completion for it:
 
 ```shell
 # Generate completion for any installed program
 make completions/_claude
 
-# Programs in the PROGRAMS_WITH_SUBCOMMANDS list get deeper exploration
-make completions/_aiautocommit
-```
-
-To build all pre-configured completions:
-
-```shell
+# Build all pre-configured completions
 make
+
+# Force regeneration of an existing completion
+make -B completions/_claude
+
+# Force regeneration of all completions
+make -B
 ```
 
 ### Configuring the AI Backend
@@ -49,17 +49,29 @@ By default, the [Gemini CLI](https://github.com/google-gemini/gemini-cli) is use
 make completions/_sops AI_MODEL=gemini-2.5-pro
 
 # Use Claude instead of Gemini
-make completions/_sops AI_CLI=claude AI_MODEL=sonnet AI_MODEL_FLAG=--model
+make completions/_sops AI_CLI=claude AI_MODEL=sonnet
 
 # Build all completions with a different backend
-make AI_CLI=claude AI_MODEL=sonnet AI_MODEL_FLAG=--model
+make AI_CLI=claude AI_MODEL=sonnet
 ```
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `AI_CLI` | `gemini` | The LLM CLI binary to invoke |
 | `AI_MODEL` | *(empty — uses CLI default)* | Model name to pass to the CLI |
-| `AI_MODEL_FLAG` | `-m` | The flag syntax for model selection (e.g., `-m` for Gemini, `--model` for Claude) |
+| `AI_MODEL_FLAG` | `--model` | The flag syntax for model selection (e.g., `--model` works for both Gemini and Claude) |
+
+#### Benchmark: `ls` completion generation
+
+| Backend | Model | Time |
+|---------|-------|------|
+| Claude | Opus | 47s |
+| Claude | Sonnet | 61s |
+| Gemini | default | 216s |
+
+#### Compatibility Notes
+
+The AI CLI must support a prompt as a positional argument (or via `-p`) and accept context on stdin. CLIs that don't follow this pattern (e.g., Codex, which uses `-p` for config profiles and doesn't accept piped stdin) are not currently supported.
 
 ### Running Scripts Directly
 
