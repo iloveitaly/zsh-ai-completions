@@ -42,6 +42,16 @@ def main():
     # Replace placeholder if any (though currently the prompt is generic)
     prompt = prompt.replace("<command>", program_name)
 
+    # Check for command-specific prompt
+    custom_prompt_file = os.path.join("prompts", f"{program_name}.md")
+    if os.path.exists(custom_prompt_file):
+        try:
+            with open(custom_prompt_file, "r") as f:
+                custom_prompt = f.read()
+            prompt += "\n\n" + custom_prompt
+        except Exception as e:
+            print(f"Warning: Could not read custom prompt {custom_prompt_file}: {e}", file=sys.stderr)
+
     # Read help content
     if help_file:
         try:
