@@ -1,3 +1,4 @@
+import re
 import subprocess
 import sys
 import json
@@ -31,12 +32,92 @@ def run_help_command(command):
         return output
 
 
+HELP_MARKERS = (
+    "usage:",
+    "commands:",
+    "options:",
+    "additional commands:",
+    "help for",
+    "flags:",
+    "arguments:",
+    "subcommands:",
+    "describe available commands",
+    "manage ",
+)
+
+
+ERROR_MARKERS = (
+    "no such file or directory",
+    "failed to execute",
+    "error:",
+)
+
+
+def looks_like_help(output):
+    """Heuristic to tell help text apart from normal command output."""
+    if not output:
+        return False
+    lower = output.lower()
+    if any(marker in lower for marker in ERROR_MARKERS):
+        return False
+    return any(marker in lower for marker in HELP_MARKERS)
+
+
+def help_command_candidates(program, args):
+    """Yield help invocations to try, from most to least specific."""
+    yield [program] + args + ["help"]
+    if len(args) == 1:
+        # Some CLIs expose namespace help via `<namespace>:help` instead of flags.
+        yield [program, f"{args[0]}:help"]
+    yield [program] + args + ["--help"]
+
+
+def get_help_output(program, args):
+    """Return (help_output, command) using the first strategy that looks like help."""
+    command = None
+    fallback_output = None
+    fallback_command = None
+
+    for command in help_command_candidates(program, args):
+        output = run_help_command(command)
+        if not output:
+            continue
+        if looks_like_help(output):
+            return output, command
+        if fallback_output is None and not any(
+            marker in output.lower() for marker in ERROR_MARKERS
+        ):
+            fallback_output = output
+            fallback_command = command
+
+    if fallback_output is not None:
+        logging.info(
+            f"No help markers found; using output from: {' '.join(fallback_command)}"
+        )
+        return fallback_output, fallback_command
+
+    return None, command
+
+
+def should_recurse_into_subcommands(help_output):
+    """Skip recursion when help already lists fully qualified colon commands."""
+    colon_commands = re.findall(
+        r"^\s+([\w-]+:[\w-]+(?::[\w-]+)?)",
+        help_output,
+        re.MULTILINE,
+    )
+    return len(colon_commands) < 2
+
+
 def get_subcommands(program, args):
-    command = [program] + args + ["--help"]
-    help_output = run_help_command(command)
+    help_output, command = get_help_output(program, args)
 
     if help_output is None:
         logging.warning(f"No help output for command: {' '.join(command)}")
+        return []
+
+    if not should_recurse_into_subcommands(help_output):
+        logging.info("Help output already lists colon-qualified subcommands; not recursing")
         return []
 
     llm_prompt = (
@@ -86,8 +167,7 @@ def explore_command(program, args=None, depth=0):
         args = []
 
     logging.info(f"Exploring command: {program} {' '.join(args)}")
-    command = [program] + args + ["--help"]
-    help_output = run_help_command(command)
+    help_output, command = get_help_output(program, args)
 
     if help_output is None:
         logging.warning(f"No help output for command: {' '.join(command)}")
