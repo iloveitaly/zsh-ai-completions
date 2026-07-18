@@ -28,7 +28,7 @@ Just modify the `justfile`, run `just`, and test the output. Then, please submit
 
 To focus on building a single completion run `just completion aiautocommit`
 
-Note that [Cody](http://cody.dev) is used for generating the completions since they have a nice CLI tool.
+Completions are generated with the [Grok](https://grok.x.ai/) CLI (`grok`).
 
 ### Custom prompts
 
