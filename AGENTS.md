@@ -15,3 +15,10 @@ If generation fails (missing LLM CLI/auth), fix the **generator / prompts / envi
 ## Custom prompts
 
 Optional per-command guidance lives in `prompts/<program>.md` and is appended to `completion_prompt.md` at generation time. Prefer tightening these prompts over editing generated zsh.
+
+Keep `prompts/*.md` limited to instructions for the model. Local machine paths and test fixtures belong here (or in the README), not in generation prompts.
+
+## Local fixtures
+
+- **Alembic** (installed + real migrations for testing revision completion):  
+  `/Users/mike/Projects/python/python-starter-template`
