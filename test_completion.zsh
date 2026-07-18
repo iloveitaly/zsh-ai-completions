@@ -73,7 +73,7 @@ elif echo "$OUTPUT" | grep -q "command not found"; then
   # If the completion calls a command that doesn't exist (unlikely for valid completion unless logic error)
   echo "⚠️  $COMP_NAME: Potential logic error (command not found)"
   echo "$OUTPUT"
-  # We don't fail strictly for this as it might be 'gemini' not found inside the completion? No.
+  # Soft pass: missing external tools inside a completion body shouldn't fail syntax checks.
   exit 0 # Soft pass
 else
   # If it failed because 'can only be called from completion function', that is GOOD.

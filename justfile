@@ -2,7 +2,7 @@ set shell := ["zsh", "-cu"]
 set script-interpreter := ["zsh", "-eu"]
 
 programs_without_subcommands := "sops ncdu tre vitest eslint fastmod ipython fzf zq pytest q lnav act localias markdown-extract micro difft"
-programs_with_subcommands := "flowctl nixpacks cody uv launchctl aiautocommit alembic security foreman mcpm gemini railpack"
+programs_with_subcommands := "flowctl nixpacks uv launchctl aiautocommit alembic security foreman mcpm gemini railpack"
 # some programs don't have helpful --help output, so we use manpages instead
 programs_with_manpages := "entr"
 

@@ -5,6 +5,8 @@ import json
 import logging
 import os
 
+from llm import call_llm_json
+
 # Set up logging
 logging.basicConfig(
     level=getattr(logging, (os.environ.get("LOG_LEVEL") or "INFO").upper(), logging.INFO),
@@ -121,44 +123,31 @@ def get_subcommands(program, args):
         return []
 
     llm_prompt = (
-        "Analyze this help output and return a JSON object with two keys: "
-        "'has_subcommands' (boolean) and 'subcommands' (list of strings). "
-        "If there are no subcommands, return an empty list for 'subcommands'. "
+        "Analyze this help output and identify subcommands. "
         "Ignore any `help` subcommands. "
-        "Respond with a single JSON object and nothing else. Do not use markdown formatting (i.e. ```).\n\n"
-        "For example, for a tool with 'init' and 'clone' subcommands, the output should be:\n"
-        '{"has_subcommands": true, "subcommands": ["init", "clone"]}\n\n'
-        "If no subcommands are found, the output should be:\n"
-        '{"has_subcommands": false, "subcommands": []}\n\n'
+        "Only list immediate subcommands of this command level, not nested ones."
     )
+    schema = {
+        "type": "object",
+        "properties": {
+            "has_subcommands": {"type": "boolean"},
+            "subcommands": {
+                "type": "array",
+                "items": {"type": "string"},
+            },
+        },
+        "required": ["has_subcommands", "subcommands"],
+    }
 
     logging.info("Sending help output to LLM for analysis")
     try:
-        llm_result = subprocess.run(
-            [
-                "gemini",
-                "-m",
-                "gemini-3-pro-preview",
-                "-p",
-                llm_prompt,
-            ],
-            input=help_output,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        llm_output = llm_result.stdout.strip()
-        logging.debug(f"LLM output: {llm_output}")
-        subcommand_data = json.loads(llm_output)
+        subcommand_data = call_llm_json(llm_prompt, schema, context=help_output)
+        logging.debug(f"LLM output: {subcommand_data}")
         subcommands = subcommand_data.get("subcommands", [])
         logging.info(f"Found subcommands: {subcommands}")
         return subcommands
-    except (subprocess.CalledProcessError, json.JSONDecodeError) as e:
+    except (RuntimeError, json.JSONDecodeError, TypeError, AttributeError) as e:
         logging.error(f"Error processing subcommands: {e}")
-
-        if isinstance(e, subprocess.CalledProcessError):
-            logging.error(f"stderr: {e.stderr}")
-            logging.error(f"stdout: {e.stdout}")
         return []
 
 

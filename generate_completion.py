@@ -1,6 +1,7 @@
 import sys
-import subprocess
-import os
+
+from llm import call_llm
+
 
 def clean_output(output):
     """
@@ -19,13 +20,17 @@ def clean_output(output):
                 first_line = code_block[:first_line_end].strip()
                 # If the first line is just a language name or empty, skip it
                 if not first_line or "zsh" in first_line or "sh" in first_line:
-                    return code_block[first_line_end+1:].strip()
+                    return code_block[first_line_end + 1 :].strip()
             return code_block.strip()
     return output
 
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python generate_completion.py <program_name> [help_file]", file=sys.stderr)
+        print(
+            "Usage: python generate_completion.py <program_name> [help_file]",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     program_name = sys.argv[1]
@@ -43,14 +48,17 @@ def main():
     prompt = prompt.replace("<command>", program_name)
 
     # Check for command-specific prompt
-    custom_prompt_file = os.path.join("prompts", f"{program_name}.md")
-    if os.path.exists(custom_prompt_file):
-        try:
-            with open(custom_prompt_file, "r") as f:
-                custom_prompt = f.read()
-            prompt += "\n\n" + custom_prompt
-        except Exception as e:
-            print(f"Warning: Could not read custom prompt {custom_prompt_file}: {e}", file=sys.stderr)
+    custom_prompt_file = f"prompts/{program_name}.md"
+    try:
+        with open(custom_prompt_file, "r") as f:
+            prompt += "\n\n" + f.read()
+    except FileNotFoundError:
+        pass
+    except OSError as e:
+        print(
+            f"Warning: Could not read custom prompt {custom_prompt_file}: {e}",
+            file=sys.stderr,
+        )
 
     # Read help content
     if help_file:
@@ -64,27 +72,13 @@ def main():
         # Read from stdin
         help_content = sys.stdin.read()
 
-    # Call Gemini
-    # We pass the prompt as the "prompt" argument and help_content as stdin (context)
     try:
-        # We use the -p flag or positional argument. 
-        # Using positional argument is safer for recent gemini CLI versions.
-        cmd = ["gemini", "-m", "gemini-3-pro-preview", prompt]
-        
-        result = subprocess.run(
-            cmd,
-            input=help_content,
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        
-        print(clean_output(result.stdout))
-
-    except subprocess.CalledProcessError as e:
-        print(f"Error calling gemini: {e}", file=sys.stderr)
-        print(f"Stderr: {e.stderr}", file=sys.stderr)
+        output = call_llm(prompt, context=help_content)
+        print(clean_output(output))
+    except RuntimeError as e:
+        print(f"Error calling grok: {e}", file=sys.stderr)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
