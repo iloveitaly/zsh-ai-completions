@@ -30,6 +30,17 @@ To focus on building a single completion run `just completion aiautocommit`
 
 Note that [Cody](http://cody.dev) is used for generating the completions since they have a nice CLI tool.
 
+### Custom prompts
+
+Generation always starts from the shared instructions in [`completion_prompt.md`](completion_prompt.md). For tool-specific guidance, add a file under [`prompts/`](prompts/) named after the command:
+
+```
+prompts/flowctl.md
+prompts/uv.md
+```
+
+If `prompts/<program>.md` exists when you run `just completion <program>`, its contents are appended to the default prompt before the model is called. Use this for quirks the help text alone doesn't capture (odd flag syntax, subcommand layout, things to ignore, etc.).
+
 ### Local Testing
 
 Want to test out a completion locally?

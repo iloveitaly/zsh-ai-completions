@@ -1,0 +1,22 @@
+#compdef uv-development-toggle
+
+_uv-development-toggle_packages() {
+  if [[ -f uv.lock ]] && (( $+commands[uv] )); then
+    local -a packages
+    packages=(${(f)"$(uv tree --all-groups --depth 1 2>/dev/null | sed -n 's/^[├└]── \([^ ]*\).*/\1/p')"})
+    _describe 'package' packages
+  fi
+}
+
+_uv-development-toggle() {
+  _arguments -S \
+    '(-git -pypi)--local[Use local editable path, and clone repo if necessary]' \
+    '(-local -pypi)--git[Use github source]' \
+    '(-local -git)--pypi[Use PyPI published version]' \
+    '--remove-editable[Find all editable packages and switch them to git sources]' \
+    '--version[Show version and exit]' \
+    '--help[Show this message and exit]' \
+    '1:MODULE:_uv-development-toggle_packages'
+}
+
+_uv-development-toggle "$@"
