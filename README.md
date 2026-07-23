@@ -28,7 +28,7 @@ Just modify the `justfile`, run `just`, and test the output. Then, please submit
 
 To focus on building a single completion run `just completion aiautocommit`
 
-Completions are generated with the [Grok](https://grok.x.ai/) CLI (`grok`).
+Set `ZSH_AI_CLI` to choose the generator (`grok` default, or `agy`).
 
 ### Custom prompts
 

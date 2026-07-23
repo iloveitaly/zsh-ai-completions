@@ -108,7 +108,7 @@ def main():
             sys.exit(1)
         print(clean_output(script))
     except (RuntimeError, TypeError, AttributeError, KeyError) as e:
-        print(f"Error calling grok: {e}", file=sys.stderr)
+        print(f"Error calling LLM: {e}", file=sys.stderr)
         sys.exit(1)
 
 
