@@ -3,44 +3,18 @@
 _agy_models() {
   local -a models
   models=(${(f)"$(agy models 2>/dev/null)"})
-  (( $#models )) && _describe -t models 'model' models
+  _describe 'model' models
 }
 
 _agy_agents() {
   local -a agents
   agents=(${(f)"$(agy agent 2>/dev/null)"})
-  agents=(${agents:#Available agents:})
-  agents=(${agents:#})
-  (( $#agents )) && _describe -t agents 'agent' agents
+  _describe 'agent' agents
 }
 
-_agy_plugin_names() {
-  local -a plugins
-  plugins=(${(f)"$(agy plugin list 2>/dev/null)"})
-  plugins=(${plugins:#No imported plugins.})
-  plugins=(${plugins:#})
-  (( $#plugins )) && _describe -t plugins 'plugin' plugins
-}
-
-_agy_commands() {
-  local -a commands
-  commands=(
-    'agent:List available agents'
-    'agents:List available agents'
-    'changelog:Show changelog and release notes'
-    'help:Show help for subcommands'
-    'install:Configure environment paths and shell settings'
-    'models:List available models'
-    'plugin:Manage plugins'
-    'plugins:Manage plugins'
-    'update:Update CLI'
-  )
-  _describe -t commands 'command' commands
-}
-
-_agy_plugin_commands() {
-  local -a commands
-  commands=(
+_agy_plugin_cmds() {
+  local -a cmds
+  cmds=(
     'list:List imported plugins'
     'import:Import plugins from gemini or claude'
     'install:Install a plugin'
@@ -49,128 +23,117 @@ _agy_plugin_commands() {
     'disable:Disable a plugin'
     'validate:Validate a plugin'
     'link:Generate link to a marketplace'
-    'help:Show this help'
+    'help:Show help'
   )
-  _describe -t commands 'plugin command' commands
-}
-
-_agy_agent() {
-  _arguments -S \
-    '(-h --help)'{-h,--help}'[Show help]'
-}
-
-_agy_changelog() {
-  _arguments -S \
-    '(-h --help)'{-h,--help}'[Show help]'
-}
-
-_agy_help() {
-  _arguments -S \
-    '1:subcommand:_agy_commands'
-}
-
-_agy_install() {
-  _arguments -S \
-    '--dir[Custom directory target to configure PATH for]:directory:_files -/' \
-    '--skip-aliases[Bypasses shell profile alias purging]' \
-    '--skip-path[Bypasses shell profile PATH appending]' \
-    '(-h --help)'{-h,--help}'[Show help]'
-}
-
-_agy_models_cmd() {
-  _arguments -S \
-    '(-h --help)'{-h,--help}'[Show help]'
-}
-
-_agy_update() {
-  _arguments -S
+  _describe 'plugin command' cmds
 }
 
 _agy_plugin() {
-  local context state state_descr line
-  typeset -A opt_args
-
+  local state
   _arguments -S \
-    '1: :_agy_plugin_commands' \
-    '*:: :->args' && return 0
+    '1: :_agy_plugin_cmds' \
+    '*:: :->args'
 
   case $state in
     args)
       case $words[1] in
-        list|help)
-          ;;
         import)
-          _arguments -S \
-            '1:source:(gemini claude)'
+          _arguments -S '1: :(gemini claude)'
           ;;
         install)
-          _arguments -S \
-            '1:target:_files -/'
-          ;;
-        uninstall|enable|disable)
-          _arguments -S \
-            '1:name:_agy_plugin_names'
+          _arguments -S '1: :_files'
           ;;
         validate)
-          _arguments -S \
-            '1:path:_files -/'
+          _arguments -S '1: :_files -/'
+          ;;
+        uninstall|enable|disable)
+          _arguments -S '1: :'
           ;;
         link)
-          _arguments -S \
-            '1:marketplace:' \
-            '2:target:'
+          _arguments -S '1: :' '2: :_files'
+          ;;
+        *)
           ;;
       esac
       ;;
   esac
 }
 
+_agy_subcommands() {
+  local -a cmds
+  cmds=(
+    'agent:List available agents'
+    'agents:List available agents'
+    'changelog:Show changelog and release notes'
+    'help:Show help for subcommands'
+    'install:Configure environment paths and shell settings'
+    'models:List available models'
+    'plugin:Manage plugins'
+    'plugins:Alias for plugin'
+    'update:Update CLI'
+  )
+  _describe 'subcommand' cmds
+}
+
 _agy() {
-  local context state state_descr line
-  typeset -A opt_args
+  local state
 
   _arguments -S \
-    '*--add-dir[Add a directory to the workspace]:directory:_files -/' \
-    '--agent[Agent for the current CLI session]:agent:_agy_agents' \
-    '(-c --continue)'{-c,--continue}'[Continue the most recent conversation]' \
-    '--conversation[Resume a previous conversation by ID]:conversation id' \
+    '*--add-dir[Add a directory to the workspace (repeatable)]:directory:_files -/' \
+    '--agent[Agent for the current CLI session]: :_agy_agents' \
+    '-c[Short alias for --continue]' \
+    '--continue[Continue the most recent conversation]' \
+    '--conversation[Resume a previous conversation by ID]:conversation id:' \
     '--dangerously-skip-permissions[Auto-approve all tool permission requests without prompting]' \
     '--effort[Reasoning effort for the current CLI session]:effort:(low medium high)' \
-    '(-i --prompt-interactive)'{-i,--prompt-interactive}'[Run an initial prompt interactively and continue the session]:prompt' \
-    '--log-file[Override CLI log file path]:file:_files' \
+    '-i[Short alias for --prompt-interactive]' \
+    '--log-file[Override CLI log file path]:log file:_files' \
     '--mode[Set the agent execution mode for this session]:mode:(accept-edits plan)' \
-    '--model[Model for the current CLI session]:model:_agy_models' \
+    '--model[Model for the current CLI session]: :_agy_models' \
     '--new-project[Create a new project for this session]' \
-    '(-p --print --prompt)'{-p,--print,--prompt}'[Run a single prompt non-interactively and print the response]:prompt' \
-    '--print-timeout[Timeout for print mode wait]:timeout' \
-    '--project[Project ID for the current CLI session]:project id' \
+    '-p[Short alias for --print]' \
+    '--print[Run a single prompt non-interactively and print the response]:prompt:' \
+    '--print-timeout[Timeout for print mode wait]:timeout:' \
+    '--project[Project ID for the current CLI session]:project id:' \
+    '--prompt[Alias for --print]:prompt:' \
+    '--prompt-interactive[Run an initial prompt interactively and continue the session]:prompt:' \
+    '--remote-control[Enable remote control mode]' \
     '--sandbox[Run in a sandbox with terminal restrictions enabled]' \
-    '1: :_agy_commands' \
-    '*:: :->args' && return 0
+    '1: :_agy_subcommands' \
+    '*:: :->args'
 
   case $state in
     args)
       case $words[1] in
         agent|agents)
-          _agy_agent
+          _arguments -S \
+            '(-h --help)'{-h,--help}'[Show help]'
           ;;
         changelog)
-          _agy_changelog
-          ;;
-        help)
-          _agy_help
+          _arguments -S \
+            '(-h --help)'{-h,--help}'[Show help]'
           ;;
         install)
-          _agy_install
+          _arguments -S \
+            '--dir[Custom directory target to configure PATH for]:directory:_files -/' \
+            '(-h --help)'{-h,--help}'[Show help]' \
+            '--skip-aliases[Bypasses shell profile alias purging]' \
+            '--skip-path[Bypasses shell profile PATH appending]'
           ;;
         models)
-          _agy_models_cmd
+          _arguments -S \
+            '(-h --help)'{-h,--help}'[Show help]'
           ;;
         plugin|plugins)
           _agy_plugin
           ;;
         update)
-          _agy_update
+          _arguments -S
+          ;;
+        help)
+          _arguments -S '1: :_agy_subcommands'
+          ;;
+        *)
           ;;
       esac
       ;;
