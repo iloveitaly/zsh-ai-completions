@@ -1,0 +1,444 @@
+#compdef hunk
+
+# Shared review options used by diff/show/patch/pager/difftool
+_hunk_review_opts() {
+  local -a opts
+  opts=(
+    '--mode[layout mode]:mode:(auto split stack)'
+    '--theme[named theme override]:theme:'
+    '--agent-context[JSON sidecar with agent rationale]:path:_files'
+    '--pager[use pager-style chrome and controls]'
+    '--line-numbers[show line numbers]'
+    '--no-line-numbers[hide line numbers]'
+    '--wrap[wrap long diff lines]'
+    '--no-wrap[truncate long diff lines to one row]'
+    '--hunk-headers[show hunk metadata rows]'
+    '--no-hunk-headers[hide hunk metadata rows]'
+    '--agent-notes[show agent notes by default]'
+    '--no-agent-notes[hide agent notes by default]'
+    '--transparent-bg[let terminal background show through]'
+    '--no-transparent-bg[paint surfaces with the active theme]'
+    '(-h --help)'{-h,--help}'[display help for command]'
+  )
+  _values -w 'options' $opts
+}
+
+_hunk_commands() {
+  local -a commands
+  commands=(
+    'diff:review working tree changes or compare targets/files'
+    'show:review the last commit or a given target'
+    'stash:review a stash entry (git only)'
+    'patch:review a patch file or stdin'
+    'pager:general Git pager wrapper with diff detection'
+    'difftool:review Git difftool file pairs'
+    'session:inspect or control a live Hunk session'
+    'skill:print the bundled Hunk review skill path'
+    'daemon:run the local Hunk session daemon'
+  )
+  _describe -t commands 'hunk command' commands
+}
+
+_hunk_session_commands() {
+  local -a commands
+  commands=(
+    'list:list live Hunk sessions'
+    'get:show one live Hunk session'
+    'context:show the selected file and hunk for one session'
+    'review:export the live review model for one session'
+    'navigate:move a live session to one diff hunk'
+    'reload:replace the contents of one live session'
+    'comment:manage live inline review notes'
+  )
+  _describe -t commands 'session command' commands
+}
+
+_hunk_session_comment_commands() {
+  local -a commands
+  commands=(
+    'add:attach one live inline review note'
+    'apply:apply many live notes from stdin JSON'
+    'list:list live inline review notes'
+    'rm:remove one inline review note'
+    'clear:clear inline review notes'
+  )
+  _describe -t commands 'comment command' commands
+}
+
+_hunk_skill_commands() {
+  local -a commands
+  commands=(
+    'path:print the bundled Hunk review skill path'
+  )
+  _describe -t commands 'skill command' commands
+}
+
+_hunk_daemon_commands() {
+  local -a commands
+  commands=(
+    'serve:run the local Hunk session daemon'
+  )
+  _describe -t commands 'daemon command' commands
+}
+
+_hunk_stash_commands() {
+  local -a commands
+  commands=(
+    'show:review a stash entry as a full Hunk changeset'
+  )
+  _describe -t commands 'stash command' commands
+}
+
+_hunk_diff() {
+  _arguments -S \
+    '--mode[layout mode]:mode:(auto split stack)' \
+    '--theme[named theme override]:theme:' \
+    '--agent-context[JSON sidecar with agent rationale]:path:_files' \
+    '--pager[use pager-style chrome and controls]' \
+    '--line-numbers[show line numbers]' \
+    '--no-line-numbers[hide line numbers]' \
+    '--wrap[wrap long diff lines]' \
+    '--no-wrap[truncate long diff lines to one row]' \
+    '--hunk-headers[show hunk metadata rows]' \
+    '--no-hunk-headers[hide hunk metadata rows]' \
+    '--agent-notes[show agent notes by default]' \
+    '--no-agent-notes[hide agent notes by default]' \
+    '--transparent-bg[let terminal background show through]' \
+    '--no-transparent-bg[paint surfaces with the active theme]' \
+    '--watch[auto-reload when the current diff input changes]' \
+    '(--cached)--staged[show staged changes instead of the working tree]' \
+    '(--staged)--cached[alias for --staged]' \
+    '--exclude-untracked[exclude untracked files from working tree reviews]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '*:target or path:_files'
+}
+
+_hunk_show() {
+  _arguments -S \
+    '--mode[layout mode]:mode:(auto split stack)' \
+    '--theme[named theme override]:theme:' \
+    '--agent-context[JSON sidecar with agent rationale]:path:_files' \
+    '--pager[use pager-style chrome and controls]' \
+    '--line-numbers[show line numbers]' \
+    '--no-line-numbers[hide line numbers]' \
+    '--wrap[wrap long diff lines]' \
+    '--no-wrap[truncate long diff lines to one row]' \
+    '--hunk-headers[show hunk metadata rows]' \
+    '--no-hunk-headers[hide hunk metadata rows]' \
+    '--agent-notes[show agent notes by default]' \
+    '--no-agent-notes[hide agent notes by default]' \
+    '--transparent-bg[let terminal background show through]' \
+    '--no-transparent-bg[paint surfaces with the active theme]' \
+    '--watch[auto-reload when the current diff input changes]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:ref: '
+}
+
+_hunk_stash() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  _arguments -S \
+    '1: :_hunk_stash_commands' \
+    '*:: :->args' && return
+
+  case $state in
+    args)
+      case $words[1] in
+        show)
+          _arguments -S \
+            '(-h --help)'{-h,--help}'[display help for command]' \
+            '1:stash ref: '
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_hunk_patch() {
+  _arguments -S \
+    '--mode[layout mode]:mode:(auto split stack)' \
+    '--theme[named theme override]:theme:' \
+    '--agent-context[JSON sidecar with agent rationale]:path:_files' \
+    '--pager[use pager-style chrome and controls]' \
+    '--line-numbers[show line numbers]' \
+    '--no-line-numbers[hide line numbers]' \
+    '--wrap[wrap long diff lines]' \
+    '--no-wrap[truncate long diff lines to one row]' \
+    '--hunk-headers[show hunk metadata rows]' \
+    '--no-hunk-headers[hide hunk metadata rows]' \
+    '--agent-notes[show agent notes by default]' \
+    '--no-agent-notes[hide agent notes by default]' \
+    '--transparent-bg[let terminal background show through]' \
+    '--no-transparent-bg[paint surfaces with the active theme]' \
+    '--watch[auto-reload when the current diff input changes]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:patch file:_files'
+}
+
+_hunk_pager() {
+  _arguments -S \
+    '--mode[layout mode]:mode:(auto split stack)' \
+    '--theme[named theme override]:theme:' \
+    '--agent-context[JSON sidecar with agent rationale]:path:_files' \
+    '--pager[use pager-style chrome and controls]' \
+    '--line-numbers[show line numbers]' \
+    '--no-line-numbers[hide line numbers]' \
+    '--wrap[wrap long diff lines]' \
+    '--no-wrap[truncate long diff lines to one row]' \
+    '--hunk-headers[show hunk metadata rows]' \
+    '--no-hunk-headers[hide hunk metadata rows]' \
+    '--agent-notes[show agent notes by default]' \
+    '--no-agent-notes[hide agent notes by default]' \
+    '--transparent-bg[let terminal background show through]' \
+    '--no-transparent-bg[paint surfaces with the active theme]' \
+    '(-h --help)'{-h,--help}'[display help for command]'
+}
+
+_hunk_difftool() {
+  _arguments -S \
+    '--mode[layout mode]:mode:(auto split stack)' \
+    '--theme[named theme override]:theme:' \
+    '--agent-context[JSON sidecar with agent rationale]:path:_files' \
+    '--pager[use pager-style chrome and controls]' \
+    '--line-numbers[show line numbers]' \
+    '--no-line-numbers[hide line numbers]' \
+    '--wrap[wrap long diff lines]' \
+    '--no-wrap[truncate long diff lines to one row]' \
+    '--hunk-headers[show hunk metadata rows]' \
+    '--no-hunk-headers[hide hunk metadata rows]' \
+    '--agent-notes[show agent notes by default]' \
+    '--no-agent-notes[hide agent notes by default]' \
+    '--transparent-bg[let terminal background show through]' \
+    '--no-transparent-bg[paint surfaces with the active theme]' \
+    '--watch[auto-reload when the current diff input changes]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:left file:_files' \
+    '2:right file:_files' \
+    '3:path:_files'
+}
+
+_hunk_session_list() {
+  _arguments -S \
+    '--json[emit structured JSON]' \
+    '(-h --help)'{-h,--help}'[display help for command]'
+}
+
+_hunk_session_get() {
+  _arguments -S \
+    '--repo[target session by repo root]:path:_files -/' \
+    '--json[emit structured JSON]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:session-id: '
+}
+
+_hunk_session_context() {
+  _arguments -S \
+    '--repo[target session by repo root]:path:_files -/' \
+    '--json[emit structured JSON]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:session-id: '
+}
+
+_hunk_session_review() {
+  _arguments -S \
+    '--repo[target session by repo root]:path:_files -/' \
+    '--json[emit structured JSON]' \
+    '--include-patch[include raw unified diff text for each file]' \
+    '--include-notes[include live review notes]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:session-id: '
+}
+
+_hunk_session_navigate() {
+  _arguments -S \
+    '--file[diff file path as shown by Hunk]:path:_files' \
+    '--repo[target session by repo root]:path:_files -/' \
+    '--hunk[1-based hunk number within the file]:n:' \
+    '--old-line[1-based line number on the old side]:n:' \
+    '--new-line[1-based line number on the new side]:n:' \
+    '--next-comment[jump to the next annotated hunk]' \
+    '--prev-comment[jump to the previous annotated hunk]' \
+    '--json[emit structured JSON]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:session-id: '
+}
+
+_hunk_session_reload() {
+  _arguments -S \
+    '--repo[target session by repo root]:path:_files -/' \
+    '--session-path[target a live session rooted at a different path]:path:_files -/' \
+    '--source[load the diff from this directory]:path:_files -/' \
+    '--json[emit structured JSON]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:session-id: ' \
+    '*:reload args: '
+}
+
+_hunk_session_comment_add() {
+  _arguments -S \
+    '--file[diff file path as shown by Hunk]:path:_files' \
+    '--summary[short review note]:text:' \
+    '--repo[target session by repo root]:path:_files -/' \
+    '--old-line[1-based line number on the old side]:n:' \
+    '--new-line[1-based line number on the new side]:n:' \
+    '--rationale[optional longer explanation]:text:' \
+    '--author[optional author label]:name:' \
+    '--focus[add the note and focus the viewport on it]' \
+    '--json[emit structured JSON]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:session-id: '
+}
+
+_hunk_session_comment_apply() {
+  _arguments -S \
+    '--repo[target session by repo root]:path:_files -/' \
+    '--stdin[read the comment batch from stdin as JSON]' \
+    '--focus[apply the batch and focus the first note]' \
+    '--json[emit structured JSON]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:session-id: '
+}
+
+_hunk_session_comment_list() {
+  _arguments -S \
+    '--repo[target session by repo root]:path:_files -/' \
+    '--file[filter comments to one diff file]:path:_files' \
+    '--type[filter comment type]:type:(live all ai agent user)' \
+    '--json[emit structured JSON]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:session-id: '
+}
+
+_hunk_session_comment_rm() {
+  _arguments -S \
+    '--repo[target session by repo root]:path:_files -/' \
+    '--json[emit structured JSON]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '*:targets: '
+}
+
+_hunk_session_comment_clear() {
+  _arguments -S \
+    '--repo[target session by repo root]:path:_files -/' \
+    '--file[clear only one diff file'''s comments]:path:_files' \
+    '(--all)--include-user[also clear human notes from TUI c action]' \
+    '(--include-user)--all[clear both live agent comments and human notes]' \
+    '--yes[confirm destructive comment clearing]' \
+    '--json[emit structured JSON]' \
+    '(-h --help)'{-h,--help}'[display help for command]' \
+    '1:session-id: '
+}
+
+_hunk_session_comment() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  _arguments -S \
+    '1: :_hunk_session_comment_commands' \
+    '*:: :->args' && return
+
+  case $state in
+    args)
+      case $words[1] in
+        add)   _hunk_session_comment_add ;;
+        apply) _hunk_session_comment_apply ;;
+        list)  _hunk_session_comment_list ;;
+        rm)    _hunk_session_comment_rm ;;
+        clear) _hunk_session_comment_clear ;;
+      esac
+      ;;
+  esac
+}
+
+_hunk_session() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  _arguments -S \
+    '1: :_hunk_session_commands' \
+    '*:: :->args' && return
+
+  case $state in
+    args)
+      case $words[1] in
+        list)     _hunk_session_list ;;
+        get)      _hunk_session_get ;;
+        context)  _hunk_session_context ;;
+        review)   _hunk_session_review ;;
+        navigate) _hunk_session_navigate ;;
+        reload)   _hunk_session_reload ;;
+        comment)  _hunk_session_comment ;;
+      esac
+      ;;
+  esac
+}
+
+_hunk_skill() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  _arguments -S \
+    '1: :_hunk_skill_commands' \
+    '*:: :->args' && return
+
+  case $state in
+    args)
+      case $words[1] in
+        path)
+          _arguments -S \
+            '(-h --help)'{-h,--help}'[display help for command]'
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_hunk_daemon() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  _arguments -S \
+    '1: :_hunk_daemon_commands' \
+    '*:: :->args' && return
+
+  case $state in
+    args)
+      case $words[1] in
+        serve)
+          _arguments -S \
+            '(-h --help)'{-h,--help}'[display help for command]'
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_hunk() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  _arguments -S \
+    '(-h --help)'{-h,--help}'[show help]' \
+    '(-v --version)'{-v,--version}'[show version]' \
+    '1: :_hunk_commands' \
+    '*:: :->args' && return
+
+  case $state in
+    args)
+      case $words[1] in
+        diff)     _hunk_diff ;;
+        show)     _hunk_show ;;
+        stash)    _hunk_stash ;;
+        patch)    _hunk_patch ;;
+        pager)    _hunk_pager ;;
+        difftool) _hunk_difftool ;;
+        session)  _hunk_session ;;
+        skill)    _hunk_skill ;;
+        daemon)   _hunk_daemon ;;
+      esac
+      ;;
+  esac
+}
+
+_hunk "$@"
