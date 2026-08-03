@@ -33,7 +33,13 @@ def get_ai_cli() -> str:
 def _compose_prompt(prompt: str, context: str = "") -> str:
     if not context:
         return prompt
-    return f"{prompt}\n\n---\n\n{context}"
+    return f"""\
+{prompt}
+
+---
+
+{context}
+"""
 
 
 def _extract_json(raw: str) -> Any:
@@ -58,11 +64,10 @@ def _extract_json(raw: str) -> Any:
 
 
 def _schema_instruction(schema: dict[str, Any]) -> str:
-    return (
-        "Respond with ONLY a JSON object matching this JSON Schema "
-        "(no markdown fences, no commentary):\n"
-        f"{json.dumps(schema, indent=2)}"
-    )
+    return f"""\
+Respond with ONLY a JSON object matching this JSON Schema (no markdown fences, no commentary):
+{json.dumps(schema, indent=2)}
+"""
 
 
 def _run_grok(args: list[str], prompt: str, *, max_turns: int = 1) -> str:
@@ -133,15 +138,18 @@ def _run_agy(prompt: str) -> str:
 def call_llm(prompt: str, context: str = "", *, max_turns: int = 16) -> str:
     """Return plain-text model output for prompt (+ optional context)."""
     if context:
-        # Instructions first, context, then a final one-line contract (recency).
-        full = (
-            f"{prompt}\n\n"
-            f"---\n\n"
-            f"{context}\n\n"
-            f"---\n"
-            f"Respond with the raw Zsh completion file only. "
-            f"First line must be #compdef …; no markdown; no commentary."
-        )
+        # Instructions first, context, then a final contract (recency bias).
+        full = f"""\
+{prompt}
+
+---
+
+{context}
+
+---
+Respond with the raw Zsh completion file only.
+First line must be #compdef …; no markdown; no commentary.
+"""
     else:
         full = prompt
 
@@ -185,7 +193,13 @@ def call_llm_json(
 
     if cli == "agy":
         # agy has no native JSON-schema mode; embed the schema in the prompt.
-        instructed = f"{full}\n\n---\n\n{_schema_instruction(schema)}"
+        instructed = f"""\
+{full}
+
+---
+
+{_schema_instruction(schema)}
+"""
         return _extract_json(_run_agy(instructed))
 
     raise RuntimeError(f"Unsupported AI CLI: {cli}")

@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 
 # Usage: ./test_completion.zsh path/to/_completion_file
+# Fails on any syntax / load error in the completion file.
 
 if [[ -z "$1" ]]; then
   echo "Usage: $0 <completion_file>"
@@ -9,75 +10,59 @@ fi
 
 COMP_FILE="$1"
 COMP_NAME="${COMP_FILE##*/}" # Extract filename (e.g., _micro)
-CMD_NAME="${COMP_NAME#_}"    # Remove leading underscore (e.g., micro)
+
+if [[ ! -f "$COMP_FILE" ]]; then
+  echo "❌ $COMP_NAME: File not found: $COMP_FILE"
+  exit 1
+fi
 
 # Create a temporary directory for fpath to isolate this test
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-# Copy the completion file to the temp dir
+# Copy the completion file to the temp dir (autoload looks up by name on fpath)
 cp "$COMP_FILE" "$TMP_DIR/$COMP_NAME"
 
-# Start a subshell to test loading
-# We turn on stderr redirection to capture errors
-OUTPUT=$(zsh -c "
-  fpath+=($TMP_DIR)
-  autoload -Uz compinit; compinit -u -C -d $TMP_DIR/zcompdump
-  autoload -Uz $COMP_NAME
-  
-  # specific check: try to resolve the function
-  if ! functions $COMP_NAME > /dev/null; then
-      # If not loaded yet, try to load it by invoking compdef or just autoloading
-      # The 'autoload' above marks it. 
-      # We simulate a completion load by triggering it? 
-      # Actually, just sourcing it or ensuring 'compinit' found it is a good start.
-      # But 'compinit' reads the #compdef line.
-      pass
-  fi
-
-  # Basic syntax check is implicit if we try to load it.
-  # But compinit only lazy-loads.
-  # We force load it.
-  load_func() {
-      $COMP_NAME
-  }
-  
-  # We run it. It will fail with 'can only be called from completion function' 
-  # but that means it PARSED correctly and EXECUTED until the first _arguments call.
-  # If it has syntax error, it will exit non-zero before that.
-  
-  try_load() {
-      # 1. Strict syntax check (checks the entire file)
-      if ! zsh -n "$COMP_FILE"; then
-          return 1
-      fi
-
-      # 2. Force load the function definition to check for function-specific errors
-      # This parses the file but does not execute the function body
-      autoload +X $COMP_NAME >/dev/null 2>&1
-      RET=\$?
-      return \$RET
-  }
-  
-  try_load
-" 2>&1)
-
-EXIT_CODE=$?
-
-# Analyze output for syntax errors
-if echo "$OUTPUT" | grep -q "parse error"; then
-  echo "❌ $COMP_NAME: Syntax Error"
-  echo "$OUTPUT"
+fail() {
+  echo "❌ $COMP_NAME: $1"
+  [[ -n "$2" ]] && print -r -- "$2"
   exit 1
-elif echo "$OUTPUT" | grep -q "command not found"; then
-  # If the completion calls a command that doesn't exist (unlikely for valid completion unless logic error)
-  echo "⚠️  $COMP_NAME: Potential logic error (command not found)"
-  echo "$OUTPUT"
-  # Soft pass: missing external tools inside a completion body shouldn't fail syntax checks.
-  exit 0 # Soft pass
-else
-  # If it failed because 'can only be called from completion function', that is GOOD.
-  # It means it loaded and ran.
-  echo "✅ $COMP_NAME: Syntax OK"
-  exit 0
+}
+
+# 1. Strict syntax check (entire file). Catches unmatched quotes, parse errors, etc.
+SYNTAX_OUTPUT=$(zsh -n "$COMP_FILE" 2>&1)
+SYNTAX_STATUS=$?
+if (( SYNTAX_STATUS != 0 )); then
+  fail "Syntax Error (zsh -n exited $SYNTAX_STATUS)" "$SYNTAX_OUTPUT"
 fi
+
+# 2. Force-load the function definition (parse + define; does not execute the body).
+#    Surfaces autoload/definition failures that pure -n might not report the same way.
+#    Prepend TMP_DIR so we never pick up a same-named completion from the user fpath
+#    (e.g. a broken install of this plugin via zinit).
+LOAD_OUTPUT=$(
+  zsh -c "
+    fpath=($TMP_DIR)
+    autoload -Uz compinit
+    compinit -u -C -d $TMP_DIR/zcompdump
+    autoload -Uz $COMP_NAME
+    autoload +X $COMP_NAME
+  " 2>&1
+)
+LOAD_STATUS=$?
+if (( LOAD_STATUS != 0 )); then
+  fail "Load Error (autoload +X exited $LOAD_STATUS)" "$LOAD_OUTPUT"
+fi
+
+# 3. Belt-and-suspenders: flag known syntax-ish diagnostics even if exit status was 0.
+#    (Should not happen after the checks above, but keep failures loud.)
+COMBINED="$SYNTAX_OUTPUT"$'\n'"$LOAD_OUTPUT"
+if print -r -- "$COMBINED" | grep -Eiq \
+  'parse error|unmatched |parse error near|command not found: |syntax error'; then
+  # "command not found" during load is a hard failure (missing function/helper).
+  # Soft-pass only applies if we ever execute completion bodies (we don't here).
+  fail "Syntax/load diagnostic in output" "$COMBINED"
+fi
+
+echo "✅ $COMP_NAME: Syntax OK"
+exit 0

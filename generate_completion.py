@@ -9,11 +9,10 @@ _COMPLETION_SCHEMA = {
     "properties": {
         "zsh_completion": {
             "type": "string",
-            "description": (
-                "Complete Zsh completion script file contents only. "
-                "First line must be #compdef <command>. No markdown fences, "
-                "no commentary."
-            ),
+            "description": """\
+Complete Zsh completion script file contents only.
+First line must be #compdef <command>. No markdown fences, no commentary.
+""",
         }
     },
     "required": ["zsh_completion"],
@@ -21,22 +20,33 @@ _COMPLETION_SCHEMA = {
 
 
 def clean_output(output: str) -> str:
-    """Normalize model script text (fence strip only; no #compdef search)."""
+    """Normalize model script text (fence strip + drop duplicate #compdef)."""
     output = output.strip()
-    if "```" not in output:
-        return output
+    if "```" in output:
+        parts = output.split("```")
+        if len(parts) >= 3:
+            code_block = parts[1]
+            if "\n" in code_block:
+                first_line_end = code_block.find("\n")
+                first_line = code_block[:first_line_end].strip()
+                if not first_line or "zsh" in first_line or "sh" in first_line:
+                    output = code_block[first_line_end + 1 :].strip()
+                else:
+                    output = code_block.strip()
+            else:
+                output = code_block.strip()
 
-    parts = output.split("```")
-    if len(parts) < 3:
-        return output
-
-    code_block = parts[1]
-    if "\n" in code_block:
-        first_line_end = code_block.find("\n")
-        first_line = code_block[:first_line_end].strip()
-        if not first_line or "zsh" in first_line or "sh" in first_line:
-            return code_block[first_line_end + 1 :].strip()
-    return code_block.strip()
+    # Models sometimes emit #compdef twice at the top.
+    lines = output.splitlines()
+    cleaned: list[str] = []
+    seen_compdef = False
+    for line in lines:
+        if line.startswith("#compdef "):
+            if seen_compdef:
+                continue
+            seen_compdef = True
+        cleaned.append(line)
+    return "\n".join(cleaned).strip() + "\n"
 
 
 def main():
@@ -71,10 +81,10 @@ def main():
             file=sys.stderr,
         )
 
-    prompt += (
-        "\n\nReturn a JSON object whose `zsh_completion` string is the entire "
-        "completion file (starting with #compdef)."
-    )
+    prompt += """
+
+Return a JSON object whose `zsh_completion` string is the entire completion file (starting with #compdef).
+"""
 
     if help_file:
         try:
@@ -91,11 +101,12 @@ def main():
         "properties": {
             "zsh_completion": {
                 **_COMPLETION_SCHEMA["properties"]["zsh_completion"],
-                "description": (
-                    f"Complete Zsh completion script for {program_name}. "
-                    f"First line must be #compdef {program_name}. "
-                    "No markdown fences, no commentary."
-                ),
+                "description": f"""\
+Complete Zsh completion script for {program_name}.
+First line must be #compdef {program_name}.
+No markdown fences, no commentary.
+Never put apostrophes (') inside single-quoted _arguments descriptions; rephrase possessives instead of escaping.
+""",
             }
         },
     }

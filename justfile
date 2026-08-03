@@ -29,9 +29,11 @@ completion program:
     # slow to read stdin — this decouples help generation from the API call.
     mkdir -p tmp
     if echo "{{programs_with_subcommands}}" | grep -q "\b${program}\b"; then
-        python explore_program.py "$program" > "tmp/${program}.help"
+        # Reuse cached help when present (exploration is slow / multi-LLM-call).
+        if [ ! -s "tmp/${program}.help" ]; then
+            python explore_program.py "$program" > "tmp/${program}.help"
+        fi
         python generate_completion.py "$program" "tmp/${program}.help" > "completions/_${program}"
-        rm "tmp/${program}.help"
     elif echo "{{programs_with_manpages}}" | grep -q "\b${program}\b"; then
         man "$program" | python generate_completion.py "$program" > "completions/_${program}"
     else
@@ -41,10 +43,11 @@ completion program:
     if [ ! -s "completions/_${program}" ]; then
         rm -f "completions/_${program}"
         echo >&2 "Warning: Generated completion for $program was empty. Removing file."
+        exit 1
     else
         if ! ./test_completion.zsh "completions/_${program}"; then
-            rm -f "completions/_${program}"
-            echo >&2 "Error: Generated completion for $program failed validation. Removing file."
+            mv -f "completions/_${program}" "tmp/_${program}.failed"
+            echo >&2 "Error: Generated completion for $program failed validation. Moved to tmp/_${program}.failed"
             exit 1
         fi
     fi
