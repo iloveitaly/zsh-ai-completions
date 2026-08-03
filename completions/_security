@@ -1,2 +1,873 @@
-Okay, I'll need the '--help' output to generate the zsh completion script. Please provide the output. Once you provide that, I will generate the zsh completion script without any additional text or markdown formatting.
+#compdef security
 
+_security_keychains() {
+  _files -g '*.keychain(-.)' -g '*.keychain-db(-.)' -g '*.keychain-db.*(-.)'
+}
+
+_security_commands() {
+  local -a commands
+  commands=(
+    'help:Show all commands or usage for a command'
+    'list-keychains:Display or manipulate the keychain search list'
+    'list-smartcards:Display available smartcards'
+    'default-keychain:Display or set the default keychain'
+    'login-keychain:Display or set the login keychain'
+    'create-keychain:Create keychains and add them to the search list'
+    'delete-keychain:Delete keychains and remove them from the search list'
+    'lock-keychain:Lock the specified keychain'
+    'unlock-keychain:Unlock the specified keychain'
+    'set-keychain-settings:Set settings for a keychain'
+    'set-keychain-password:Set password for a keychain'
+    'show-keychain-info:Show the settings for a keychain'
+    'dump-keychain:Dump the contents of one or more keychains'
+    'create-keypair:Create an asymmetric key pair'
+    'add-generic-password:Add a generic password item'
+    'add-internet-password:Add an internet password item'
+    'add-certificates:Add certificates to a keychain'
+    'find-generic-password:Find a generic password item'
+    'delete-generic-password:Delete a generic password item'
+    'set-generic-password-partition-list:Set the partition list of a generic password item'
+    'find-internet-password:Find an internet password item'
+    'delete-internet-password:Delete an internet password item'
+    'set-internet-password-partition-list:Set the partition list of an internet password item'
+    'find-key:Find keys in the keychain'
+    'set-key-partition-list:Set the partition list of a key'
+    'find-certificate:Find a certificate item'
+    'find-identity:Find an identity (certificate + private key)'
+    'delete-certificate:Delete a certificate from a keychain'
+    'delete-identity:Delete an identity from a keychain'
+    'set-identity-preference:Set the preferred identity for a service'
+    'get-identity-preference:Get the preferred identity for a service'
+    'create-db:Create a db using the DL'
+    'export:Export items from a keychain'
+    'import:Import items into a keychain'
+    'export-smartcard:Export items from a smartcard'
+    'cms:Encode or decode CMS messages'
+    'install-mds:Install or re-install the MDS database'
+    'add-trusted-cert:Add trusted certificates'
+    'remove-trusted-cert:Remove trusted certificates'
+    'dump-trust-settings:Display contents of trust settings'
+    'user-trust-settings-enable:Display or manipulate user-level trust settings'
+    'trust-settings-export:Export trust settings'
+    'trust-settings-import:Import trust settings'
+    'verify-cert:Verify certificates'
+    'authorize:Perform authorization operations'
+    'authorizationdb:Make changes to the authorization policy database'
+    'execute-with-privileges:Execute tool with privileges'
+    'leaks:Run /usr/bin/leaks on this process'
+    'error:Display a descriptive message for error codes'
+    'create-filevaultmaster-keychain:Create a FileVault recovery keychain'
+    'smartcards:Enable disable or list disabled smartcard tokens'
+    'translocate-policy-check:Check whether a path would be translocated'
+    'translocate-status-check:Check whether a path is translocated'
+    'translocate-original-path:Find the original path for a translocated path'
+    'requirement-evaluate:Evaluate a requirement against a cert chain'
+    'filevault:Handle FileVault specific settings and overrides'
+    'platformsso:Handle Platform SSO specific settings and overrides'
+  )
+  _describe -t commands 'security command' commands
+}
+
+_security_pref_domain() {
+  local -a domains
+  domains=(
+    'user:User preference domain'
+    'system:System preference domain'
+    'common:Common preference domain'
+    'dynamic:Dynamic preference domain'
+  )
+  _describe -t domains 'preference domain' domains
+}
+
+_security_help() {
+  _arguments -S \
+    '*:command:_security_commands'
+}
+
+_security_list_keychains() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-d[Use the specified preference domain]:domain:_security_pref_domain' \
+    '-s[Set the search list to the specified keychains]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_list_smartcards() {
+  _arguments -S \
+    '-h[Show help]'
+}
+
+_security_default_keychain() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-d[Use the specified preference domain]:domain:_security_pref_domain' \
+    '-s[Set the default keychain to the specified keychain]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_login_keychain() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-d[Use the specified preference domain]:domain:_security_pref_domain' \
+    '-s[Set the login keychain to the specified keychain]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_create_keychain() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-p[Use password for the keychains being created (insecure)]:password' \
+    '-P[Prompt the user for a password using the SecurityAgent]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_delete_keychain() {
+  _arguments -S \
+    '-h[Show help]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_lock_keychain() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-a[Lock all keychains]' \
+    '1:keychain:_security_keychains'
+}
+
+_security_unlock_keychain() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-p[Use password to unlock the keychain (insecure)]:password' \
+    '-u[Do not use the password]' \
+    '1:keychain:_security_keychains'
+}
+
+_security_set_keychain_settings() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-l[Lock keychain when the system sleeps]' \
+    '-u[Lock keychain after timeout interval]' \
+    '-t[Timeout in seconds (omit for no timeout)]:timeout' \
+    '1:keychain:_security_keychains'
+}
+
+_security_set_keychain_password() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-o[Old keychain password (insecure)]:oldPassword' \
+    '-p[New keychain password (insecure)]:newPassword' \
+    '1:keychain:_security_keychains'
+}
+
+_security_show_keychain_info() {
+  _arguments -S \
+    '1:keychain:_security_keychains'
+}
+
+_security_dump_keychain() {
+  _arguments -S \
+    '-a[Dump access control list of items]' \
+    '-d[Dump decrypted data of items]' \
+    '-h[Show help]' \
+    '-i[Interactive access control list editing mode]' \
+    '-r[Dump the raw encrypted data of items]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_create_keypair() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-a[Algorithm (rsa dh dsa fee; default rsa)]:algorithm:(rsa dh dsa fee)' \
+    '-s[Keysize in bits (default 512)]:size' \
+    '-f[Make key valid from the specified date]:date' \
+    '-t[Make key valid to the specified date]:date' \
+    '-d[Make key valid for the number of days from today]:days' \
+    '-k[Use the specified keychain rather than the default]:keychain:_security_keychains' \
+    '(-T)-A[Allow any application to access this key without warning (insecure)]' \
+    '*-T[Specify an application which may access this key]:appPath:_files' \
+    '1:description'
+}
+
+_security_add_generic_password() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-a[Specify account name (required)]:account' \
+    '-c[Specify item creator (optional four-character code)]:creator' \
+    '-C[Specify item type (optional four-character code)]:type' \
+    '-D[Specify kind (default is application password)]:kind' \
+    '-G[Specify generic attribute (optional)]:generic' \
+    '-j[Specify comment string (optional)]:comment' \
+    '-l[Specify label (defaults to service name)]:label' \
+    '-s[Specify service name (required)]:service' \
+    '-p[Specify password to be added (legacy; insecure)]:password' \
+    '-w[Specify password to be added (insecure)]:password' \
+    '-X[Specify password data as a hexadecimal string]:hex' \
+    '(-T)-A[Allow any application to access this item without warning (insecure)]' \
+    '*-T[Specify an application which may access this item]:appPath:_files' \
+    '-U[Update item if it already exists]' \
+    '1:keychain:_security_keychains'
+}
+
+_security_add_internet_password() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-a[Specify account name (required)]:account' \
+    '-c[Specify item creator (optional four-character code)]:creator' \
+    '-C[Specify item type (optional four-character code)]:type' \
+    '-d[Specify security domain string (optional)]:domain' \
+    '-D[Specify kind (default is Internet password)]:kind' \
+    '-j[Specify comment string (optional)]:comment' \
+    '-l[Specify label (defaults to server name)]:label' \
+    '-p[Specify path string (optional)]:path' \
+    '-P[Specify port number (optional)]:port' \
+    '-r[Specify protocol (four-character SecProtocolType)]:protocol' \
+    '-s[Specify server name (required)]:server' \
+    '-t[Specify authentication type (four-character; default dflt)]:authType' \
+    '-w[Specify password to be added (insecure)]:password' \
+    '-X[Specify password data as a hexadecimal string]:hex' \
+    '(-T)-A[Allow any application to access this item without warning (insecure)]' \
+    '*-T[Specify an application which may access this item]:appPath:_files' \
+    '-U[Update item if it already exists]' \
+    '1:keychain:_security_keychains'
+}
+
+_security_add_certificates() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-k[Keychain to add certificates to]:keychain:_security_keychains' \
+    '*:certificate file:_files'
+}
+
+_security_find_generic_password() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-a[Match account string]:account' \
+    '-c[Match creator (four-character code)]:creator' \
+    '-C[Match type (four-character code)]:type' \
+    '-D[Match kind string]:kind' \
+    '-G[Match value string (generic attribute)]:value' \
+    '-j[Match comment string]:comment' \
+    '-l[Match label string]:label' \
+    '-s[Match service string]:service' \
+    '-g[Display the password for the item found]' \
+    '-w[Display only the password on stdout]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_delete_generic_password() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-a[Match account string]:account' \
+    '-c[Match creator (four-character code)]:creator' \
+    '-C[Match type (four-character code)]:type' \
+    '-D[Match kind string]:kind' \
+    '-G[Match value string (generic attribute)]:value' \
+    '-j[Match comment string]:comment' \
+    '-l[Match label string]:label' \
+    '-s[Match service string]:service' \
+    '*:keychain:_security_keychains'
+}
+
+_security_set_generic_password_partition_list() {
+  _arguments -S \
+    '-a[Match account string]:account' \
+    '-c[Match creator (four-character code)]:creator' \
+    '-C[Match type (four-character code)]:type' \
+    '-D[Match kind string]:kind' \
+    '-G[Match value string (generic attribute)]:value' \
+    '-j[Match comment string]:comment' \
+    '-l[Match label string]:label' \
+    '-s[Match service string]:service' \
+    '-S[Comma-separated list of allowed partition IDs]:partition-list' \
+    '-k[Password for the keychain (deprecated; insecure)]:password' \
+    '1:keychain:_security_keychains'
+}
+
+_security_find_internet_password() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-a[Match account string]:account' \
+    '-c[Match creator (four-character code)]:creator' \
+    '-C[Match type (four-character code)]:type' \
+    '-d[Match securityDomain string]:securityDomain' \
+    '-D[Match kind string]:kind' \
+    '-j[Match comment string]:comment' \
+    '-l[Match label string]:label' \
+    '-p[Match path string]:path' \
+    '-P[Match port number]:port' \
+    '-r[Match protocol (four-character code)]:protocol' \
+    '-s[Match server string]:server' \
+    '-t[Match authenticationType (four-character code)]:authType' \
+    '-g[Display the password for the item found]' \
+    '-w[Display only the password on stdout]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_delete_internet_password() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-a[Match account string]:account' \
+    '-c[Match creator (four-character code)]:creator' \
+    '-C[Match type (four-character code)]:type' \
+    '-d[Match securityDomain string]:securityDomain' \
+    '-D[Match kind string]:kind' \
+    '-j[Match comment string]:comment' \
+    '-l[Match label string]:label' \
+    '-p[Match path string]:path' \
+    '-P[Match port number]:port' \
+    '-r[Match protocol (four-character code)]:protocol' \
+    '-s[Match server string]:server' \
+    '-t[Match authenticationType (four-character code)]:authType' \
+    '*:keychain:_security_keychains'
+}
+
+_security_set_internet_password_partition_list() {
+  _arguments -S \
+    '-a[Match account string]:account' \
+    '-c[Match creator (four-character code)]:creator' \
+    '-C[Match type (four-character code)]:type' \
+    '-d[Match securityDomain string]:securityDomain' \
+    '-D[Match kind string]:kind' \
+    '-j[Match comment string]:comment' \
+    '-l[Match label string]:label' \
+    '-p[Match path string]:path' \
+    '-P[Match port number]:port' \
+    '-r[Match protocol (four-character code)]:protocol' \
+    '-s[Match server string]:server' \
+    '-t[Match authenticationType (four-character code)]:authType' \
+    '-S[Comma-separated list of allowed partition IDs]:partition-list' \
+    '-k[Password for keychain (deprecated; insecure)]:password' \
+    '1:keychain:_security_keychains'
+}
+
+_security_find_key() {
+  _arguments -S \
+    '-a[Match application label string]:application label' \
+    '-c[Match creator (four-character code)]:creator' \
+    '-d[Match keys that can decrypt]' \
+    '-D[Match description string]:description' \
+    '-e[Match keys that can encrypt]' \
+    '-j[Match comment string]:comment' \
+    '-l[Match label string]:label' \
+    '-r[Match keys that can derive]' \
+    '-s[Match keys that can sign]' \
+    '-t[Type of key to find]:type:(symmetric public private)' \
+    '-u[Match keys that can unwrap]' \
+    '-v[Match keys that can verify]' \
+    '-w[Match keys that can wrap]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_set_key_partition_list() {
+  _arguments -S \
+    '-a[Match application label string]:application label' \
+    '-c[Match creator (four-character code)]:creator' \
+    '-d[Match keys that can decrypt]' \
+    '-D[Match description string]:description' \
+    '-e[Match keys that can encrypt]' \
+    '-j[Match comment string]:comment' \
+    '-l[Match label string]:label' \
+    '-r[Match keys that can derive]' \
+    '-s[Match keys that can sign]' \
+    '-t[Type of key to find]:type:(symmetric public private)' \
+    '-u[Match keys that can unwrap]' \
+    '-v[Match keys that can verify]' \
+    '-w[Match keys that can wrap]' \
+    '-S[Comma-separated list of allowed partition IDs]:partition-list' \
+    '-k[Password for keychain (deprecated; insecure)]:password' \
+    '1:keychain:_security_keychains'
+}
+
+_security_find_certificate() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-a[Find all matching certificates not just the first one]' \
+    '-c[Match on name when searching]:name' \
+    '-e[Match on emailAddress when searching]:emailAddress' \
+    '-m[Show the email addresses in the certificate]' \
+    '-p[Output certificate in pem format]' \
+    '-Z[Print SHA-256 and SHA-1 hash of the certificate]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_find_identity() {
+  _arguments -S \
+    '-h[Show help]' \
+    '*-p[Specify policy to evaluate]:policy:(basic ssl-client ssl-server smime eap ipsec ichat codesigning sys-default sys-kerberos-kdc macappstore appleID)' \
+    '-s[Specify optional policy-specific string]:string' \
+    '-v[Show valid identities only]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_delete_certificate() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-c[Specify certificate to delete by common name]:name' \
+    '-Z[Specify certificate to delete by SHA-256 or SHA-1 hash]:hash' \
+    '-t[Also delete user trust settings for this certificate]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_delete_identity() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-c[Specify certificate to delete by common name]:name' \
+    '-Z[Specify certificate to delete by SHA-256 or SHA-1 hash]:hash' \
+    '-t[Also delete user trust settings for this identity certificate]' \
+    '*:keychain:_security_keychains'
+}
+
+_security_set_identity_preference() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-n[Specify no identity (clears existing preference for service)]' \
+    '-c[Specify identity by common name of the certificate]:identity' \
+    '-s[Specify service for which this identity is preferred]:service' \
+    '-u[Specify key usage (optional)]:keyUsage' \
+    '-Z[Specify identity by SHA-256 or SHA-1 hash of certificate]:hash' \
+    '*:keychain:_security_keychains'
+}
+
+_security_get_identity_preference() {
+  _arguments -S \
+    '-h[Show help]' \
+    '-s[Specify service name]:service' \
+    '-u[Specify key usage (optional)]:keyUsage' \
+    '-p[Output identity certificate in pem format]' \
+    '-c[Print common name of the preferred identity certificate]' \
+    '-Z[Print SHA-256 and SHA-1 hash of the preferred identity certificate]'
+}
+
+_security_create_db() {
+  _arguments -S \
+    '-a[Turn off autocommit]' \
+    '-h[Show help]' \
+    '-o[Force using openparams argument]' \
+    '-0[Force using version 0 openparams]' \
+    '-g[Attach to guid rather than the AppleFileDL]:guid:(dl cspdl)' \
+    '-m[Set the initial mode of the created db]:mode' \
+    '1:name'
+}
+
+_security_export() {
+  _arguments -S \
+    '-k[Keychain to export items from]:keychain:_security_keychains' \
+    '-t[Type of items to export]:type:(certs allKeys pubKeys privKeys identities all)' \
+    '-f[Export format]:format:(openssl openssh1 openssh2 bsafe pkcs7 pkcs8 pkcs12 pemseq x509)' \
+    '-w[Private keys are wrapped]' \
+    '-p[PEM encode the output]' \
+    '-P[Specify wrapping passphrase immediately (insecure)]:passphrase' \
+    '-o[Specify output file (default is stdout)]:outfile:_files'
+}
+
+_security_import() {
+  _arguments -S \
+    '-k[Target keychain to import into]:keychain:_security_keychains' \
+    '-t[Type of items to import]:type:(pub priv session cert agg)' \
+    '-f[Import format]:format:(openssl openssh1 openssh2 bsafe raw pkcs7 pkcs8 pkcs12 netscape pemseq)' \
+    '-w[Private keys are wrapped and must be unwrapped on import]' \
+    '-x[Private keys are non-extractable after being imported]' \
+    '-P[Specify wrapping passphrase immediately (insecure)]:passphrase' \
+    '*-a[Specify name and value of extended attribute]:attribute' \
+    '(-T)-A[Allow any application to access the imported key without warning (insecure)]' \
+    '*-T[Specify an application which may access the imported key]:appPath:_files' \
+    '1:inputfile:_files'
+}
+
+_security_export_smartcard() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C -S \
+    '1: :->token' \
+    '*:: :->args' && return 0
+
+  case $state in
+    (token)
+      local -a tokens
+      tokens=('token:Export items from a smartcard token')
+      _describe -t tokens 'token' tokens
+      ;;
+    (args)
+      _arguments -S \
+        '-i[ID of the smartcard to export]:id' \
+        '-t[Type of items to export]:type:(certs privKeys identities all)' \
+        '-e[Path to export certificates and public keys]:exportPath:_files'
+      ;;
+  esac
+}
+
+_security_cms() {
+  _arguments -S \
+    '(-D -E -S)-C[Create a CMS encrypted message]' \
+    '(-C -E -S)-D[Decode a CMS message]' \
+    '(-C -D -S)-E[Create a CMS enveloped message]' \
+    '(-C -D -E)-S[Create a CMS signed message]' \
+    '-c[Use this detached content file]:content:_files' \
+    '-h[Generate email headers with info about CMS message]:level' \
+    '-n[Suppress output of content]' \
+    '-r[Create envelope for these recipients]:recipients' \
+    '-G[Include a signing time attribute]' \
+    '-H[Hash algorithm]:hash:(MD2 MD4 MD5 SHA1 SHA256 SHA384 SHA512)' \
+    '-N[Use certificate named nick for signing]:nick' \
+    '-P[Include a SMIMECapabilities attribute]' \
+    '-T[Do not include content in CMS message]' \
+    '-Y[Include EncryptionKeyPreference with certificate]:nick' \
+    '-Z[Find a certificate by subject key ID]:hash' \
+    '-e[Specify envelope file]:envelope:_files' \
+    '-k[Specify keychain to use]:keychain:_security_keychains' \
+    '-i[Use infile as source of data]:infile:_files' \
+    '-o[Use outfile as destination of data]:outfile:_files' \
+    '-p[Use password as key db password (insecure)]:password' \
+    '-s[Pass data a single byte at a time to CMS]' \
+    '-u[Set type of certificate usage]:certusage' \
+    '-v[Print debugging information]'
+}
+
+_security_install_mds() {
+  _arguments -S
+}
+
+_security_add_trusted_cert() {
+  _arguments -S \
+    '-d[Add to admin cert store (default is user)]' \
+    '-r[Result type]:resultType:(trustRoot trustAsRoot deny unspecified)' \
+    '*-p[Specify policy constraint]:policy:(ssl smime codeSign IPSec iChat basic swUpdate pkgSign pkinitClient pkinitServer eap)' \
+    '-a[Specify application constraint]:appPath:_files' \
+    '-s[Specify policy-specific string]:policyString' \
+    '-e[Specify allowed error]:allowedError:(certExpired hostnameMismatch)' \
+    '-u[Specify key usage as an integer]:keyUsage' \
+    '-k[Specify keychain to which cert is added]:keychain:_security_keychains' \
+    '-i[Input trust settings file]:settingsFileIn:_files' \
+    '-o[Output trust settings file]:settingsFileOut:_files' \
+    '1:certFile:_files'
+}
+
+_security_remove_trusted_cert() {
+  _arguments -S \
+    '-d[Remove from admin cert store (default is user)]' \
+    '1:certFile:_files'
+}
+
+_security_dump_trust_settings() {
+  _arguments -S \
+    '-s[Display trusted system certs (default is user)]' \
+    '-d[Display trusted admin certs (default is user)]'
+}
+
+_security_user_trust_settings_enable() {
+  _arguments -S \
+    '-d[Disable user-level trust settings]' \
+    '-e[Enable user-level trust settings]'
+}
+
+_security_trust_settings_export() {
+  _arguments -S \
+    '-s[Export system trust settings (default is user)]' \
+    '-d[Export admin trust settings (default is user)]' \
+    '1:settings_file:_files'
+}
+
+_security_trust_settings_import() {
+  _arguments -S \
+    '-d[Import admin trust settings (default is user)]' \
+    '1:settings_file:_files'
+}
+
+_security_verify_cert() {
+  _arguments -S \
+    '*-c[Certificate to verify (leaf first)]:certFile:_files' \
+    '*-r[Root certificate]:rootCertFile:_files' \
+    '-p[Verify policy]:policy:(basic ssl smime codeSign IPSec swUpdate pkgSign eap appleID macappstore timestamping)' \
+    '-C[Set client policy to true (default is server)]' \
+    '-d[Date and time to use when verifying (YYYY-MM-DD-hh:mm:ss GMT)]:date' \
+    '*-k[Keychain to search]:keychain:_security_keychains' \
+    '-n[Name to be verified]:name' \
+    '-N[No keychain search list]' \
+    '-L[Local certificates only (do not fetch missing CA certs)]' \
+    '-l[Leaf cert is a CA]' \
+    '-e[Email address for smime policy (deprecated; use -n)]:emailAddress' \
+    '-s[SSL host name for ssl policy (deprecated; use -n)]:sslHost' \
+    '-q[Quiet]' \
+    '*-R[Perform revocation checking]:revCheckOption:(ocsp require offline)' \
+    '-P[Output the constructed certificate chain in PEM format]' \
+    '-t[Output certificate contents as text]' \
+    '-v[Verbose output including per-certificate trust results]' \
+    '1:url'
+}
+
+_security_authorize() {
+  _arguments -S \
+    '-u[Allow user interaction]' \
+    '-c[Use login name and prompt for password]' \
+    '-C[Use given login name and prompt for password]:login' \
+    '-x[Do not share -c/-C explicit credentials]' \
+    '-p[Allow returning partial rights]' \
+    '-d[Destroy acquired rights]' \
+    '-P[Pre-authorize rights only]' \
+    '-l[Operate authorizations in least privileged mode]' \
+    '-i[Internalize authref passed on stdin]' \
+    '-e[Externalize authref to stdout]' \
+    '-w[Wait until stdout is closed]' \
+    '*:right'
+}
+
+_security_authorizationdb_commands() {
+  local -a commands
+  commands=(
+    'read:Read a right definition from the database'
+    'remove:Remove a right from the database'
+    'write:Write a right definition to the database'
+    'reset:Reset Authorization database to the default state'
+  )
+  _describe -t commands 'authorizationdb command' commands
+}
+
+_security_authorizationdb() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C -S \
+    '1: :_security_authorizationdb_commands' \
+    '*:: :->args' && return 0
+
+  case $state in
+    (args)
+      case $words[1] in
+        (read)
+          _arguments -S \
+            '1:right-name'
+          ;;
+        (remove)
+          _arguments -S \
+            '1:right-name'
+          ;;
+        (write)
+          _arguments -S \
+            '1:right-name' \
+            '2:rule:(allow deny)'
+          ;;
+        (reset)
+          _arguments -S \
+            '1:data volume UUID'
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_security_execute_with_privileges() {
+  _arguments -S \
+    '1:program:_files -g "*(*)"' \
+    '*:args:_files'
+}
+
+_security_leaks() {
+  _arguments -S \
+    '-cycles[Use a stricter algorithm]' \
+    '-nocontext[Withhold hex dumps of the leaked memory]' \
+    '-nostacks[Do not show stack traces of leaked memory]' \
+    '-exclude[Ignore leaks called from symbol]:symbol'
+}
+
+_security_error() {
+  _arguments -S \
+    '*:error-code'
+}
+
+_security_create_filevaultmaster_keychain() {
+  _arguments -S \
+    '-p[Use password for the keychain being created (insecure)]:password' \
+    '-s[Keysize in bits (default 2048; 1024 and 4096 allowed)]:size:(1024 2048 4096)' \
+    '1:keychain name:_security_keychains'
+}
+
+_security_smartcards_token_commands() {
+  # token is a fixed keyword; options follow
+  :
+}
+
+_security_smartcards() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C -S \
+    '1: :->subcmd' \
+    '*:: :->args' && return 0
+
+  case $state in
+    (subcmd)
+      local -a subcmds
+      subcmds=('token:Enable disable or list disabled smartcard tokens')
+      _describe -t subcmds 'smartcards command' subcmds
+      ;;
+    (args)
+      case $words[1] in
+        (token)
+          _arguments -S \
+            '-l[List disabled smartcard tokens]' \
+            '-e[Enable specified token]:token' \
+            '-d[Disable specified token]:token'
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_security_translocate_policy_check() {
+  _arguments -S \
+    '1:path:_files'
+}
+
+_security_translocate_status_check() {
+  _arguments -S \
+    '1:path:_files'
+}
+
+_security_translocate_original_path() {
+  _arguments -S \
+    '1:path:_files'
+}
+
+_security_requirement_evaluate() {
+  _arguments -S \
+    '1:requirements' \
+    '*:DER certificate file:_files'
+}
+
+_security_filevault() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C -S \
+    '1: :->subcmd' \
+    '*:: :->args' && return 0
+
+  case $state in
+    (subcmd)
+      local -a subcmds
+      subcmds=(
+        'skip-sc-enforcement:Skip SmartCard enforcement for FileVault'
+      )
+      _describe -t subcmds 'filevault command' subcmds
+      ;;
+    (args)
+      case $words[1] in
+        (skip-sc-enforcement)
+          _arguments -S \
+            '1:data volume UUID' \
+            '2:operation:(set reset status)'
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_security_platformsso() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C -S \
+    '1: :->subcmd' \
+    '*:: :->args' && return 0
+
+  case $state in
+    (subcmd)
+      local -a subcmds
+      subcmds=(
+        'bypass-login-policy:Bypass Platform SSO login policy'
+      )
+      _describe -t subcmds 'platformsso command' subcmds
+      ;;
+    (args)
+      case $words[1] in
+        (bypass-login-policy)
+          _arguments -S \
+            '-u[User name]:user:_users' \
+            '-v[APFS volume UUID (case insensitive)]:volumeUUID'
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_security() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C -S \
+    '-h[Show help]' \
+    '-i[Run in interactive mode]' \
+    '-l[Run /usr/bin/leaks -nocontext before exiting]' \
+    '-p[Set the prompt (implies -i)]:prompt' \
+    '-q[Be less verbose]' \
+    '-v[Be more verbose about what is going on]' \
+    '1: :_security_commands' \
+    '*:: :->args' && return 0
+
+  case $state in
+    (args)
+      case $words[1] in
+        (help) _security_help ;;
+        (list-keychains) _security_list_keychains ;;
+        (list-smartcards) _security_list_smartcards ;;
+        (default-keychain) _security_default_keychain ;;
+        (login-keychain) _security_login_keychain ;;
+        (create-keychain) _security_create_keychain ;;
+        (delete-keychain) _security_delete_keychain ;;
+        (lock-keychain) _security_lock_keychain ;;
+        (unlock-keychain) _security_unlock_keychain ;;
+        (set-keychain-settings) _security_set_keychain_settings ;;
+        (set-keychain-password) _security_set_keychain_password ;;
+        (show-keychain-info) _security_show_keychain_info ;;
+        (dump-keychain) _security_dump_keychain ;;
+        (create-keypair) _security_create_keypair ;;
+        (add-generic-password) _security_add_generic_password ;;
+        (add-internet-password) _security_add_internet_password ;;
+        (add-certificates) _security_add_certificates ;;
+        (find-generic-password) _security_find_generic_password ;;
+        (delete-generic-password) _security_delete_generic_password ;;
+        (set-generic-password-partition-list) _security_set_generic_password_partition_list ;;
+        (find-internet-password) _security_find_internet_password ;;
+        (delete-internet-password) _security_delete_internet_password ;;
+        (set-internet-password-partition-list) _security_set_internet_password_partition_list ;;
+        (find-key) _security_find_key ;;
+        (set-key-partition-list) _security_set_key_partition_list ;;
+        (find-certificate) _security_find_certificate ;;
+        (find-identity) _security_find_identity ;;
+        (delete-certificate) _security_delete_certificate ;;
+        (delete-identity) _security_delete_identity ;;
+        (set-identity-preference) _security_set_identity_preference ;;
+        (get-identity-preference) _security_get_identity_preference ;;
+        (create-db) _security_create_db ;;
+        (export) _security_export ;;
+        (import) _security_import ;;
+        (export-smartcard) _security_export_smartcard ;;
+        (cms) _security_cms ;;
+        (install-mds) _security_install_mds ;;
+        (add-trusted-cert) _security_add_trusted_cert ;;
+        (remove-trusted-cert) _security_remove_trusted_cert ;;
+        (dump-trust-settings) _security_dump_trust_settings ;;
+        (user-trust-settings-enable) _security_user_trust_settings_enable ;;
+        (trust-settings-export) _security_trust_settings_export ;;
+        (trust-settings-import) _security_trust_settings_import ;;
+        (verify-cert) _security_verify_cert ;;
+        (authorize) _security_authorize ;;
+        (authorizationdb) _security_authorizationdb ;;
+        (execute-with-privileges) _security_execute_with_privileges ;;
+        (leaks) _security_leaks ;;
+        (error) _security_error ;;
+        (create-filevaultmaster-keychain) _security_create_filevaultmaster_keychain ;;
+        (smartcards) _security_smartcards ;;
+        (translocate-policy-check) _security_translocate_policy_check ;;
+        (translocate-status-check) _security_translocate_status_check ;;
+        (translocate-original-path) _security_translocate_original_path ;;
+        (requirement-evaluate) _security_requirement_evaluate ;;
+        (filevault) _security_filevault ;;
+        (platformsso) _security_platformsso ;;
+      esac
+      ;;
+  esac
+}
+
+_security "$@"
